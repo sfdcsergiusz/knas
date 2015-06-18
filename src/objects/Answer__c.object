@@ -79,7 +79,7 @@
         <externalId>false</externalId>
         <label>Variant</label>
         <length>255</length>
-        <required>true</required>
+        <required>false</required>
         <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
@@ -87,6 +87,8 @@
     <label>Answer</label>
     <listViews>
         <fullName>All</fullName>
+        <columns>Variant__c</columns>
+        <columns>Question__c</columns>
         <filterScope>Everything</filterScope>
         <label>All</label>
     </listViews>

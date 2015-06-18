@@ -58,7 +58,7 @@
         <externalId>false</externalId>
         <label>First Name</label>
         <length>80</length>
-        <required>true</required>
+        <required>false</required>
         <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
@@ -76,7 +76,7 @@
         <externalId>false</externalId>
         <label>Last Name</label>
         <length>80</length>
-        <required>true</required>
+        <required>false</required>
         <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
@@ -86,7 +86,7 @@
         <externalId>false</externalId>
         <label>Password</label>
         <length>32</length>
-        <required>true</required>
+        <required>false</required>
         <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>

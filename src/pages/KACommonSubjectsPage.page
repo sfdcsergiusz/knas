@@ -24,7 +24,7 @@
 		}
 	</style>
 
-	<apex:form>
+	<apex:form >
 		<nav class="navbar navbar-inverse">
 			<div class="container-fluid">
 				<div class="navbar-header">
@@ -47,9 +47,9 @@
 		</nav>
 	</apex:form>
 
-	<apex:form>
-		<apex:pageBlock>
-			<apex:actionRegion>
+	<apex:form >
+		<apex:pageBlock >
+			<apex:actionRegion >
 				<apex:outputPanel layout="none">
 					<apex:commandButton value="Create Subject" action="{!createSubject}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-primary" style="float: left; margin: 16px 12px 12px 12px !important;"/>
 					<apex:inputText value="{!tmpSubject}" html-placeholder="Please, input sought-for subject name..." style="width: 73% !important; float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
@@ -59,9 +59,9 @@
 			</apex:actionRegion>
 			<apex:outputPanel id="subjectSection">
 				<apex:repeat value="{!subjects}" var="subject">
-					<apex:pageBlock>
+					<apex:pageBlock >
 
-						<apex:actionRegion>
+						<apex:actionRegion >
 							<apex:outputPanel layout="none">
 								<div style="position: relative; bottom: -7px; height: 0; left: 50px">
 									<h3>
@@ -102,7 +102,7 @@
 				</apex:repeat>
 			</apex:outputPanel>
 
-			<apex:outputpanel>
+			<apex:outputpanel >
 				<apex:actionstatus id="refreshStatus">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%; top: 135px;">

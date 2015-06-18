@@ -54,6 +54,32 @@
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <fields>
+        <fullName>Level__c</fullName>
+        <externalId>false</externalId>
+        <label>Level</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Junior</fullName>
+                <default>true</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Lead</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Middle</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Senior</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
         <fullName>Statement__c</fullName>
         <externalId>false</externalId>
         <label>Statement</label>

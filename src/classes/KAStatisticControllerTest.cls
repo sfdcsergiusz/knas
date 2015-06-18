@@ -110,4 +110,3 @@ private class KAStatisticControllerTest {
 
 
 }
-

@@ -1,7 +1,7 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KASubjectQuestionsListController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
 
-	<apex:form>
+	<apex:form >
 		<nav class="navbar navbar-inverse">
 			<div class="container-fluid">
 				<div class="navbar-header">
@@ -30,8 +30,8 @@
 		}
 	</style>
 
-	<apex:form>
-		<apex:pageBlock>
+	<apex:form >
+		<apex:pageBlock >
 
 			<apex:pageBlockSection id="commonSection" title="{!subjectName}" columns="1">
 				<apex:outputPanel layout="none">
@@ -73,8 +73,8 @@
 		</apex:pageBlock>
 	</apex:form>
 
-	<apex:form>
-		<apex:pageBlock>
+	<apex:form >
+		<apex:pageBlock >
 			<apex:outputpanel id="createQuestion" style="display: none;">
 				<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
 					<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
@@ -90,7 +90,7 @@
 
         				<!-- Subject Choosing -->
 
-    					<apex:actionRegion>
+    					<apex:actionRegion >
     						<apex:outputLabel for="inputSubject" value="Subject" style="float: left"/>
     						<apex:inputText id="inputSubject" value="{!tmpSubject}" html-placeholder="Please, input subject title...">
     							<apex:actionSupport event="onkeyup" action="{!typeSubject}" reRender="subjectsTable"/>
@@ -114,7 +114,7 @@
 
         				<!-- Theme Choosing -->
 
-        				<apex:actionRegion>
+        				<apex:actionRegion >
         					<apex:outputLabel for="inputTheme" value="Theme" style="float: left"/>
     						<apex:inputText id="inputTheme" value="{!tmpTheme}" html-placeholder="Please, input theme title...">
     							<apex:actionSupport event="onkeyup" action="{!typeTheme}" reRender="themesTable"/>

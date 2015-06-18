@@ -7,7 +7,7 @@
 		}
 	</style>
 
-	<apex:form>
+	<apex:form >
 		<nav class="navbar navbar-inverse">
 			<div class="container-fluid">
 				<div class="navbar-header">
@@ -36,9 +36,9 @@
 		</nav>
 	</apex:form>
 
-	<apex:form>
+	<apex:form >
 		<div style="width: 100%; height: 100%;">
-			<apex:pageBlock>
+			<apex:pageBlock >
 
 				<apex:pageBlockButtons location="bottom">
 
@@ -91,8 +91,8 @@
 		</div>
 	</apex:form>
 
-	<apex:form>
-		<apex:pageBlock>
+	<apex:form >
+		<apex:pageBlock >
 			<apex:outputpanel id="createTask" style="display: none;">
 				<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
 					<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
@@ -108,7 +108,7 @@
 
 	    				<!-- Employee Choosing -->
 
-						<apex:actionRegion>
+						<apex:actionRegion >
 							<apex:inputText id="inputEmployee" value="{!tmpEmployee}" html-placeholder="Please, input employee name or surname...">
 								<apex:actionSupport event="onkeyup" action="{!typeEmployee}" reRender="employeesTable"/>
 							</apex:inputText>
@@ -132,7 +132,7 @@
 
 	    				<!-- Test Choosing -->
 
-	    				<apex:actionRegion>
+	    				<apex:actionRegion >
 							<apex:inputText id="inputTest" value="{!tmpTest}" html-placeholder="Please, input test name or subject...">
 								<apex:actionSupport event="onkeyup" action="{!typeTest}" reRender="testsTable"/>
 							</apex:inputText>

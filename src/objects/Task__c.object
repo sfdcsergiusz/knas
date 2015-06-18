@@ -57,7 +57,7 @@
         <fullName>AssignTime__c</fullName>
         <externalId>false</externalId>
         <label>AssignTime</label>
-        <required>true</required>
+        <required>false</required>
         <trackTrending>false</trackTrending>
         <type>DateTime</type>
     </fields>

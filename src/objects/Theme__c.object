@@ -54,6 +54,15 @@
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <fields>
+        <fullName>Questions_Number__c</fullName>
+        <externalId>false</externalId>
+        <label>Questions Number</label>
+        <summaryForeignKey>Question__c.Theme__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
         <fullName>Subject__c</fullName>
         <externalId>false</externalId>
         <label>Subject</label>

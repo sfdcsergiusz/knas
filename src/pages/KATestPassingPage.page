@@ -1,7 +1,7 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KATestPassingController" docType="HTML-5.0" action="{!onLoad}">
 <apex:stylesheet value="{!URLFOR($Resource.style)}"/>
 
-	<apex:form>
+	<apex:form >
 		<nav class="navbar navbar-inverse">
 			<div class="container-fluid">
 				<div class="navbar-header">

@@ -71,7 +71,7 @@
         <externalId>false</externalId>
         <label>Result</label>
         <precision>4</precision>
-        <required>true</required>
+        <required>false</required>
         <scale>1</scale>
         <trackTrending>false</trackTrending>
         <type>Percent</type>
