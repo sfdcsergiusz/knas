@@ -1,0 +1,60 @@
+<apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KARegisterController" action="{!onLoad}">
+	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+
+	<apex:form>
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#" style="color: #FFA200 !important; pointer-events: none; cursor: default;">Knowledge Assessment System</a>
+				</div>
+				<div>
+					<ul class="nav navbar-nav">
+						<li>
+							<apex:commandLink value="Home" style="font-size: 16px;"/>
+						</li>
+						<li style="float: right !important; margin-right: 1.5em;">
+							<apex:commandLink value="Logout" style="font-size: 16px;"/>
+						</li>
+						<li style="float: right !important;">
+							<apex:commandLink value="Your username" style="font-size: 16px; color: #FFA200 !important; pointer-events: none; cursor: default;"/>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</apex:form>
+
+	<apex:form >
+		<div style="width: 100%; height: 100%;">
+			<div style="width: 50%; margin: auto; position: relative; top: 200px;">
+				<apex:pageBlock >
+
+					<apex:pageBlockButtons location="bottom">
+						<apex:commandButton value="Sign In" action="{!login}" styleClass="btn btn-warning"/>
+						<apex:commandButton value="SIGN UP" action="{!register}" styleClass="btn btn-success"/>
+					</apex:pageBlockButtons>
+
+					<apex:pageBlockSection columns="1">
+						<apex:pageBlockSectionItem >
+							<apex:outputLabel for="inputUsername" value="* Username: "/>
+							<apex:inputText id="inputUsername" value="{!username}" html-placeholder="Please, input your email login..." required="true"/>
+						</apex:pageBlockSectionItem>
+						<apex:pageBlockSectionItem >
+							<apex:outputLabel for="inputPass" value="* Password: "/>
+							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." required="true"/>
+						</apex:pageBlockSectionItem>
+						<apex:pageBlockSectionItem >
+							<apex:outputLabel for="inputFirstName" value="First Name: "/>
+							<apex:inputText id="inputFirstName" value="{!firstName}" html-placeholder="Please, input your first name..." required="false"/>
+						</apex:pageBlockSectionItem>
+						<apex:pageBlockSectionItem >
+							<apex:outputLabel for="inputLastName" value="Last Name: "/>
+							<apex:inputText id="inputLastName" value="{!lastName}" html-placeholder="Please, input your surname..." required="false"/>
+						</apex:pageBlockSectionItem>
+					</apex:pageBlockSection>
+
+				</apex:pageBlock>
+			</div>
+		</div>
+	</apex:form>
+</apex:page>

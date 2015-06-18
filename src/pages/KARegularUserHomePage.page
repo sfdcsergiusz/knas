@@ -1,0 +1,96 @@
+<apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KARegularHomeController" docType="HTML-5.0" action="{!onLoad}">
+	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+
+	<apex:form>
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#" style="color: #FFA200 !important; pointer-events: none; cursor: default;">Knowledge Assessment System</a>
+				</div>
+				<div>
+					<ul class="nav navbar-nav">
+						<li>
+							<apex:commandLink value="Home" style="font-size: 16px;" action="{!goHome}"/>
+						</li>
+						<li style="float: right !important; margin-right: 1.5em;">
+							<apex:commandLink value="Logout" style="font-size: 16px;" action="{!makeLogout}"/>
+						</li>
+						<li style="float: right !important;">
+							<apex:commandLink value="Your username" style="font-size: 16px; color: #FFA200 !important; pointer-events: none; cursor: default;"/>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</apex:form>
+
+	<apex:form >
+		<div style="width: 100%; height: 100%;">
+			<apex:pageBlock >
+
+				<apex:outputpanel >
+					<apex:actionstatus id="resultStatus">
+    					<apex:facet name="start">
+        					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; opacity: 0.8; width: 100%;">
+            					<div class="waitingHolder" style="top: 25%;">
+                    				<h1>
+                    					Your result is
+                    					<br/>
+                    					{!lastTestResult} %
+                    				</h1>
+            					</div>
+            				</div>
+    					</apex:facet>
+					</apex:actionstatus>
+				</apex:outputpanel>
+
+				<apex:pageBlockButtons location="bottom">
+
+				</apex:pageBlockButtons>
+
+				<apex:pageBlockSection title="Statistics" columns="1">
+					<apex:pageBlockTable value="{!statistics}" var="statistic">
+						<apex:column value="{!statistic.Name}"/>
+					</apex:pageBlockTable>
+				</apex:pageBlockSection>
+
+				<apex:pageBlockSection id="upcomingTable" title="Upcoming Tests" columns="1">
+					<apex:outputLabel rendered="{!IF(upcomingTests.size = 0, true, false)}" value="There is no upcoming tests yet."/>
+					<apex:pageBlockTable id="upcomingTestTable" value="{!upcomingTests}" var="upcomingTest">
+						<apex:column value="{!upcomingTest.Task__r.AssignTime__c}" headerValue="Time Of Assignment"/>
+						<apex:column value="{!upcomingTest.Task__r.Test__r.Subject__r.Name}" headerValue="Subject"/>
+						<apex:column value="{!upcomingTest.Task__r.Test__r.Name}" headerValue="Test Title"/>
+						<apex:column rendered="{!IF(upcomingTests.size > 0, true, false)}">
+							<apex:facet name="header">Action</apex:facet>
+								<apex:commandButton value="Launch" action="{!launchTest}" reRender="upcomingTable" styleClass="btn btn-link">
+									<apex:param name="launchedTestId" value="{!upcomingTest.Task__r.Test__r.Id}" assignTo="{!launchedTestId}"/>
+								</apex:commandButton>
+						</apex:column>
+					</apex:pageBlockTable>
+				</apex:pageBlockSection>
+
+				<apex:pageBlockSection title="Passed Tests" columns="1">
+					<apex:outputLabel rendered="{!IF(passedTests.size = 0, true, false)}" value="You didn't pass any tests."/>
+					<apex:pageBlockTable id="passedTestTable" value="{!passedTests}" var="passedTest" rows="12">
+						<apex:column value="{!passedTest.CreatedDate}" headerValue="The End Time"/>
+						<apex:column value="{!passedTest.Test__r.Subject__r.Name}" headerValue="Subject"/>
+						<apex:column value="{!passedTest.Test__r.Name}" headerValue="Test Title"/>
+						<apex:column value="{!passedTest.Result__c}" headerValue="Pass Result"/>
+					</apex:pageBlockTable>
+				</apex:pageBlockSection>
+
+			</apex:pageBlock>
+		</div>
+	</apex:form>
+
+	<script>
+		if (new Date() - new Date('{!lastTimeResult}') < 5200) {
+			var resultDiv = document.querySelector("span[id*='resultStatus.start']");
+			resultDiv.style.display = 'block';
+			setTimeout(function() {
+				resultDiv.style.display = 'none';
+			}, 3700);
+		}
+	</script>
+
+</apex:page>
