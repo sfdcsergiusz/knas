@@ -45,7 +45,7 @@ public with sharing class KAAdminHomeController {
 				new Cookie('KALogin', '', null, 0, false)
 			}
 		);
-		return new PageReference('/apex/KALoginPage');
+		return new PageReference('/apex/KALogin');
 	}
 
 	public void refreshRecentTasks() {
@@ -97,7 +97,7 @@ public with sharing class KAAdminHomeController {
 				}
 			}
 		}
-		PageReference updatingPage = new PageReference('/apex/KAAdminUserHomePage');
+		PageReference updatingPage = new PageReference('/apex/KAAdminUserHome');
 		updatingPage.setRedirect(true);
 		return updatingPage;
 	}
@@ -145,7 +145,7 @@ public with sharing class KAAdminHomeController {
 	}
 
 	public PageReference goToCommonList() {
-		return new PageReference('/apex/KACommonSubjectsPage');
+		return new PageReference('/apex/KACommonSubjects');
 	}
 
 }

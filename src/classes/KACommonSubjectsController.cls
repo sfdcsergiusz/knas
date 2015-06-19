@@ -21,7 +21,7 @@ public with sharing class KACommonSubjectsController {
 	}
 
 	public PageReference goHome() {
-		return new PageReference('/apex/KAAdminUserHomePage');
+		return new PageReference('/apex/KAAdminUserHome');
 	}
 
 	public void typeSubject() {
@@ -128,11 +128,11 @@ public with sharing class KACommonSubjectsController {
 	}
 
 	public PageReference goToThemeList() {
-		return new PageReference('/apex/KASubjectQuestionsListPage?themeName=' + ApexPages.currentPage().getParameters().get('listParam'));
+		return new PageReference('/apex/KASubjectQuestionsList?themeName=' + ApexPages.currentPage().getParameters().get('listParam'));
 	}
 
 	public PageReference goToSubjectList() {
-		return new PageReference('/apex/KASubjectQuestionsListPage?subjectName=' + ApexPages.currentPage().getParameters().get('listParam'));
+		return new PageReference('/apex/KASubjectQuestionsList?subjectName=' + ApexPages.currentPage().getParameters().get('listParam'));
 	}
 
 }

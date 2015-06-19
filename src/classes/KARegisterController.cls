@@ -13,7 +13,7 @@ public with sharing class KARegisterController {
 
 	public PageReference onLoad() {
 		if (getLoginCookie() != null) {
-			return new PageReference('/apex/KARegularUserHomePage');
+			return new PageReference('/apex/KARegularUserHome');
 		}
 		else {
 			return null;
@@ -21,13 +21,13 @@ public with sharing class KARegisterController {
 	}
 
 	public PageReference login() {
-		return new PageReference('/apex/KALoginPage');
+		return new PageReference('/apex/KALogin');
 	}
 
 	public PageReference register() {
 		if (registerNewEmployee()) {
 			setLoginCookie(username);
-			return new PageReference('/apex/KARegularUserHomePage');
+			return new PageReference('/apex/KARegularUserHome');
 		}
 		else {
 			return null;

@@ -18,10 +18,10 @@ public with sharing class KALoginController {
 				LIMIT 1
 			];
 			if ( ! emploUser.IsAdmin__c) {
-				return new PageReference('/apex/KARegularUserHomePage');
+				return new PageReference('/apex/KARegularUserHome');
 			}
 			else {
-				return new PageReference('/apex/KAAdminUserHomePage');
+				return new PageReference('/apex/KAAdminUserHome');
 			}
 		}
 		else {
@@ -39,17 +39,17 @@ public with sharing class KALoginController {
 		if (emploUser != null && emploUser.Password__c == EncodingUtil.convertToHex(Crypto.generateDigest('MD5', Blob.valueOf(password)))) {
 			setLoginCookie(username);
 			if ( ! emploUser.IsAdmin__c) {
-				return new PageReference('/apex/KARegularUserHomePage');
+				return new PageReference('/apex/KARegularUserHome');
 			}
 			else {
-				return new PageReference('/apex/KAAdminUserHomePage');
+				return new PageReference('/apex/KAAdminUserHome');
 			}
 		}
 		return null;
 	}
 
 	public PageReference register() {
-		return new PageReference('/apex/KARegisterPage');
+		return new PageReference('/apex/KARegister');
 	}
 
 	public void resetPass() {

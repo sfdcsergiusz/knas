@@ -41,7 +41,7 @@ public with sharing class KASubjectQuestionsListController {
 	}
 
 	public PageReference goHome() {
-		return new PageReference('/apex/KAAdminUserHomePage');
+		return new PageReference('/apex/KAAdminUserHome');
 	}
 
 	public void refreshQuestions() {
@@ -160,12 +160,12 @@ public with sharing class KASubjectQuestionsListController {
 
 		refreshQuestions();
 		if (themeName != null) {
-			PageReference updatingPage = new PageReference('/apex/KASubjectQuestionsListPage?themeName='+themeName);
+			PageReference updatingPage = new PageReference('/apex/KASubjectQuestionsList?themeName='+themeName);
 			updatingPage.setRedirect(true);
 			return updatingPage;
 		}
 		else {
-			PageReference updatingPage = new PageReference('/apex/KASubjectQuestionsListPage?subjectName='+subjectName);
+			PageReference updatingPage = new PageReference('/apex/KASubjectQuestionsList?subjectName='+subjectName);
 			updatingPage.setRedirect(true);
 			return updatingPage;
 		}

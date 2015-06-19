@@ -51,15 +51,15 @@ public with sharing class KATestPassingController {
 			return null;
 		}
 		else if (username != null && testId == null) {
-			return new PageReference('/apex/KARegularUserHomePage');
+			return new PageReference('/apex/KARegularUserHome');
 		}
 		else {
-			return new PageReference('/apex/KALoginPage');
+			return new PageReference('/apex/KALogin');
 		}
 	}
 
 	public PageReference goHome() {
-		return new PageReference('/apex/KARegularUserHomePage');
+		return new PageReference('/apex/KARegularUserHome');
 	}
 
 	public List<SelectOption> getVariantOptions() {
@@ -95,7 +95,7 @@ public with sharing class KATestPassingController {
 		Pass_History__c newestResult = new Pass_History__c(Employee__c = currentEmployee.Id, Test__c = currentTest.Id, Result__c = getResults());
 		insert newestResult;
 
-		return new PageReference('/apex/KARegularUserHomePage');
+		return new PageReference('/apex/KARegularUserHome');
 	}
 
 	private Map<String, Boolean> getVariants(Integer questionPosition) {

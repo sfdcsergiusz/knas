@@ -46,12 +46,12 @@ public with sharing class KARegularHomeController {
 				new Cookie('KALogin', '', null, 0, false)
 			}
 		);
-		return new PageReference('/apex/KALoginPage');
+		return new PageReference('/apex/KALogin');
 	}
 
 	public PageReference launchTest() {
 		if (launchedTestId != null && launchedTestId != '') {
-			return new PageReference('/apex/KATestPassingPage?test=' + launchedTestId);
+			return new PageReference('/apex/KATestPassing?test=' + launchedTestId);
 		}
 		return null;
 	}
@@ -61,7 +61,7 @@ public with sharing class KARegularHomeController {
 			return null;
 		}
 		else {
-			return new PageReference('/apex/KALoginPage');
+			return new PageReference('/apex/KALogin');
 		}
 	}
 
