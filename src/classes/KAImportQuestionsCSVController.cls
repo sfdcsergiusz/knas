@@ -23,22 +23,22 @@ public List<List<Answer__c>> wrongAnswers{get;set;}
 
 		for (Integer i = 1; i < csvFileLines.size(); i++) {
 			Question__c question = new Question__c();
-			String[] csvRecordData = csvFileLines[i].split(',');
+			String[] csvRecordData = csvFileLines[i].split(';');
 			if (csvRecordData.size() == 4) {
 				question.Statement__c = csvRecordData[0];
 				question.Level__c = csvRecordData[1];
 
 				List<Answer__c> tmpRightAnswerList = new List<Answer__c>();
 				if ( ! String.isEmpty(csvRecordData[2])) {
-					for (String answerName : csvRecordData[2].split(';')) {
+					for (String answerName : csvRecordData[2].split('~')) {
 						tmpRightAnswerList.add(new Answer__c(Variant__c = answerName, Right__c = true));
 					}
 					rightAnswers.add(tmpRightAnswerList);
 				}
 
 				List<Answer__c> tmpWrongAnswerList = new List<Answer__c>();
-				if (csvRecordData[3].split(';').size() !=0) {
-					for (String answerName : csvRecordData[3].split(';')) {//
+				if ( ! String.isEmpty(csvRecordData[3])) {
+					for (String answerName : csvRecordData[3].split('~')) {
 						tmpWrongAnswerList.add(new Answer__c(Variant__c = answerName));
 					}
 					wrongAnswers.add(tmpWrongAnswerList);
