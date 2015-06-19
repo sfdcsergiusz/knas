@@ -37,11 +37,11 @@
 					<apex:pageBlockSection columns="1">
 						<apex:pageBlockSectionItem >
 							<apex:outputLabel for="inputUsername" value="* Username: "/>
-							<apex:inputText id="inputUsername" value="{!username}" html-placeholder="Please, input your email login..." required="true"/>
+							<apex:inputText id="inputUsername" value="{!username}" html-placeholder="Please, input your email login..." required="false"/>
 						</apex:pageBlockSectionItem>
 						<apex:pageBlockSectionItem >
 							<apex:outputLabel for="inputPass" value="* Password: "/>
-							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." required="true"/>
+							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." required="false"/>
 						</apex:pageBlockSectionItem>
 						<apex:pageBlockSectionItem >
 							<apex:outputLabel for="inputFirstName" value="First Name: "/>
