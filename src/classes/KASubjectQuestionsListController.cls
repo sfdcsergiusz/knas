@@ -1,5 +1,7 @@
 public with sharing class KASubjectQuestionsListController {
 
+	public static JSON tmpJSON { get; set; }
+
 	public List<Subject__c> subjects { get; set; }
 	public List<Theme__c> themes { get; set; }
 
@@ -30,6 +32,19 @@ public with sharing class KASubjectQuestionsListController {
 		currentPage = ApexPages.currentPage();
 		themeName = currentPage.getParameters().get('themeName');
 		subjectName = currentPage.getParameters().get('subjectName');
+		refreshQuestions();
+	}
+
+	@RemoteAction
+	public static JSON startUpdateQuestion(String questId) {
+		return null;
+	}
+
+	public PageReference goHome() {
+		return new PageReference('/apex/KAAdminUserHomePage');
+	}
+
+	public void refreshQuestions() {
 		if (themeName != null) {
 			questions = [
 				SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name
@@ -63,10 +78,6 @@ public with sharing class KASubjectQuestionsListController {
 			];
 			tmpSubject = subjectName;
 		}
-	}
-
-	public PageReference goHome() {
-		return new PageReference('/apex/KAAdminUserHomePage');
 	}
 
 	public void typeSubject() {
@@ -147,39 +158,7 @@ public with sharing class KASubjectQuestionsListController {
 			preCreatedAnswers.add(new Answer__c());
 		}
 
-		if (themeName != null) {
-			questions = [
-				SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name
-				FROM Question__c
-				WHERE Theme__r.Name = :themeName
-				ORDER BY CreatedDate DESC
-				LIMIT 50000
-			];
-			if (questions.size() > 0) {
-				subjectName = questions[0].Theme__r.Subject__r.Name;
-			}
-			else {
-				subjectName = [
-					SELECT Subject__r.Name
-					FROM Theme__c
-					WHERE Name = :themeName
-					LIMIT 1
-					].Subject__r.Name;
-			}
-
-			tmpSubject = subjectName;
-			tmpTheme = themeName;
-		}
-		else if (subjectName != null) {
-			questions = [
-				SELECT Name, Level__c, Statement__c, CreatedDate,  Theme__r.Name, Theme__r.Subject__r.Name
-				FROM Question__c
-				WHERE Theme__r.Subject__r.Name = :subjectName
-				ORDER BY CreatedDate DESC
-				LIMIT 50000
-			];
-			tmpSubject = subjectName;
-		}
+		refreshQuestions();
 		if (themeName != null) {
 			PageReference updatingPage = new PageReference('/apex/KASubjectQuestionsListPage?themeName='+themeName);
 			updatingPage.setRedirect(true);
@@ -200,39 +179,7 @@ public with sharing class KASubjectQuestionsListController {
 		];
 		delete deletingQuestion;
 
-		if (themeName != null) {
-			questions = [
-				SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name
-				FROM Question__c
-				WHERE Theme__r.Name = :themeName
-				ORDER BY CreatedDate DESC
-				LIMIT 50000
-			];
-			if (questions.size() > 0) {
-				subjectName = questions[0].Theme__r.Subject__r.Name;
-			}
-			else {
-				subjectName = [
-					SELECT Subject__r.Name
-					FROM Theme__c
-					WHERE Name = :themeName
-					LIMIT 1
-					].Subject__r.Name;
-			}
-
-			tmpSubject = subjectName;
-			tmpTheme = themeName;
-		}
-		else if (subjectName != null) {
-			questions = [
-				SELECT Name, Level__c, Statement__c, CreatedDate,  Theme__r.Name, Theme__r.Subject__r.Name
-				FROM Question__c
-				WHERE Theme__r.Subject__r.Name = :subjectName
-				ORDER BY CreatedDate DESC
-				LIMIT 50000
-			];
-			tmpSubject = subjectName;
-		}
+		refreshQuestions();
 	}
 
 }

@@ -30,16 +30,17 @@
 		}
 	</style>
 
-	<apex:form >
+	<apex:form >		
 		<apex:pageBlock >
-
-			<apex:pageBlockSection id="commonSection" title="{!subjectName}" columns="1">
+			<apex:pageBlockSection id="commonSection" columns="1">
 				<apex:outputPanel layout="none">
-					<apex:commandButton value="Create Question" onclick="openCreatingQuestion(); return false;" styleClass="btn btn-primary" style="float: left;"/>
+					<apex:commandButton value="Create Question" onclick="openCreatingQuestion(); return false;" styleClass="btn btn-primary" style="float: left;"/>						
+					<apex:outputLabel value="for {!subjectName} {!themeName}" style="line-height: 2.1 !important;"/>
+					<apex:commandButton value="Refresh" action="{!refreshQuestions}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-success" style="float: right;"/>								
 				</apex:outputPanel>
 
 				<apex:pageBlockTable value="{!questions}" var="question">
-					<apex:column value="{!question.Theme__r.Name}" headerValue="Theme"/>
+					<apex:column value="{!question.Theme__r.Name}" headerValue="Theme" rendered="{!IF(themeName == null, true, false)}"/>
 					<apex:column value="{!question.Name}" headerValue="Name"/>
 					<apex:column value="{!question.Level__c}" headerValue="Level"/>
 					<apex:column value="{!question.CreatedDate}" headerValue="Created On"/>
@@ -48,7 +49,7 @@
 					</apex:column>
 					<apex:column headerValue="Actions">
 						<apex:outputPanel layout="none">
-							<apex:commandButton value="Update" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
+							<apex:commandButton value="Update" onclick="startUpdateQuestion('{!question.Id}'); return false;" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
 							<apex:commandButton value="Delete" action="{!deleteQuestion}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;">
 								<apex:param name="chosenQuestion" value="{!question.Id}"/>
 							</apex:commandButton>
@@ -199,6 +200,18 @@
 		function closeCreatingQuestion() {
 			var resultDiv = document.querySelector("span[id*='createQuestion']");
 			resultDiv.style.display = 'none';
+		}
+		function startUpdateQuestion(questId) {
+			Visualforce.remoting.Manager.invokeAction(
+				'{!$RemoteAction.KASubjectQuestionsListController.startUpdateQuestion}',
+				questId,
+				function(result, event) {
+					var resultDiv = document.querySelector("span[id*='refreshStatus.start']");
+					resultDiv.style.display = 'block';					
+					alert(result);
+				},
+				{escape: true}
+			);
 		}
 	</script>
 

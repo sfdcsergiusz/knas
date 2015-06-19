@@ -1,0 +1,18 @@
+<apex:page controller="KAImportQuestionsCSVController" showHeader="false" sidebar="false" >
+ <apex:form >
+        <apex:pageMessages />
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="2">
+                  <apex:inputFile value="{!csvFileBody}"  filename="{!csvAsString}"/>
+                  <apex:commandButton value="Import Question" action="{!importCSVFile}"/>
+                  <apex:commandButton value="Import to database" action="{!insertToDatabase}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock >
+           <apex:pageBlockTable value="{!queList}" var="que">
+              <apex:column value="{!que.Statement__c}" />
+              <apex:column value="{!que.Level__c}" />
+         </apex:pageBlockTable>
+      </apex:pageBlock>
+   </apex:form>
+</apex:page>

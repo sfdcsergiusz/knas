@@ -1983,6 +1983,9 @@
 			span:empty {
 				display: none !important;
 			}
+			.waitingSearchDiv {
+				position: fixed !important;
+			}
 			.waitingSearchDiv .waitingHolder {
-				width: 60% !important;
+				width: 60% !important;				
 			}
