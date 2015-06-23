@@ -1,5 +1,6 @@
 <apex:page showHeader="false" sidebar="false" controller="KAStatisticController" docType="HTML-5.0">
  <apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+ <apex:include pageName="KANavigationBar"/>
 
  <style>
   .sort:hover {

@@ -1,4 +1,5 @@
 <apex:page controller="KAImportQuestionsCSVController" showHeader="false" sidebar="false" >
+<apex:include pageName="KANavigationBar"/>
  <apex:form >
         <apex:pageMessages />
         <apex:pageBlock >

@@ -1,40 +1,12 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KAAdminHomeController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:include pageName="KANavigationBar"/>
 
 	<style>
 		.chooseColumn:hover {
 			cursor: pointer;
 		}
 	</style>
-
-	<apex:form >
-		<nav class="navbar navbar-inverse">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<a class="navbar-brand" href="#" style="color: #FFA200 !important; pointer-events: none; cursor: default;">Knowledge Assessment System</a>
-				</div>
-				<div>
-					<ul class="nav navbar-nav">
-						<li>
-							<apex:commandLink value="Home" style="font-size: 16px;" action="{!goHome}"/>
-						</li>
-						<li>
-							<apex:commandLink value="GO TO HELL" style="font-size: 16px;" action="{!goToHell}"/>
-						</li>
-						<li>
-							<apex:commandLink value="GO TO HELL 2" style="font-size: 16px;" action="{!goToHell2}"/>
-						</li>
-						<li style="float: right !important; margin-right: 1.5em;">
-							<apex:commandLink value="Logout" style="font-size: 16px;" action="{!makeLogout}"/>
-						</li>
-						<li style="float: right !important;">
-							<apex:commandLink value="Your username" style="font-size: 16px; color: #FFA200 !important; pointer-events: none; cursor: default;"/>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
-	</apex:form>
 
 	<apex:form >
 		<div style="width: 100%; height: 100%;">

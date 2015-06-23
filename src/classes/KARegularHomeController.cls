@@ -36,33 +36,11 @@ public with sharing class KARegularHomeController {
 		}
 	}
 
-	public PageReference goHome() {
-		return null;
-	}
-
-	public PageReference makeLogout() {
-		ApexPages.currentPage().setCookies(
-			new Cookie[] {
-				new Cookie('KALogin', '', null, 0, false)
-			}
-		);
-		return new PageReference('/apex/KALogin');
-	}
-
 	public PageReference launchTest() {
 		if (launchedTestId != null && launchedTestId != '') {
 			return new PageReference('/apex/KATestPassing?test=' + launchedTestId);
 		}
 		return null;
-	}
-
-	public PageReference onLoad() {
-		if (username != null) {
-			return null;
-		}
-		else {
-			return new PageReference('/apex/KALogin');
-		}
 	}
 
 }
