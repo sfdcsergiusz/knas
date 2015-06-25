@@ -6,6 +6,7 @@
 		<members>KAEmailHandler</members>
 		<members>KAImportQuestionsCSVController</members>
 		<members>KALoginController</members>
+		<members>KANavigationBarController</members>
 		<members>KAPageConstants</members>
 		<members>KARegisterController</members>
 		<members>KARegularHomeController</members>
