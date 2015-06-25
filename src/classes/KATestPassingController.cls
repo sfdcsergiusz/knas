@@ -15,10 +15,10 @@ public with sharing class KATestPassingController {
 	public List<List<String>> appliedAnswers { get; private set; }
 
 	private List<String> subAppliedAnswer { private get; private set; }
-	private String username { private get; private set; }
+	private String userId { private get; private set; }
 	private String testId { private get; private set; }
 	private PageReference currentPage;
-	
+
 
 	public KATestPassingController() {
 		currentQuestion = 0;
@@ -29,40 +29,37 @@ public with sharing class KATestPassingController {
 		currentPage = ApexPages.currentPage();
 		testId = currentPage.getParameters().get('test');
 
-		Cookie tmpCookie = currentPage.getCookies().get('KALogin');
+		Cookie tmpCookie = currentPage.getCookies().get('Identifier');
 
 		if (testId != null && tmpCookie != null) {
-			username = tmpCookie.getValue();
-			questions = [
-				SELECT Question__r.Id, Question__r.Statement__c, Question__r.Theme__r.Subject__r.Name, Question__r.Theme__r.Name
-				FROM TestQuestion__c
-				WHERE Test__r.Id = :testId
-				LIMIT 50000
+			List<Browser__c> tmpBrowsers = [
+				SELECT Employee__r.Id
+				FROM Browser__c
+				WHERE Identifier__c = :tmpCookie.getValue()
+				LIMIT 1
 			];
-			totalQuestionsNum = questions.size();
+			if ( ! tmpBrowsers.isEmpty()) {
+				userId = tmpBrowsers.get(0).Employee__r.Id;
 
-			appliedAnswers = new List<List<String>>();
-			for (Integer i = 0; i < totalQuestionsNum; i++) {
-				appliedAnswers.add(new List<String>());
+				questions = [
+					SELECT Question__r.Id, Question__r.Statement__c, Question__r.Theme__r.Subject__r.Name, Question__r.Theme__r.Name
+					FROM TestQuestion__c
+					WHERE Test__r.Id = :testId
+					LIMIT 50000
+				];
+				totalQuestionsNum = questions.size();
+
+				appliedAnswers = new List<List<String>>();
+				for (Integer i = 0; i < totalQuestionsNum; i++) {
+					appliedAnswers.add(new List<String>());
+				}
+
+				subAppliedAnswer = new String[1];
+				variants = getVariants(currentQuestion);
 			}
-
-			subAppliedAnswer = new String[1];
-			variants = getVariants(currentQuestion);
 		}
 		this.isEnableBlock1 = true;
 		this.isEnableBlock2 = false;
-	}
-
-	public PageReference onLoad() {
-		if (username != null) {
-			return null;
-		}
-		else if (username != null && testId == null) {
-			return new PageReference('/apex/KARegularUserHome');
-		}
-		else {
-			return new PageReference('/apex/KALogin');
-		}
 	}
 
 	public PageReference goHome() {
@@ -89,7 +86,7 @@ public with sharing class KATestPassingController {
 		doSingleTransfer(null);
 		this.isEnableBlock1 = false;
 		this.isEnableBlock2 = true;
-	
+
 	}
 
 	public void goToQuestions() {
@@ -105,7 +102,7 @@ public with sharing class KATestPassingController {
 		Employee__c currentEmployee = [
 			SELECT Id
 			FROM Employee__c
-			WHERE Name = :username
+			WHERE Name = :userId
 			LIMIT 1
 		];
 		Test__c currentTest = [

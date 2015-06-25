@@ -53,7 +53,15 @@ public with sharing class KANavigationBarController {
 	}
 
 	public PageReference goHome() {
-		return null;
+		PageReference homePage;
+		if (browserUser.Employee__r.IsAdmin__c) {
+			homePage = Page.KAAdminUserHome;
+		}
+		else {
+			homePage = Page.KARegularUserHome;
+		}
+		homePage.setRedirect(true);
+		return homePage;
 	}
 
 	public PageReference makeLogout() {
