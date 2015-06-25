@@ -1,6 +1,6 @@
 public with sharing class KARegularHomeController {
 
-	private String username { private get; private set; }
+	private Id userId { private get; private set; }
 
 	public String launchedTestId { get; set; }
 	public String lastTestResult { get; set; }
@@ -14,27 +14,36 @@ public with sharing class KARegularHomeController {
 		upcomingTests = new List<Employee_Task__c>();
 		passedTests = new List<Pass_History__c>();
 
-		Cookie tmpCookie = ApexPages.currentPage().getCookies().get('KALogin');
+		Cookie tmpCookie = ApexPages.currentPage().getCookies().get('Identifier');
 		if (tmpCookie != null) {
-			username = tmpCookie.getValue();
+			List<Browser__c> tmpBrowsers = [
+				SELECT Employee__r.Id
+				FROM Browser__c
+				WHERE Identifier__c = :tmpCookie.getValue()
+				LIMIT 1
+			];
 
-			upcomingTests = [
-				SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id
-				FROM Employee_Task__c
-				WHERE Employee__r.Name =: username
-				ORDER BY Task__r.AssignTime__c DESC
-				LIMIT 50000
-			];
-			passedTests = [
-				SELECT Name, Employee__c, CreatedDate, Result__c, Test__r.Name, Test__r.Subject__r.Name
-				FROM Pass_History__c
-				WHERE Employee__r.Name =: username
-				ORDER BY CreatedDate DESC
-				LIMIT 50000
-			];
-			if (passedTests.size() > 0) {
-				lastTestResult = String.valueOf(passedTests.get(0).Result__c);
-				lastTimeResult = passedTests.get(0).CreatedDate;
+			if ( ! tmpBrowsers.isEmpty()) {
+				userId = tmpBrowsers.get(0).Employee__r.Id;
+
+				upcomingTests = [
+					SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id
+					FROM Employee_Task__c
+					WHERE Employee__r.Id =: userId
+					ORDER BY Task__r.AssignTime__c DESC
+					LIMIT 50000
+				];
+				passedTests = [
+					SELECT Name, Employee__c, CreatedDate, Result__c, Test__r.Name, Test__r.Subject__r.Name
+					FROM Pass_History__c
+					WHERE Employee__r.Id =: userId
+					ORDER BY CreatedDate DESC
+					LIMIT 50000
+				];
+				if (passedTests.size() > 0) {
+					lastTestResult = String.valueOf(passedTests.get(0).Result__c);
+					lastTimeResult = passedTests.get(0).CreatedDate;
+				}
 			}
 		}
 	}

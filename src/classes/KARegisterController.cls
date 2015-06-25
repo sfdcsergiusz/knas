@@ -7,17 +7,16 @@ public with sharing class KARegisterController {
 
 	private PageReference currentPage;
 
+	private Browser__c browserId { private get; private set; }
+
 	public KARegisterController() {
 		currentPage = ApexPages.currentPage();
+		browserId = new Browser__c();
 	}
 
-	public PageReference onLoad() {
-		if (getLoginCookie() != null) {
-			return new PageReference('/apex/KARegularUserHome');
-		}
-		else {
-			return null;
-		}
+	public void setIdentifier() {
+		String tmpBrowserId = ApexPages.currentPage().getParameters().get('mainId');
+		browserId.Identifier__c = tmpBrowserId;
 	}
 
 	public PageReference login() {
@@ -26,7 +25,7 @@ public with sharing class KARegisterController {
 
 	public PageReference register() {
 		if (registerNewEmployee()) {
-			setLoginCookie(username);
+			setLoginCookie(browserId.Identifier__c);
 			return new PageReference('/apex/KARegularUserHome');
 		}
 		else {
@@ -42,18 +41,19 @@ public with sharing class KARegisterController {
 		    Last_Name__c = lastName
 		);
 		Database.SaveResult employeeSaveResult = Database.insert(newestEmployee);
+		if (employeeSaveResult.isSuccess()) {
+			browserId.Employee__c = newestEmployee.Id;
+			insert browserId;
+		}
 		return employeeSaveResult.isSuccess();
 	}
 
-	private void setLoginCookie(String username) {
+	private void setLoginCookie(String id) {
 		currentPage.setCookies(
-		    new Cookie[] {
-		        new Cookie('KALogin', username, null, 1000, false)
-		    }
+			new Cookie[] {
+				new Cookie('Identifier', id, null, 1000, false)
+			}
 		);
 	}
 
-	private Cookie getLoginCookie() {
-		return currentPage.getCookies().get('KALogin');
-	}
 }
