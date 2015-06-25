@@ -135,4 +135,8 @@ public with sharing class KACommonSubjectsController {
 		return new PageReference('/apex/KASubjectQuestionsList?subjectName=' + ApexPages.currentPage().getParameters().get('listParam'));
 	}
 
+	public PageReference goToUploadCSV() {
+		return new PageReference('/apex/KAImportQuestionsCSV?themeId=' + ApexPages.currentPage().getParameters().get('CSVParam'));
+	}
+
 }

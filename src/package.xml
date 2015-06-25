@@ -3,6 +3,7 @@
 	<types>
 		<members>KAAdminHomeController</members>
 		<members>KACommonSubjectsController</members>
+		<members>KAEmailHandler</members>
 		<members>KAImportQuestionsCSVController</members>
 		<members>KALoginController</members>
 		<members>KAPageConstants</members>
@@ -12,7 +13,8 @@
 		<members>KAStatisticControllerTest</members>
 		<members>KASubjectQuestionsListController</members>
 		<members>KATestPassingController</members>
-		<members>MyApexClass</members>
+		<members>KAUniqueSubjectHandler</members>
+		<members>KAUniqueThemeHandler</members>
 		<name>ApexClass</name>
 	</types>
 	<types>

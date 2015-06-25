@@ -49,8 +49,8 @@
 					</apex:outputPanel>
 				</apex:pageBlockSectionItem>
 
-				<apex:pageBlockSectionItem >
-					<apex:panelGroup >
+				<apex:pageBlockSectionItem>
+					<apex:panelGroup>
 						<h4>
 							<apex:outputLabel value="Theme:"/>
 						</h4>
@@ -60,9 +60,11 @@
 					</apex:outputPanel>
 				</apex:pageBlockSectionItem>
 
-				<apex:panelGroup >
+				<apex:panelGroup>
 					<h3>
-						<apex:outputLabel id="questionLabel" value="Question #{!currentQuestion + 1} of {!totalQuestionsNum}:" styleClass="label label-primary"/>
+						<apex:outputPanel layout="none">
+							<apex:outputLabel id="questionLabel" value="Question #{!currentQuestion + 1} of {!totalQuestionsNum}:" styleClass="label label-primary"/>							
+						</apex:outputPanel>						
 					</h3>
 				</apex:panelGroup>
 
@@ -72,7 +74,7 @@
 					</h3>
 				</apex:outputPanel>
 
-				<apex:panelGroup >
+				<apex:panelGroup>
 					<h3>
 						<apex:outputLabel value="Answers:" styleClass="label label-danger"/>
 					</h3>
@@ -92,6 +94,75 @@
 
 			</apex:pageBlockSection>
 		</apex:pageBlock>
+
+		<apex:pageBlock id = "block2">
+			<apex:pageBlockButtons location="bottom" rendered="{!isEnableBlock2}">
+					<apex:commandButton action="{!finishTest}" status="refreshStatus" value="Finish" styleClass="btn btn-primary"/>
+			</apex:pageBlockButtons>
+
+			<apex:variable var="questNum" value="{!-1}"/>
+			<apex:repeat value="{!questions}" var="question">						
+				<apex:variable var="questNum" value="{!questNum + 1}"/>		
+				<apex:pageBlockSection columns="1" rendered="{!isEnableBlock2}">
+					<apex:outputPanel layout="none">
+							<apex:outputLabel value="{!question.Question__r.Statement__c}"/>
+							<apex:commandButton value="Edit" action="{!goToQuestions}" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" reRender="block1, block2">
+								<apex:param name="questOnEdit" value="{!questNum}"/>
+							</apex:commandButton>
+							<br/>
+							<apex:repeat value="{!appliedAnswers[questNum]}" var="answer">
+								<apex:outputLabel value="{!answer}"/>
+							</apex:repeat>				
+					</apex:outputPanel>
+				</apex:pageBlockSection>			
+			</apex:repeat>	
+		</apex:pageBlock>
 	</apex:form>
 
+	<div style="position: absolute; top: 47px; left: 50%; width: 100%;">
+		<apex:outputPanel layout="none">
+			<apex:outputLabel id="testTimer" style="color: #8B3A3A !important;">
+				00:00:20
+			</apex:outputLabel>							
+		</apex:outputPanel>
+	</div>
+
+	<apex:form>
+		<apex:actionFunction action="{!finishTest}" name="outOfTime">
+    	</apex:actionFunction>
+	</apex:form>
+
+	<script>
+	var testTimer = document.querySelector("label[id*='testTimer']");
+	var time = testTimer.innerHTML;
+	var arr = time.split(":");
+  	function startTimer() {
+	    if (arr[2] == 0) {
+	      	if (arr[1] == 0) {
+	        	if (arr[0] == 0) {
+	          		alert("Время вышло");
+	          		outOfTime();
+	          		return;
+	        	}
+	        	arr[0]--;
+	        	arr[1] = 60;
+	        	if (arr[0] < 10) {
+	        		arr[0] = "0" + arr[0];
+	        	}
+	      	}
+	      	arr[1]--;
+	      	if (arr[1] < 10) {
+	      		arr[1] = "0" + arr[1];
+	      	} 
+	      	arr[2] = 59;
+	    }
+	    else arr[2]--;
+	    if (arr[2] < 10) {
+	    	arr[2] = "0" + arr[2];
+	    }
+	    testTimer.innerHTML = arr[0]+":"+arr[1]+":"+arr[2];
+	    setTimeout(startTimer, 1000);
+	}	
+	startTimer();
+	</script>
 </apex:page>

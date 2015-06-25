@@ -9,11 +9,16 @@ public with sharing class KATestPassingController {
 	public Integer totalQuestionsNum { get; private set; }
 	public String questionType { get; private set; }
 
-	private List<List<String>> appliedAnswers { private get; private set; }
+	public Boolean isEnableBlock1 { get; private set; }
+	public Boolean isEnableBlock2 { get; private set; }
+
+	public List<List<String>> appliedAnswers { get; private set; }
+
 	private List<String> subAppliedAnswer { private get; private set; }
 	private String username { private get; private set; }
 	private String testId { private get; private set; }
 	private PageReference currentPage;
+	
 
 	public KATestPassingController() {
 		currentQuestion = 0;
@@ -44,6 +49,8 @@ public with sharing class KATestPassingController {
 			subAppliedAnswer = new String[1];
 			variants = getVariants(currentQuestion);
 		}
+		this.isEnableBlock1 = true;
+		this.isEnableBlock2 = false;
 	}
 
 	public PageReference onLoad() {
@@ -78,8 +85,23 @@ public with sharing class KATestPassingController {
 		doSingleTransfer(true);
 	}
 
-	public PageReference goToFinish() {
+	public void goToFinish() {
 		doSingleTransfer(null);
+		this.isEnableBlock1 = false;
+		this.isEnableBlock2 = true;
+	
+	}
+
+	public void goToQuestions() {
+		this.isEnableBlock1 = true;
+		this.isEnableBlock2 = false;
+
+		String newCurrQuest = ApexPages.currentPage().getParameters().get('questOnEdit');
+		currentQuestion = Integer.valueOf(newCurrQuest);
+		variants = getVariants(currentQuestion);
+	}
+
+	public PageReference finishTest() {
 		Employee__c currentEmployee = [
 			SELECT Id
 			FROM Employee__c

@@ -68,7 +68,9 @@
 										<apex:commandButton value="List" action="{!goToThemeList}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection">
 											<apex:param name="listParam" value="{!theme.Name}"/>
 										</apex:commandButton>
-										<apex:commandButton value="Upload CSV" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
+										<apex:commandButton value="Upload CSV" action="{!goToUploadCSV}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection">
+											<apex:param name="CSVParam" value="{!theme.Id}"/>
+										</apex:commandButton>	
 										<apex:commandButton value="Delete" action="{!deleteTheme}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;">
 											<apex:param name="deleteParam" value="{!theme.Name}"/>
 										</apex:commandButton>
