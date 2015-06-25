@@ -3,8 +3,8 @@
 	<apex:include pageName="KANavigationBar"/>
 	<apex:form >
 		<div style="width: 100%; height: 100%;">
-			<apex:pageBlock>
-				<apex:outputpanel>
+			<apex:pageBlock >
+				<apex:outputpanel >
 					<apex:actionstatus id="resultStatus">
     					<apex:facet name="start">
         					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; opacity: 0.8; width: 100%;">

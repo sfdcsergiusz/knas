@@ -1,15 +1,42 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KANavigationBarController" docType="HTML-5.0" action="{!onLoad}">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
 
-	<script type="text/javascript">
+	<script>
 		var browserId = document.cookie.split('BrowserId=')[1].split(';')[0];
+		var isStartPage = ('{!isStartPage}' === "true");
+		var isAdminPage = ('{!isAdminPage}' === "true");
+		var isUserAdmin = ('{!browserUser.Employee__r.IsAdmin__c}' === "true");
+		var areIdsEqual = (browserId == '{!browserUser.Identifier__c}');
 
-
+		if (isStartPage && areIdsEqual) {
+			if ( ! '{!browserUser.Employee__r.IsAdmin__c}') {
+				window.stop();
+				window.location.href = "KARegularUserHome";
+			}
+			else {
+				window.stop();
+				window.location.href = "KAAdminUserHome";
+			}
+		}
+		else if ( ! isStartPage && ! areIdsEqual) {
+			window.stop();
+			window.location.href = "KALogin";
+		}
+		else if ( ! isStartPage && ! (isAdminPage == isUserAdmin)) {
+			if (isUserAdmin) {
+				window.stop();
+				window.location.href = "KAAdminUserHome";
+			}
+			else {
+				window.stop();
+				window.location.href = "KARegularUserHome";
+			}
+		}
 	</script>
 
-	<apex:outputpanel id="createTask" style="display: block;">
+	<!-- <apex:outputpanel id="createTask" style="display: block;">
 		<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;"/>
-	</apex:outputpanel>
+	</apex:outputpanel> -->
 
 	<apex:form>
 		<nav class="navbar navbar-inverse">

@@ -11,6 +11,9 @@ public with sharing class KARegularHomeController {
 	public List<Pass_History__c> passedTests { get; private set; }
 
 	public KARegularHomeController() {
+		upcomingTests = new List<Employee_Task__c>();
+		passedTests = new List<Pass_History__c>();
+
 		Cookie tmpCookie = ApexPages.currentPage().getCookies().get('KALogin');
 		if (tmpCookie != null) {
 			username = tmpCookie.getValue();

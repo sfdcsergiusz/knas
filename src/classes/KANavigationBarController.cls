@@ -1,19 +1,38 @@
 public with sharing class KANavigationBarController {
 
 	public Browser__c browserUser { get; private set; }
+	public Boolean isStartPage { get; private set; }
+	public Boolean isAdminPage { get; private set; }
+	public PageReference target { get; private set; }
 
-	private String username { private get; private set; }
 	private PageReference currentPage { private get; private set; }
 
 	public KANavigationBarController() {
 		currentPage = ApexPages.currentPage();
-		Cookie tmpCookie = currentPage.getCookies().get('KALogin');
-		if (tmpCookie != null) {
-			username = tmpCookie.getValue();
+		isStartPage = currentPage.getUrl().contains('Login') || currentPage.getUrl().contains('Register');
+		isAdminPage = true;
+
+		for (String page : KAPageConstants.userPages) {
+			if (currentPage.getUrl().contains(page)) {
+				isAdminPage = false;
+				break;
+			}
+		}
+
+		if (getLoginCookie() != null) {
+			List<Browser__c> browsers = [
+				SELECT Identifier__c, Employee__r.Name, Employee__r.Password__c, Employee__r.IsAdmin__c, Employee__r.First_Name__c, Employee__r.Last_Name__c
+				FROM Browser__c
+				WHERE Identifier__c = :getLoginCookie().getValue()
+				LIMIT 1
+			];
+			browserUser = ! browsers.isEmpty() ? browsers.get(0) : null;
 		}
 	}
 
 	public PageReference onLoad() {
+		target = null;
+
 		if (getLoginCookie() != null) {
 			List<Browser__c> browsers = [
 				SELECT Identifier__c, Employee__r.Name, Employee__r.Password__c, Employee__r.IsAdmin__c, Employee__r.First_Name__c, Employee__r.Last_Name__c
@@ -23,10 +42,14 @@ public with sharing class KANavigationBarController {
 			];
 			browserUser = ! browsers.isEmpty() ? browsers.get(0) : null;
 			if (browserUser != null) {
-				return null;
+				return target;
 			}
 		}
-		return new PageReference('/apex/KALogin');
+		else if ( ! isStartPage) {
+			target = new PageReference('/apex/KALogin');
+			target.setRedirect(true);
+		}
+		return target;
 	}
 
 	public PageReference goHome() {
@@ -39,11 +62,16 @@ public with sharing class KANavigationBarController {
 				new Cookie('Identifier', '', null, 0, false)
 			}
 		);
+		if (browserUser != null) {
+			delete browserUser;
+			browserUser = null;
+		}
+
 		return new PageReference('/apex/KALogin');
 	}
 
 	private void setLoginCookie(String id) {
-		currentPage.setCookies(
+		ApexPages.currentPage().setCookies(
 		    new Cookie[] {
 		        new Cookie('Identifier', id, null, 1000, false)
 		    }
@@ -51,6 +79,6 @@ public with sharing class KANavigationBarController {
 	}
 
 	private Cookie getLoginCookie() {
-		return currentPage.getCookies().get('Identifier');
+		return ApexPages.currentPage().getCookies().get('Identifier');
 	}
 }

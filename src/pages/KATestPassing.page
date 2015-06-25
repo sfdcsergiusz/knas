@@ -2,8 +2,8 @@
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
-	<apex:form>
-		<apex:pageBlock>
+	<apex:form >
+		<apex:pageBlock >
 
 				<apex:pageBlockButtons location="bottom">
 					<apex:commandButton id="backButton" action="{!goToPrev}" status="refreshStatus" value="Back" disabled="{!IF(currentQuestion == 0, true, false)}" styleClass="btn btn-warning" reRender="ubjectLabel, themeLabel, questionLabel, questionStatement, answersCheckboxes, answersRadios, backButton, nextButton"/>

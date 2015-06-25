@@ -3,42 +3,35 @@ public with sharing class KALoginController {
 	public String username { get; set; }
 	public String password { get; set; }
 
+	private Browser__c browserId { private get; private set; }
+
 	private PageReference currentPage;
 
 	public KALoginController() {
 		currentPage = ApexPages.currentPage();
+		browserId = new Browser__c();
 	}
 
-	public PageReference onLoad() {
-		if (getLoginCookie() != null) {
-			Employee__c emploUser = [
-				SELECT Name, Password__c, IsAdmin__c
-				FROM Employee__c
-				WHERE Name =: getLoginCookie().getValue()
-				LIMIT 1
-			];
-			if ( ! emploUser.IsAdmin__c) {
-				return new PageReference('/apex/KARegularUserHome');
-			}
-			else {
-				return new PageReference('/apex/KAAdminUserHome');
-			}
-		}
-		else {
-			return null;
-		}
+	public void setIdentifier() {
+		String tmpBrowserId = ApexPages.currentPage().getParameters().get('mainId');
+		browserId.Identifier__c = tmpBrowserId;
 	}
 
 	public PageReference login() {
-		Employee__c emploUser = [
+		List<Employee__c> emploUsers = [
 			SELECT Name, Password__c, IsAdmin__c
 			FROM Employee__c
 			WHERE Name =: username
 			LIMIT 1
 		];
-		if (emploUser != null && emploUser.Password__c == EncodingUtil.convertToHex(Crypto.generateDigest('MD5', Blob.valueOf(password)))) {
-			setLoginCookie(username);
-			if ( ! emploUser.IsAdmin__c) {
+		if (emploUsers.size() != 0 && emploUsers.get(0).Password__c == EncodingUtil.convertToHex(Crypto.generateDigest('MD5', Blob.valueOf(password)))) {
+
+			browserId.Employee__c = emploUsers.get(0).Id;
+			insert browserId;
+
+			setLoginCookie(browserId.Identifier__c);
+
+			if ( ! emploUsers.get(0).IsAdmin__c) {
 				return new PageReference('/apex/KARegularUserHome');
 			}
 			else {
@@ -56,16 +49,12 @@ public with sharing class KALoginController {
 
 	}
 
-	private void setLoginCookie(String username) {
+	private void setLoginCookie(String id) {
 		currentPage.setCookies(
 			new Cookie[] {
-				new Cookie('KALogin', username, null, 1000, false)
+				new Cookie('Identifier', id, null, 1000, false)
 			}
 		);
-	}
-
-	private Cookie getLoginCookie() {
-		return currentPage.getCookies().get('KALogin');
 	}
 
 }
