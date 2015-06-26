@@ -1,0 +1,19 @@
+<apex:page showHeader="false" sidebar="false" controller="KAUsersBoardController">
+	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:include pageName="KANavigationBar"/>
+
+	<apex:form>
+		<apex:pageBlock id = "block1">
+			<apex:repeat value="{!users}" var="user">							
+				<apex:pageBlockSection columns="1">
+					<apex:outputPanel layout="none">
+							<apex:outputLabel value="{!user.First_Name__c} {!user.Last_Name__c}"/>
+							<apex:commandButton value="View statistics" action="{!goToUsers}" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" reRender="block1, block2">
+								<apex:param name="userId" value="{!user.Id}"/>
+							</apex:commandButton>			
+					</apex:outputPanel>
+				</apex:pageBlockSection>			
+			</apex:repeat>	
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>
