@@ -1,5 +1,5 @@
 public with sharing class KAUniqueThemeHandler {
-	public static Boolean enablesTrigger = true;
+	public static Boolean enablesTrigger = false;
 	public static void addNewTheme (List<Theme__c> p_theme) {
 		List<Theme__c> themes = [
 			SELECT Name

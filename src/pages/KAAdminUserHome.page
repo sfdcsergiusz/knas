@@ -6,13 +6,23 @@
 		.chooseColumn:hover {
 			cursor: pointer;
 		}
+		.shadowEffect
+		{
+			position: absolute;
+			width: 100%;
+			left: 0;
+
+		    -webkit-box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
+		       -moz-box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
+		            box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
+		}
 	</style>
 
-	<apex:form >
+	<apex:form>
 		<div style="width: 100%; height: 100%;">
-			<apex:pageBlock >
+			<apex:pageBlock>
 
-				<apex:pageBlockButtons location="bottom">
+				<apex:pageBlockButtons location="top">
 
 				</apex:pageBlockButtons>
 
@@ -24,8 +34,7 @@
 
 					<apex:pageBlockTable id="recentTasksTable" value="{!recentTasks}" var="task">
 						<apex:column value="{!task.Task__r.CreatedDate}" headerValue="Created On"/>
-						<apex:column value="{!task.Employee__r.First_Name__c}" headerValue="First Name"/>
-						<apex:column value="{!task.Employee__r.Last_Name__c}" headerValue="Surname"/>
+						<apex:column value="{!task.Employee__r.First_Name__c} {!task.Employee__r.Last_Name__c}" headerValue="User"/>
 						<apex:column value="{!task.Task__r.Status__c}" headerValue="Status"/>
 						<apex:column value="{!task.Task__r.AssignTime__c}" headerValue="Time Of Assignment"/>
 					</apex:pageBlockTable>
@@ -34,13 +43,11 @@
 				<apex:pageBlockSection title="Recent Results" columns="1">
 					<apex:outputPanel layout="none">
 						<apex:commandButton value="Refresh" action="{!refreshRecentResults}" status="refreshStatus" reRender="recentResultsTable" styleClass="btn btn-success" style="float: right;"/>
-						<apex:commandButton value="Work With Assessment Data" action="{!goToCommonList}" styleClass="btn btn-primary"/>
 					</apex:outputPanel>
 
 					<apex:pageBlockTable id="recentResultsTable" value="{!recentResults}" var="result">
 						<apex:column value="{!result.CreatedDate}" headerValue="Created On"/>
-						<apex:column value="{!result.Employee__r.First_Name__c}" headerValue="First Name"/>
-						<apex:column value="{!result.Employee__r.Last_Name__c}" headerValue="Last Name"/>
+						<apex:column value="{!result.Employee__r.First_Name__c} {!result.Employee__r.Last_Name__c}" headerValue="User"/>
 						<apex:column value="{!result.Test__r.Subject__r.Name}" headerValue="Subject"/>
 						<apex:column value="{!result.Test__r.Name}" headerValue="Test Title"/>
 						<apex:column value="{!result.Result__c}" headerValue="Pass Result"/>
@@ -63,8 +70,8 @@
 		</div>
 	</apex:form>
 
-	<apex:form >
-		<apex:pageBlock >
+	<apex:form>
+		<apex:pageBlock>
 			<apex:outputpanel id="createTask" style="display: none;">
 				<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
 					<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
@@ -75,24 +82,24 @@
 
 	    				<apex:commandButton value="Close" onclick="closeCreatingTask(); return false;" styleClass="btn btn-link" style="float: right;"/>
 	    				<apex:commandButton value="Create" action="{!createNewTask}" styleClass="btn btn-primary" style="float: right;"/>
-	    				<br/>
+
 	    				<br/>
 
 	    				<!-- Employee Choosing -->
 
 						<apex:actionRegion >
+							<apex:outputLabel value="Employee" style="float: left"/>
 							<apex:inputText id="inputEmployee" value="{!tmpEmployee}" html-placeholder="Please, input employee name or surname...">
 								<apex:actionSupport event="onkeyup" action="{!typeEmployee}" reRender="employeesTable"/>
 							</apex:inputText>
 						</apex:actionRegion>
 
-						<br/>
-						<div style="position: absolute; width: 90%; margin: 0 auto;">
+						<div class="shadowEffect">
 	    					<apex:pageBlockTable id="employeesTable" value="{!employees}" var="employee" style="overflow:scroll; border: none;" align="left">
-	    						<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size > 0, true, false)}" headerValue="Name" onclick="chooseEmployeeAF('{!employee.Id}');">
+	    						<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Name" onclick="chooseEmployeeAF('{!employee.Id}');">
 	    							<h5><apex:outputText value="{!employee.First_Name__c}"/></h5>
 	    						</apex:column>
-	    						<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size > 0, true, false)}" headerValue="Surname" onclick="chooseEmployeeAF('{!employee.Id}');">
+	    						<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Surname" onclick="chooseEmployeeAF('{!employee.Id}');">
 	    							<h5><apex:outputText value="{!employee.Last_Name__c}"/></h5>
 	    						</apex:column>
 	    					</apex:pageBlockTable>
@@ -105,18 +112,18 @@
 	    				<!-- Test Choosing -->
 
 	    				<apex:actionRegion >
+	    					<apex:outputLabel value="Test Name" style="float: left"/>
 							<apex:inputText id="inputTest" value="{!tmpTest}" html-placeholder="Please, input test name or subject...">
 								<apex:actionSupport event="onkeyup" action="{!typeTest}" reRender="testsTable"/>
 							</apex:inputText>
 						</apex:actionRegion>
 
-						<br/>
-						<div style="position: absolute; width: 90%; margin: 0 auto;">
+						<div class="shadowEffect">
 	    					<apex:pageBlockTable id="testsTable" value="{!tests}" var="test" style="overflow:scroll; border: none;" align="left">
-	    						<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size > 0, true, false)}" headerValue="Name" onclick="chooseTestAF('{!test.Id}');" style="">
+	    						<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Test Title" onclick="chooseTestAF('{!test.Id}');" style="">
 	    							<h5><apex:outputText value="{!test.Name}"/></h5>
 	    						</apex:column>
-	    						<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size > 0, true, false)}" headerValue="Surname" onclick="chooseTestAF('{!test.Id}');">
+	    						<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Subject" onclick="chooseTestAF('{!test.Id}');">
 	    							<h5><apex:outputText value="{!test.Subject__r.Name}"/></h5>
 	    						</apex:column>
 	    					</apex:pageBlockTable>
@@ -128,13 +135,14 @@
 
 	    				<!-- DateTime Choosing -->
 
+	    				<apex:outputLabel value="Date And Time" style="float: left"/>
 	    				<apex:inputField value="{!preCreatedTask.AssignTime__c}" required="false" html-placeholder="Please, input assignment date and time"/>
 
 					</div>
 				</div>
 			</apex:outputpanel>
 
-			<apex:outputpanel >
+			<apex:outputpanel>
 				<apex:actionstatus id="refreshStatusTask">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">

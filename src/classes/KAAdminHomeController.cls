@@ -31,14 +31,6 @@ public with sharing class KAAdminHomeController {
 		return null;
 	}
 
-	public PageReference goToHell() {
-		return new PageReference('/apex/KAStatistic');
-	}
-
-	public PageReference goToHell2() {
-		return new PageReference('/apex/KAImportQuestionsCSV');
-	}
-
 	public PageReference makeLogout() {
 		ApexPages.currentPage().setCookies(
 			new Cookie[] {
@@ -142,10 +134,6 @@ public with sharing class KAAdminHomeController {
 		];
 		tmpTest = varTest.Name + ' ' + varTest.Subject__r.Name;
 		tests.clear();
-	}
-
-	public PageReference goToCommonList() {
-		return new PageReference('/apex/KACommonSubjects');
 	}
 
 }

@@ -155,7 +155,7 @@
 				</div>
 			</apex:outputpanel>
 
-			<apex:outputpanel>
+			<apex:outputpanel >
 				<apex:actionstatus id="refreshStatusQuest">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">

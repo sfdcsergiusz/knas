@@ -3,7 +3,7 @@ public with sharing class KATestPassingController {
 	public List<String> multipleAnswers { get; set; }
 	public String singleAnswer { get; set; }
 
-	public List<TestQuestion__c> questions { get; private set; }
+	public List<Question__c> questions { get; private set; }
 	public Map<String, Boolean> variants { get; private set; }
 	public Integer currentQuestion { get; private set; }
 	public Integer totalQuestionsNum { get; private set; }
@@ -41,21 +41,29 @@ public with sharing class KATestPassingController {
 			if ( ! tmpBrowsers.isEmpty()) {
 				userId = tmpBrowsers.get(0).Employee__r.Id;
 
-				questions = [
-					SELECT Question__r.Id, Question__r.Statement__c, Question__r.Theme__r.Subject__r.Name, Question__r.Theme__r.Name
-					FROM TestQuestion__c
+				List<TestTheme__c> correspThemes = [
+					SELECT Theme__r.Id
+					FROM TestTheme__c
 					WHERE Test__r.Id = :testId
-					LIMIT 50000
 				];
-				totalQuestionsNum = questions.size();
 
-				appliedAnswers = new List<List<String>>();
-				for (Integer i = 0; i < totalQuestionsNum; i++) {
-					appliedAnswers.add(new List<String>());
+				if ( ! correspThemes.isEmpty()) {
+					questions = [
+						SELECT Id, Statement__c, Theme__r.Subject__r.Name, Theme__r.Name
+						FROM Question__c
+						WHERE Theme__r.Id = :correspThemes.get(0).Theme__r.Id
+						LIMIT 50000
+					];
+					totalQuestionsNum = questions.size();
+
+					appliedAnswers = new List<List<String>>();
+					for (Integer i = 0; i < totalQuestionsNum; i++) {
+						appliedAnswers.add(new List<String>());
+					}
+
+					subAppliedAnswer = new String[1];
+					variants = getVariants(currentQuestion);
 				}
-
-				subAppliedAnswer = new String[1];
-				variants = getVariants(currentQuestion);
 			}
 		}
 		this.isEnableBlock1 = true;
@@ -102,7 +110,7 @@ public with sharing class KATestPassingController {
 		Employee__c currentEmployee = [
 			SELECT Id
 			FROM Employee__c
-			WHERE Name = :userId
+			WHERE Id = :userId
 			LIMIT 1
 		];
 		Test__c currentTest = [
@@ -111,6 +119,13 @@ public with sharing class KATestPassingController {
 			WHERE Id = :testId
 			LIMIT 1
 		];
+		List<Pass_History__c> oldHistory = [
+			SELECT Id
+			FROM Pass_History__c
+			WHERE Test__r.Id = :testId AND Employee__r.Id = :userId
+		];
+		delete oldHistory;
+
 		Pass_History__c newestResult = new Pass_History__c(Employee__c = currentEmployee.Id, Test__c = currentTest.Id, Result__c = getResults());
 		insert newestResult;
 
@@ -121,7 +136,7 @@ public with sharing class KATestPassingController {
 		List<Answer__c> tmpVariants = [
 			SELECT Variant__c, Right__c
 			FROM Answer__c
-			WHERE Question__r.Id = :questions[questionPosition].Question__r.Id
+			WHERE Question__r.Id = :questions[questionPosition].Id
 		];
 		Map<String, Boolean> resultVariants = new Map<String, Boolean>();
 		{
@@ -150,7 +165,7 @@ public with sharing class KATestPassingController {
 		List<Answer__c> tmpVariants = [
 			SELECT Variant__c, Right__c
 			FROM Answer__c
-			WHERE Question__r.Id = :questions[questionPosition].Question__r.Id AND Right__c = true
+			WHERE Question__r.Id = :questions[questionPosition].Id AND Right__c = true
 		];
 		Map<String, Boolean> resultVariants = new Map<String, Boolean>();
 		{

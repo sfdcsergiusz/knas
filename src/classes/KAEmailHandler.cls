@@ -1,7 +1,7 @@
 public with sharing class KAEmailHandler {
 
 	public static void sendEmail (List<Employee_Task__c> p_employee_task) {
-		List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
+		/*List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
 		Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
 		List<String> sendTo = new List<String>();
 		List<Employee_Task__c> employeeName = [
@@ -19,6 +19,6 @@ public with sharing class KAEmailHandler {
       	body += 'Good luck';
       	mail.setHtmlBody(body);
       	mails.add(mail);
-      	Messaging.sendEmail(mails);
+      	Messaging.sendEmail(mails);*/
 	}
 }

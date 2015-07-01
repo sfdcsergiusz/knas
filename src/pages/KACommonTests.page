@@ -1,0 +1,213 @@
+<apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonTestsController" docType="HTML-5.0">
+	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:include pageName="KANavigationBar"/>
+
+	<style>
+		html {
+			overflow-y: auto !important;
+		}
+		.pbSubheader {
+			padding: 0px !important;
+			font-size: 24px !important;
+		}
+		.pbSubsection {
+			padding: 0px !important;
+		}
+		.data2Col {
+			padding: 0px 0px !important;
+		}
+		span> .apexp {
+			width: 100% !important;
+			margin: 0 !important;
+		}
+		body .bPageBlock {
+			border-top-width: 1px !important;
+		}
+		.hiddenRow {
+			padding: 10px;
+			z-index: 5;
+			visibility: hidden;
+			background-color: #f9f9f9;
+			opacity: 0;
+			position: absolute;
+			right: 15%;
+			-webkit-transition-duration: 0.3s; /* анимационное выдвижение для всех браузеров*/
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+
+			-webkit-border-radius: 0px 0px 5px 5px; /* закругление границ для всех браузеров*/
+			-moz-border-radius: 0px 0px 5px 5px;
+
+			-webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2) inset;
+		       -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2) inset;
+		            box-shadow:0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2) inset;
+		}
+		.dropRow:hover .hiddenRow {
+			visibility: visible;
+			opacity: 0.5;
+			right: 25%;
+		}
+		.dropRow .hiddenRow:hover {
+			opacity: 1;
+			right: 25%;
+		}
+	</style>
+
+	<apex:form id="showForm">
+		<apex:pageBlock>
+			<apex:actionRegion>
+				<apex:outputPanel layout="none">
+					<apex:inputText value="{!tmpSubject}" html-placeholder="Please, input sought-for subject name..." style="float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
+						<apex:actionSupport event="onkeyup" action="{!typeSubject}" reRender="subjectSection" status="refreshStatus"/>
+					</apex:inputText>
+				</apex:outputPanel>
+			</apex:actionRegion>
+			<apex:outputPanel id="subjectSection">
+				<apex:repeat value="{!subjects}" var="subject">
+					<apex:pageBlock>
+
+						<apex:actionRegion>
+							<apex:outputPanel layout="none">
+								<div style="position: relative; bottom: -7px; height: 37px; left: 50px; z-index: 4;">
+									<h3>
+										<apex:outputLabel value="{!subject.Name}" style="margin: 0px !important; border-radius: .25em .25em 0 0 !important; border: 1px solid #BBB !important;; border-bottom-style: none !important;"/>
+									</h3>
+								</div>
+							</apex:outputPanel>
+						</apex:actionRegion>
+
+						<apex:pageBlockSection columns="1">
+							<apex:pageBlockTable value="{!subject.Themes__r}" var="theme" columnsWidth="20%, 20%, 15%, 20%, 25%">
+								<apex:column value="{!theme.Name}"/>
+								<apex:column value="{!theme.Questions_Number__c}"/>
+								<apex:column value="{!theme.Tests_Number__c}" headerValue="Used In Tests"/>
+								<apex:column headerValue="Stats">
+									<div class="dropRow">
+										<div class="hiddenRow">
+											<apex:outputPanel id="themeStats">
+												<apex:outputPanel rendered="{!IF(OR(themeStatistic.size == 0, AND(themeStatistic.size > 0, themeStatistic[0].Theme__r.Id != theme.Id)), true, false)}">
+													<apex:outputLabel value="Please, wait. We are searching..."/>
+													<apex:actionSupport id="actionStat" event="onmouseover" action="{!createThemeStatistic}" reRender="themeStats" status="testStatStatus">
+														<apex:param name="statTheme" value="{!theme.Id}"/>
+													</apex:actionSupport>
+												</apex:outputPanel>
+												<apex:outputPanel>
+													<apex:repeat value="{!themeStatistic}" var="testStat">
+														<apex:outputLabel value="{!testStat.Test__r.Name}"/>
+														<apex:outputLabel value="Dur.: {!testStat.Test__r.Duration__c}"/>
+														<apex:outputLabel value="Num.: {!testStat.Questions_Captured__c}"/>
+														<apex:actionStatus id="testStatStatus">
+															<apex:facet name="start">
+
+															</apex:facet>
+															<apex:facet name="stop">
+																<apex:commandButton value="Delete" styleClass="btn btn-link" action="{!deleteTest}" reRender="showForm, createForm" status="refreshStatus">
+																	<apex:param name="testToDelete" value="{!testStat.Test__r.Id}"/>
+																</apex:commandButton>
+															</apex:facet>
+														</apex:actionStatus>
+														<br/>
+													</apex:repeat>
+												</apex:outputPanel>
+											</apex:outputPanel>
+										</div>
+										<apex:outputPanel id="testActions" layout="none">
+												<apex:commandLink value="Connected Tests List" style="pointer-events: none; cursor: default;"/>
+										</apex:outputPanel>
+									</div>
+								</apex:column>
+								<apex:column headerValue="Actions">
+									<apex:commandButton value="Quick Test Create" onclick="openCreatingTest('{!theme.Id}'); return false;" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
+								</apex:column>
+							</apex:pageBlockTable>
+						</apex:pageBlockSection>
+					</apex:pageBlock>
+				</apex:repeat>
+			</apex:outputPanel>
+
+			<apex:outputpanel>
+				<apex:actionstatus id="refreshStatus">
+					<apex:facet name="start">
+    					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%; top: 135px;">
+        					<div class="waitingHolder" style="top: 25%;">
+            					<img class="waitingImage" src="{!$Resource.spinner}"/>
+        					</div>
+    					</div>
+					</apex:facet>
+				</apex:actionstatus>
+			</apex:outputpanel>
+		</apex:pageBlock>
+	</apex:form>
+
+	<apex:form id="createForm">
+		<apex:actionFunction name="preCreateTest" action="{!preCreateTest}" reRender="testSubjectName, testThemeName, capturedQuests, testDuration, capturedQuestsLabel, testName" status="refreshStatusTest">
+			<apex:param name="themeId" value=""/>
+		</apex:actionFunction>
+		<apex:pageBlock>
+			<apex:outputpanel id="createTest" style="display: none;">
+				<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
+					<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+
+						<h1>
+	    					Creating New Test
+	    				</h1>
+	    				<apex:commandButton value="Close" onclick="closeCreatingTest(); return false;" styleClass="btn btn-link" style="float: right;"/>
+		    			<apex:commandButton value="Create" action="{!createTest}" styleClass="btn btn-primary" style="float: right;"/>
+		    			<br/>
+
+	    				<apex:pageBlockSection columns="1">
+
+		    				<!-- Subject -->
+
+							<apex:outputLabel for="testSubjectName" value="Subject" style="float: left"/>
+							<apex:outputText id="testSubjectName" value="{!testSubjectName}"/>
+
+		    				<!-- Theme -->
+
+		    				<apex:outputLabel for="testThemeName" value="Theme" style="float: left"/>
+							<apex:outputText id="testThemeName" value="{!testThemeName}"/>
+
+		    				<!-- Test And Junction Filling -->
+
+		    				<apex:outputLabel for="testName" value="Test Name" style="float: left"/>
+							<apex:inputField id="testName" value="{!preCreatedTest.Name}" required="false" html-placeholder="Please, input test name..." label=""/>
+
+		    				<apex:outputLabel id="capturedQuestsLabel" for="capturedQuests" value="Questions to catch (max. {!themeAvailableQuestions})" style="float: left"/>
+							<apex:inputField id="capturedQuests" value="{!preCreatedTestTheme.Questions_Captured__c}" required="false" html-placeholder="Please, input number of questions..." label=""/>
+
+							<apex:outputLabel for="testDuration" value="Passing Time" style="float: left"/>
+							<apex:inputField id="testDuration" value="{!preCreatedTest.Duration__c}" required="false" html-placeholder="Please, input time in minutes..." label=""/>
+
+	    				</apex:pageBlockSection>
+
+					</div>
+				</div>
+			</apex:outputpanel>
+
+			<apex:outputpanel>
+				<apex:actionstatus id="refreshStatusTest">
+					<apex:facet name="start">
+    					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
+        					<div class="waitingHolder">
+            					<img class="waitingImage" src="{!$Resource.spinner}"/>
+        					</div>
+    					</div>
+					</apex:facet>
+				</apex:actionstatus>
+			</apex:outputpanel>
+		</apex:pageBlock>
+	</apex:form>
+
+	<script>
+		function openCreatingTest(themeId) {
+			preCreateTest(themeId);
+			var resultDiv = document.querySelector("span[id*='createTest']");
+			resultDiv.style.display = 'block';
+		}
+		function closeCreatingTest() {
+			var resultDiv = document.querySelector("span[id*='createTest']");
+			resultDiv.style.display = 'none';
+		}
+	</script>
+</apex:page>

@@ -1,6 +1,5 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KANavigationBarController" docType="HTML-5.0" action="{!onLoad}">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
-
 	<script>
 		var browserId = document.cookie.split('BrowserId=')[1].split(';')[0];
 		var isStartPage = ('{!isStartPage}' === "true");
@@ -34,15 +33,70 @@
 		}
 	</script>
 
-	<apex:form>
-		<nav class="navbar navbar-inverse">
+	<style>
+	.arrow-top {
+		position: absolute;
+		top: 24px;
+		width: 0;
+		border: 5px solid transparent;
+		border-top-color: #9d9d9d;
+		border-bottom: 0;
+
+		-webkit-transition-duration: 0.3s; /* анимационное выдвижение для всех браузеров*/
+		-moz-transition-duration: 0.3s;
+		-o-transition-duration: 0.3s;
+		transition-duration: 0.3s;
+	}
+	.dropPanel:hover .arrow-top {
+		border-top-color: #FFA200;
+	}
+	.hiddenPanel {
+		visibility: hidden;
+		background-color: #222;
+		opacity: 0;
+		position: absolute;
+		top: 15px;
+		-webkit-transition-duration: 0.3s; /* анимационное выдвижение для всех браузеров*/
+		-moz-transition-duration: 0.3s;
+		-o-transition-duration: 0.3s;
+		transition-duration: 0.3s;
+
+		-webkit-border-radius: 0px 0px 5px 5px; /* закругление границ для всех браузеров*/
+		-moz-border-radius: 0px 0px 5px 5px;
+	}
+	.dropPanel:hover .hiddenPanel {
+		visibility: visible;
+		opacity: 0.5;
+	}
+	.dropPanel .hiddenPanel:hover {
+		opacity: 0.9;
+		top: 20px;
+	}
+
+	</style>
+
+
+
+	<apex:form >
+		<nav class="navbar navbar-inverse" style="z-index: 3">
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<a class="navbar-brand" href="#" style="color: #FFA200 !important; pointer-events: none; cursor: default;">Knowledge Assessment System</a>
 				</div>
 				<div>
 					<ul class="nav navbar-nav">
-						<li>
+						<li class="dropPanel">
+							<apex:outputPanel layout="none" rendered="{!isAdminPage}">
+								<div class="arrow-top">
+									<div class="hiddenPanel">
+										<apex:commandButton value="Manage Users" style="font-size: 16px;" action="{!goToUsers}" styleClass="btn btn-link"/>
+										<br/>
+										<apex:commandButton value="Manage Data" style="font-size: 16px;" action="{!goToData}" styleClass="btn btn-link"/>
+										<br/>
+										<apex:commandButton value="Manage Tests" style="font-size: 16px;" action="{!goToTests}" styleClass="btn btn-link"/>
+									</div>
+								</div>
+							</apex:outputPanel>
 							<apex:commandLink value="Home" style="font-size: 16px;" action="{!goHome}"/>
 						</li>
 						<li style="float: right !important; margin-right: 1.5em;">
@@ -51,6 +105,7 @@
 						<li style="float: right !important;">
 							<apex:commandLink value="{!IF(browserUser != null, browserUser.Employee__r.First_Name__c, 'Hello!')}" style="font-size: 16px; color: #FFA200 !important; pointer-events: none; cursor: default;"/>
 						</li>
+
 					</ul>
 				</div>
 			</div>

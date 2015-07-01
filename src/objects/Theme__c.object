@@ -75,6 +75,15 @@
         <type>MasterDetail</type>
         <writeRequiresMasterRead>false</writeRequiresMasterRead>
     </fields>
+    <fields>
+        <fullName>Tests_Number__c</fullName>
+        <externalId>false</externalId>
+        <label>Tests Number</label>
+        <summaryForeignKey>TestTheme__c.Theme__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
     <label>Theme</label>
     <listViews>
         <fullName>All</fullName>

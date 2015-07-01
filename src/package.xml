@@ -3,6 +3,8 @@
 	<types>
 		<members>KAAdminHomeController</members>
 		<members>KACommonSubjectsController</members>
+		<members>KACommonTestsController</members>
+		<members>KACommonUsersController</members>
 		<members>KAEmailHandler</members>
 		<members>KAImportQuestionsCSVController</members>
 		<members>KALoginController</members>
@@ -21,8 +23,11 @@
 	<types>
 		<members>KAAdminUserHome</members>
 		<members>KACommonSubjects</members>
+		<members>KACommonTests</members>
+		<members>KACommonUsers</members>
 		<members>KAImportQuestionsCSV</members>
 		<members>KALogin</members>
+		<members>KANavigationBar</members>
 		<members>KARegister</members>
 		<members>KARegularUserHome</members>
 		<members>KAStatistic</members>

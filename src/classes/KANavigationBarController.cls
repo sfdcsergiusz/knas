@@ -9,13 +9,15 @@ public with sharing class KANavigationBarController {
 
 	public KANavigationBarController() {
 		currentPage = ApexPages.currentPage();
-		isStartPage = currentPage.getUrl().contains('Login') || currentPage.getUrl().contains('Register');
-		isAdminPage = true;
+		isStartPage = currentPage.getUrl().toUpperCase().contains('LOGIN') || currentPage.getUrl().toUpperCase().contains('REGISTER');
+		isAdminPage = isStartPage ? false : true;
 
-		for (String page : KAPageConstants.userPages) {
-			if (currentPage.getUrl().contains(page)) {
-				isAdminPage = false;
-				break;
+		if ( ! isStartPage) {
+			for (String page : KAPageConstants.userPages) {
+				if (currentPage.getUrl().contains(page)) {
+					isAdminPage = false;
+					break;
+				}
 			}
 		}
 
@@ -54,14 +56,28 @@ public with sharing class KANavigationBarController {
 
 	public PageReference goHome() {
 		PageReference homePage;
-		if (browserUser.Employee__r.IsAdmin__c) {
-			homePage = Page.KAAdminUserHome;
+		if ( ! isStartPage) {
+			if (browserUser.Employee__r.IsAdmin__c) {
+				homePage = new PageReference('/apex/KAAdminUserHome');
+			}
+			else {
+				homePage = new PageReference('/apex/KARegularUserHome');
+			}
+			homePage.setRedirect(true);
 		}
-		else {
-			homePage = Page.KARegularUserHome;
-		}
-		homePage.setRedirect(true);
 		return homePage;
+	}
+
+	public PageReference goToUsers() {
+		return new PageReference('/apex/KACommonUsers');
+	}
+
+	public PageReference goToData() {
+		return new PageReference('/apex/KACommonSubjects');
+	}
+
+	public PageReference goToTests() {
+		return new PageReference('/apex/KACommonTests');
 	}
 
 	public PageReference makeLogout() {

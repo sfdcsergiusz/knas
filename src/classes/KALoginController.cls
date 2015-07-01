@@ -26,6 +26,13 @@ public with sharing class KALoginController {
 		];
 		if (emploUsers.size() != 0 && emploUsers.get(0).Password__c == EncodingUtil.convertToHex(Crypto.generateDigest('MD5', Blob.valueOf(password)))) {
 
+			List<Browser__c> sameUsedIds = [
+				SELECT Id
+				FROM Browser__c
+				WHERE Identifier__c = :browserId.Identifier__c
+			];
+			delete sameUsedIds;
+
 			browserId.Employee__c = emploUsers.get(0).Id;
 			insert browserId;
 
@@ -52,7 +59,7 @@ public with sharing class KALoginController {
 	private void setLoginCookie(String id) {
 		currentPage.setCookies(
 			new Cookie[] {
-				new Cookie('Identifier', id, null, 1000, false)
+				new Cookie('Identifier', id, null, 10000, false)
 			}
 		);
 	}

@@ -1,0 +1,145 @@
+<apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonUsersController" docType="HTML-5.0">
+	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:include pageName="KANavigationBar"/>
+
+	<style>
+		.movedBlock {
+			margin: 0 auto;
+			width: 100%;
+			opacity: 0.3;
+			position: absolute;
+			/*right: 2%;*/
+
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+
+			-moz-transition: all 0.3s linear;
+			-o-transition: all 0.3s linear;
+			-webkit-transition: all 0.3s linear;
+
+		}
+		.movingBlock:hover .movedBlock {
+			margin: 0 auto;
+			width: 100%;
+			opacity: 1;
+			position: absolute;
+			/*left: 2%;*/
+
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+
+			-moz-transition: all 0.3s linear;
+			-o-transition: all 0.3s linear;
+			-webkit-transition: all 0.3s linear;
+		}
+		.movingBlock .movedBlock:hover {
+			margin: 0 auto;
+			width: 100%;
+			opacity: 1;
+			position: absolute;
+			/*left: 2%;*/
+
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+
+			-moz-transition: all 0.3s linear;
+			-o-transition: all 0.3s linear;
+			-webkit-transition: all 0.3s linear;
+		}
+		.scrollDiv {
+			overflow: auto;
+			height: 560px !important;
+		}
+	</style>
+
+	<div style="width: 65%; left: 0%; position: absolute;">
+		<apex:form>
+			<apex:pageBlock>
+				<apex:actionRegion>
+					<apex:outputPanel layout="none">
+						<apex:inputText value="{!tmpUser}" html-placeholder="Please, input sought-for user name..." style="margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
+							<apex:actionSupport event="onkeyup" action="{!typeUser}" reRender="usersSection" status="refreshStatus"/>
+						</apex:inputText>
+					</apex:outputPanel>
+				</apex:actionRegion>
+
+				<apex:outputPanel id="usersSection">
+					<apex:pageBlockSection columns="1">
+						<apex:pageBlockTable value="{!users}" var="user" columnsWidth="40%, 15%, 15%, 30%">
+								<apex:column value="{!user.First_Name__c} {!user.Last_Name__c}" headerValue="Full Name"/>
+								<apex:column value="{!user.Name}" headerValue="Username"/>
+								<apex:column value="{!user.CreatedDate}" headerValue="Registered"/>
+								<apex:column headerValue="Actions">
+									<apex:commandButton value="Render Information" action="{!renderUser}" reRender="userSection, usersSection" status="refreshStatus" styleClass="btn btn-link">
+										<apex:param name="rendUserId" value="{!user.Id}"/>
+									</apex:commandButton>
+								</apex:column>
+						</apex:pageBlockTable>
+					</apex:pageBlockSection>
+				</apex:outputPanel>
+
+				<apex:outputpanel >
+					<apex:actionstatus id="refreshStatus">
+						<apex:facet name="start">
+							<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.6; width: 100%; top: 135px;">
+								<div class="waitingHolder" style="top: 25%;">
+									<img class="waitingImage" src="{!$Resource.spinner}"/>
+								</div>
+							</div>
+						</apex:facet>
+					</apex:actionstatus>
+				</apex:outputpanel>
+			</apex:pageBlock>
+		</apex:form>
+	</div>
+
+	<div class="movingBlock" style="width: 40%; right: -1%; top: 72px; position: absolute; height: 80%;">
+		<apex:form styleClass="movedBlock">
+			<apex:pageBlock>
+				<div style="margin: 3% 3% auto; border-bottom: 15px solid transparent;">
+					<h3>
+						<apex:outputLabel value="User Detailed Information" styleClass="label label-warning"/>
+					</h3>
+				</div>
+				<div class="scrollDiv">
+					<apex:outputPanel id="userSection">
+						<apex:pageBlockSection rendered="{!IF(renderedUser.Name != null, true, false)}" columns="1">
+							<apex:outputField value="{!renderedUser.First_Name__c}"/>
+							<apex:outputField value="{!renderedUser.Last_Name__c}"/>
+							<apex:outputField value="{!renderedUser.Name}"/>
+							<apex:outputField value="{!renderedUser.CreatedDate}"/>
+						</apex:pageBlockSection>
+						<apex:pageBlockSection columns="1">
+							<apex:repeat value="{!renderedStatistic}" var="subjectKey">
+								{!subjectKey.Name}
+
+								<apex:pageBlockSection columns="1">
+									<apex:repeat value="{!renderedStatistic[subjectKey]}" var="themeKey">
+									{!themeKey.Name}
+
+										<apex:pageBlockSection columns="1">
+											<apex:repeat value="{!renderedStatistic[subjectKey][themeKey]}" var="testKey">
+												{!testKey.Name} {!renderedStatistic[subjectKey][themeKey][testKey].Result__c}%
+											</apex:repeat>
+										</apex:pageBlockSection>
+
+									</apex:repeat>
+								</apex:pageBlockSection>
+
+							</apex:repeat>
+						</apex:pageBlockSection>
+						<apex:pageBlockSection rendered="{!IF(renderedUser.Name != null, false, true)}" columns="1">
+							<apex:outputLabel value="There is no anything yet..."/>
+						</apex:pageBlockSection>
+					</apex:outputPanel>
+				</div>
+			</apex:pageBlock>
+		</apex:form>
+	</div>
+</apex:page>

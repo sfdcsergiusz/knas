@@ -77,6 +77,11 @@
         <unique>false</unique>
     </fields>
     <label>Browser</label>
+    <listViews>
+        <fullName>All</fullName>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
     <nameField>
         <displayFormat>BI-{0000}</displayFormat>
         <label>Browser #</label>
