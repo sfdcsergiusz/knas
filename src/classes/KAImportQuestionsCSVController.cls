@@ -23,6 +23,14 @@ private PageReference currentPage;
 		if ( ! String.isEmpty(csvAsString)) {
 			csvAsString = csvFileBody.toString();
 			csvFileLines = csvAsString.split('\n');
+
+			List<Theme__c> tmpList = [
+				SELECT Id
+				FROM Theme__c
+				WHERE Id = :themeId
+				LIMIT 1
+			];
+
 			for (Integer i = 1; i < csvFileLines.size(); i++) {
 				Question__c question = new Question__c();
 				String[] csvRecordData = csvFileLines[i].split(';');
@@ -44,13 +52,7 @@ private PageReference currentPage;
 							tmpWrongAnswerList.add(new Answer__c(Variant__c = answerName));
 						}
 						wrongAnswers.add(tmpWrongAnswerList);
-					}
-					List<Theme__c> tmpList = [
-						SELECT Id
-						FROM Theme__c
-						WHERE Id = :themeId
-						LIMIT 1
-					];
+					}					
 
 					if (tmpList.size () > 0) {
 						question.Theme__c = tmpList.get(0).Id;
@@ -78,12 +80,14 @@ private PageReference currentPage;
 				wrongAnswers[i][j].Question__c = quelist[i].Id;
 			}
 		}
+		List<Answer__c> insertAnswers = new List<Answer__c>();
 		for (List<Answer__c> answer : rightAnswers) {
-			insert answer;
+			insertAnswers.addAll(answer);
 		}
 		for (List<Answer__c> answer : wrongAnswers) {
-			insert answer;
+			insertAnswers.addAll(answer);
 		}
+		insert insertAnswers;
 		quelist.clear();
   }
 }

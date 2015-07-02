@@ -27,11 +27,11 @@
 					</apex:column>
 					<apex:column headerValue="Actions">
 						<apex:outputPanel layout="none">
-							<apex:commandButton value="Update" onclick="startUpdateQuestion('{!question.Id}'); return false;" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
-							<apex:commandButton value="Delete" action="{!deleteQuestion}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;">
+							<apex:commandButton value="Update" onclick="startUpdateQuestion('{!question.Id}'); return false;" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Edit question"/>
+							<apex:commandButton value="Delete" action="{!deleteQuestion}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete question">
 								<apex:param name="chosenQuestion" value="{!question.Id}"/>
 							</apex:commandButton>
-							<apex:commandButton value="Freeze" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
+							<apex:commandButton value="Freeze" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Lock question"/>
 						</apex:outputPanel>
 					</apex:column>
 				</apex:pageBlockTable>
@@ -62,7 +62,7 @@
         					Creating New Question
         				</h1>
 
-        				<apex:commandButton value="Close" onclick="closeCreatingQuestion(); return false;" styleClass="btn btn-link" style="float: right;"/>
+        				<apex:commandButton value="Close" onclick="closeCreatingQuestion(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
         				<apex:commandButton value="Create" action="{!createQuestion}" reRender="commonSection, createQuestion" status="refreshStatusQuest" styleClass="btn btn-primary" style="float: right;"/>
         				<br/>
         				<br/>
@@ -142,12 +142,12 @@
 	        							<apex:inputField value="{!answer.Variant__c}" html-placeholder="Please, input the answer..."/>
 	        						</apex:column>
 	        						<apex:column headerValue="Actions">
-	        							<apex:commandButton value="Delete" action="{!reduceAnswer}" styleClass="btn btn-link" reRender="answersPanel" status="refreshStatusQuest">
+	        							<apex:commandButton value="Delete" action="{!reduceAnswer}" styleClass="btn btn-link" reRender="answersPanel" status="refreshStatusQuest" title="Delete this answer">
 		        							<apex:param name="answerIndex" value="{!rowNum}"/>
 	        							</apex:commandButton>
 	        						</apex:column>
 		        				</apex:pageBlockTable>
-		        				<apex:commandButton value="Add answer..." action="{!addAnswer}" styleClass="btn btn-link" reRender="answersPanel" status="refreshStatusQuest"/>
+		        				<apex:commandButton value="Add answer..." action="{!addAnswer}" styleClass="btn btn-link" reRender="answersPanel" status="refreshStatusQuest" title="Add new answer"/>
 	        				</apex:pageBlockSection>
 	        			</apex:outputPanel>
 
@@ -155,7 +155,7 @@
 				</div>
 			</apex:outputpanel>
 
-			<apex:outputpanel >
+			<apex:outputpanel>
 				<apex:actionstatus id="refreshStatusQuest">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">

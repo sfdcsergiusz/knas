@@ -30,7 +30,7 @@ public with sharing class KARegularHomeController {
 					SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id
 					FROM Employee_Task__c
 					WHERE Employee__r.Id =: userId
-					ORDER BY Task__r.AssignTime__c ASC
+					ORDER BY Task__r.AssignTime__c DESC
 					LIMIT 50000
 				];
 				passedTests = [

@@ -2,6 +2,8 @@ public with sharing class KALoginController {
 
 	public String username { get; set; }
 	public String password { get; set; }
+	public Boolean isSend {get; set; }
+	public Boolean noSend {get; set; }
 
 	private Browser__c browserId { private get; private set; }
 
@@ -10,6 +12,8 @@ public with sharing class KALoginController {
 	public KALoginController() {
 		currentPage = ApexPages.currentPage();
 		browserId = new Browser__c();
+		this.isSend = false;
+		this.noSend = false;
 	}
 
 	public void setIdentifier() {
@@ -53,7 +57,31 @@ public with sharing class KALoginController {
 	}
 
 	public void resetPass() {
+		List<Employee__c> existingEmployees = [
+			SELECT First_Name__c, Id
+			FROM Employee__c
+			WHERE Name = :username
+		];
+		if ( ! existingEmployees.isEmpty()) {
+			List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
+			Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+			List<String> sendTo = new List<String>();
+			sendTo.add(username);
+			email.setSubject( 'Request for new password on the Knowledge Assessment System' );
+			email.setToAddresses(sendTo);
+			email.setHtmlBody( 'Dear '+ existingEmployees.get(0).First_Name__c +
+				',</br><p>You requested a password recovery for your account on the Knowledge Assessment System </br>Your login:'+
+				username +'</p>To recover your password, go to ' + '<a href="' +
+				URL.getSalesforceBaseUrl().toExternalForm() + '/apex/CreateNewPassword?s=' +
+				username + '">this link</a>' );
+			mails.add(email);
+      		Messaging.sendEmail(mails);
 
+      		this.isSend = true;
+		}
+		else {
+			noSend = true;
+		}
 	}
 
 	private void setLoginCookie(String id) {

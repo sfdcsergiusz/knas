@@ -1,67 +1,52 @@
 <apex:page showHeader="false" sidebar="false" controller="KAStatisticController" docType="HTML-5.0">
- <apex:stylesheet value="{!URLFOR($Resource.style)}"/>
- <apex:include pageName="KANavigationBar"/>
+    <apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+    <apex:include pageName="KANavigationBar"/>
 
- <style>
-  .sort:hover {
-   cursor: pointer;
-  }
- </style>
+    <style>
+        .sort:hover {
+            cursor: pointer;
+        }
+    </style>
 
- <apex:form >
-  <apex:pageblock >
-   <apex:pageBlockSection columns="1">
-    <apex:pageBlockTable id="statisticTable" value="{!recentResults}" var="result">
-     <apex:column value="{!result.CreatedDate}">
-      <apex:facet name="header">
-       <apex:outputPanel styleClass="sort">
-        Created On
-        <apex:actionSupport event="onclick" action="{! orderByCreatedOn}" reRender="statisticTable"/>
-       </apex:outputPanel>
-      </apex:facet>
-     </apex:column>
-     <apex:column value="{!result.Employee__r.First_Name__c}">
-      <apex:facet name="header">
-       <apex:outputPanel styleClass="sort">
-        First Name
-        <apex:actionSupport event="onclick" action="{! orderByName}" reRender="statisticTable"/>
-       </apex:outputPanel>
-      </apex:facet>
-     </apex:column>
-     <apex:column value="{!result.Employee__r.Last_Name__c}">
-      <apex:facet name="header">
-        <apex:outputPanel styleClass="sort">
-         Last Name
-         <apex:actionSupport event="onclick" action="{! orderByLastName}" reRender="statisticTable"/>
-        </apex:outputPanel>
-       </apex:facet>
-      </apex:column>
-     <apex:column value="{!result.Test__r.Subject__r.Name}">
-      <apex:facet name="header">
-        <apex:outputPanel styleClass="sort">
-         Subject
-         <apex:actionSupport event="onclick" action="{! orderBySubject}" reRender="statisticTable"/>
-        </apex:outputPanel>
-       </apex:facet>
-      </apex:column>
-     <apex:column value="{!result.Test__r.Name}">
-      <apex:facet name="header">
-        <apex:outputPanel styleClass="sort">
-         Test Title
-         <apex:actionSupport event="onclick" action="{! orderByTestTitle}" reRender="statisticTable"/>
-        </apex:outputPanel>
-       </apex:facet>
-      </apex:column>
-     <apex:column value="{!result.Result__c}">
-      <apex:facet name="header">
-       <apex:outputPanel styleClass="sort">
-        Pass Test Result
-        <apex:actionSupport event="onclick" action="{! orderByPassResult}" reRender="statisticTable"/>
-       </apex:outputPanel>
-      </apex:facet>
-     </apex:column>
-    </apex:pageBlockTable>
-   </apex:pageBlockSection>
-  </apex:pageblock>
- </apex:form>
+    <apex:form >
+        <apex:pageblock >
+            <apex:pageBlockSection columns="1">
+                <apex:outputLabel value = "{!recentResults[0].Employee__r.Last_Name__c} {!recentResults[0].Employee__r.First_Name__c}"/>
+                <apex:pageBlockTable id="statisticTable" value="{!recentResults}" var="result">
+                    <apex:column value="{!result.CreatedDate}">
+                        <apex:facet name="header">
+                            <apex:outputPanel styleClass="sort">
+                                    Created On
+                                <apex:actionSupport event="onclick" action="{! orderByCreatedOn}" reRender="statisticTable"/>
+                            </apex:outputPanel>
+                        </apex:facet>
+                    </apex:column>
+                    <apex:column value="{!result.Test__r.Subject__r.Name}">
+                        <apex:facet name="header">
+                            <apex:outputPanel styleClass="sort">
+                                    Subject
+                                <apex:actionSupport event="onclick" action="{! orderBySubject}" reRender="statisticTable"/>
+                            </apex:outputPanel>
+                       </apex:facet>
+                    </apex:column>
+                    <apex:column value="{!result.Test__r.Name}">
+                        <apex:facet name="header">
+                            <apex:outputPanel styleClass="sort">
+                                    Test Title
+                                <apex:actionSupport event="onclick" action="{! orderByTestTitle}" reRender="statisticTable"/>
+                            </apex:outputPanel>
+                        </apex:facet>
+                    </apex:column>
+                    <apex:column value="{!result.Result__c}">
+                        <apex:facet name="header">
+                            <apex:outputPanel styleClass="sort">
+                                    Pass Test Result
+                                <apex:actionSupport event="onclick" action="{! orderByPassResult}" reRender="statisticTable"/>
+                            </apex:outputPanel>
+                        </apex:facet>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageblock>
+    </apex:form>
 </apex:page>

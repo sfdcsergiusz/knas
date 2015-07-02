@@ -38,7 +38,7 @@
 						<apex:column value="{!upcomingTest.Task__r.Test__r.Name}" headerValue="Test Title"/>
 						<apex:column rendered="{!IF(upcomingTests.size > 0, true, false)}">
 							<apex:facet name="header">Action</apex:facet>
-								<apex:commandButton value="Launch" action="{!launchTest}" reRender="upcomingTable" styleClass="btn btn-link">
+								<apex:commandButton value="Launch" action="{!launchTest}" reRender="upcomingTable" styleClass="btn btn-link" title="Start test passing">
 									<apex:param name="launchedTestId" value="{!upcomingTest.Task__r.Test__r.Id}" assignTo="{!launchedTestId}"/>
 								</apex:commandButton>
 						</apex:column>
