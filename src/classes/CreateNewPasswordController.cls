@@ -20,9 +20,11 @@ public with sharing class CreateNewPasswordController {
 		user = users.get(0);
 		
 		if (newPassword == confirmPassword) {
-				user.Password__c = newPassword;
+				user.Password__c = EncodingUtil.convertToHex(Crypto.generateDigest('MD5', Blob.valueOf(newPassword)));
 				update user;
-				return Page.KALogin;
+				PageReference updatingPage = new PageReference('/apex/KALogin');
+				updatingPage.setRedirect(true);
+				return updatingPage;
 			} else {
 				ApexPages.addMessage(
 					new ApexPages.Message(

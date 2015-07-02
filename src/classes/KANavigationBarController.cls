@@ -9,7 +9,7 @@ public with sharing class KANavigationBarController {
 
 	public KANavigationBarController() {
 		currentPage = ApexPages.currentPage();
-		isStartPage = currentPage.getUrl().toUpperCase().contains('LOGIN') || currentPage.getUrl().toUpperCase().contains('REGISTER');
+		isStartPage = currentPage.getUrl().toUpperCase().contains('LOGIN') || currentPage.getUrl().toUpperCase().contains('REGISTER') || currentPage.getUrl().toUpperCase().contains('PASSWORD');
 		isAdminPage = isStartPage ? false : true;
 
 		if ( ! isStartPage) {

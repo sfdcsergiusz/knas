@@ -49,7 +49,11 @@ public with sharing class KATestPassingController {
 
 				if ( ! correspThemes.isEmpty()) {
 					questions = [
-						SELECT Id, Statement__c, Theme__r.Subject__r.Name, Theme__r.Name
+						SELECT Id, Statement__c, Theme__r.Subject__r.Name, Theme__r.Name,
+						(
+							SELECT Variant__c, Right__c
+							FROM Answers__r
+						)
 						FROM Question__c
 						WHERE Theme__r.Id = :correspThemes.get(0).Theme__r.Id
 						LIMIT 50000
@@ -162,11 +166,13 @@ public with sharing class KATestPassingController {
 	}
 
 	private Map<String, Boolean> getRightVariants(Integer questionPosition) {
-		List<Answer__c> tmpVariants = [
-			SELECT Variant__c, Right__c
-			FROM Answer__c
-			WHERE Question__r.Id = :questions[questionPosition].Id AND Right__c = true
-		];
+		List<Answer__c> tmpVariants = questions.get(questionPosition).Answers__r;
+		for (Integer i = 0; i < tmpVariants.size(); i++) {
+			if ( ! tmpVariants.get(i).Right__c) {
+				tmpVariants.remove(i);
+				i--;
+			}
+		}
 		Map<String, Boolean> resultVariants = new Map<String, Boolean>();
 		{
 			for (Answer__c answer : tmpVariants) {
