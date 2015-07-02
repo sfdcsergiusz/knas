@@ -125,7 +125,15 @@
 
 										<apex:pageBlockSection columns="1">
 											<apex:repeat value="{!renderedStatistic[subjectKey][themeKey]}" var="testKey">
-												{!testKey.Name} {!renderedStatistic[subjectKey][themeKey][testKey].Result__c}%
+												<apex:panelGroup>
+													{!testKey.Name}
+												<apex:variable value="{!renderedStatistic[subjectKey][themeKey][testKey].Result__c}" var="tmpResult"/>
+												<h4>
+													<apex:outputLabel value="{!tmpResult}%" styleClass="label label-danger" rendered="{!IF(tmpResult < 33, true, false)}"/>
+													<apex:outputLabel value="{!tmpResult}%" styleClass="label label-warning" rendered="{!IF(AND(tmpResult > 33, tmpResult < 67), true, false)}"/>
+													<apex:outputLabel value="{!tmpResult}%" styleClass="label label-success" rendered="{!IF(tmpResult > 67, true, false)}"/>
+												</h4>
+												</apex:panelGroup>
 											</apex:repeat>
 										</apex:pageBlockSection>
 

@@ -72,7 +72,7 @@ public with sharing class KALoginController {
 			email.setHtmlBody( 'Dear '+ existingEmployees.get(0).First_Name__c +
 				',</br><p>You requested a password recovery for your account on the Knowledge Assessment System </br>Your login:'+
 				username +'</p>To recover your password, go to ' + '<a href="' +
-				URL.getSalesforceBaseUrl().toExternalForm() + '/apex/CreateNewPassword?s=' +
+				URL.getSalesforceBaseUrl().toExternalForm() + '/apex/KACreateNewPassword?hashLink=' +
 				username + '">this link</a>' );
 			mails.add(email);
       		Messaging.sendEmail(mails);
