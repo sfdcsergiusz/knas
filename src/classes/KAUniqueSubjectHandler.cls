@@ -1,5 +1,5 @@
 public with sharing class KAUniqueSubjectHandler {
-	public static Boolean enablesTrigger = true;
+	public static Boolean enablesTrigger = false;
 
 	public static void addNewSubject(List<Subject__c> p_subject) {
 		List<Subject__c> subjects = [

@@ -58,7 +58,7 @@
 		<apex:pageBlock>
 			<apex:actionRegion>
 				<apex:outputPanel layout="none">
-					<apex:inputText value="{!tmpSubject}" html-placeholder="Please, input sought-for subject name..." style="float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
+					<apex:inputText value="{!tmpSubject}" html-placeholder="Please, input subject name..." style="float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
 						<apex:actionSupport event="onkeyup" action="{!typeSubject}" reRender="subjectSection" status="refreshStatus"/>
 					</apex:inputText>
 				</apex:outputPanel>
@@ -81,7 +81,7 @@
 							<apex:pageBlockTable value="{!subject.Themes__r}" var="theme" columnsWidth="20%, 20%, 15%, 20%, 25%">
 								<apex:column value="{!theme.Name}"/>
 								<apex:column value="{!theme.Questions_Number__c}"/>
-								<apex:column value="{!theme.Tests_Number__c}" headerValue="Used In Tests"/>
+								<apex:column value="{!theme.Tests_Number__c}" headerValue="Number of Tests"/>
 								<apex:column headerValue="Stats">
 									<div class="dropRow">
 										<div class="hiddenRow">
@@ -95,8 +95,8 @@
 												<apex:outputPanel>
 													<apex:repeat value="{!themeStatistic}" var="testStat">
 														<apex:outputLabel value="{!testStat.Test__r.Name}"/>
-														<apex:outputLabel value="Dur.: {!testStat.Test__r.Duration__c}"/>
-														<apex:outputLabel value="Num.: {!testStat.Questions_Captured__c}"/>
+														<apex:outputLabel value="Time: {!testStat.Test__r.Duration__c}"/>
+														<apex:outputLabel value="Questions: {!testStat.Questions_Captured__c}"/>
 														<apex:actionStatus id="testStatStatus">
 															<apex:facet name="start">
 
@@ -152,7 +152,7 @@
 						<h1>
 	    					Creating New Test
 	    				</h1>
-	    				<apex:commandButton value="Close" onclick="closeCreatingTest(); return false;" styleClass="btn btn-link" style="float: right;"/>
+	    				<apex:commandButton value="Cancel" onclick="closeCreatingTest(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 		    			<apex:commandButton value="Create" action="{!createTest}" styleClass="btn btn-primary" style="float: right;"/>
 		    			<br/>
 

@@ -80,7 +80,7 @@
 	    					Creating New Task
 	    				</h1>
 
-	    				<apex:commandButton value="Close" onclick="closeCreatingTask(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+	    				<apex:commandButton value="Cancel" onclick="closeCreatingTask(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 	    				<apex:commandButton value="Create" action="{!createNewTask}" styleClass="btn btn-primary" style="float: right;"/>
 
 	    				<br/>

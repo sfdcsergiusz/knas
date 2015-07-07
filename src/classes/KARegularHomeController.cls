@@ -6,6 +6,7 @@ public with sharing class KARegularHomeController {
 	public String lastTestResult { get; set; }
 	public Datetime lastTimeResult { get; set; }
 
+	public Boolean activeUser { get; private set; }
 	public List<Pass_History__c> statistics { get; private set; }
 	public List<Employee_Task__c> upcomingTests { get; private set; }
 	public List<Pass_History__c> passedTests { get; private set; }
@@ -17,7 +18,7 @@ public with sharing class KARegularHomeController {
 		Cookie tmpCookie = ApexPages.currentPage().getCookies().get('Identifier');
 		if (tmpCookie != null) {
 			List<Browser__c> tmpBrowsers = [
-				SELECT Employee__r.Id
+				SELECT Employee__r.Id, Employee__r.IsActive__c
 				FROM Browser__c
 				WHERE Identifier__c = :tmpCookie.getValue()
 				LIMIT 1
@@ -25,18 +26,19 @@ public with sharing class KARegularHomeController {
 
 			if ( ! tmpBrowsers.isEmpty()) {
 				userId = tmpBrowsers.get(0).Employee__r.Id;
+				activeUser = tmpBrowsers.get(0).Employee__r.IsActive__c;
 
 				upcomingTests = [
 					SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id
 					FROM Employee_Task__c
-					WHERE Employee__r.Id =: userId
+					WHERE Employee__r.Id = :userId
 					ORDER BY Task__r.AssignTime__c DESC
 					LIMIT 50000
 				];
 				passedTests = [
 					SELECT Name, Employee__c, CreatedDate, Result__c, Test__r.Name, Test__r.Subject__r.Name
 					FROM Pass_History__c
-					WHERE Employee__r.Id =: userId
+					WHERE Employee__r.Id = :userId
 					ORDER BY CreatedDate DESC
 					LIMIT 50000
 				];

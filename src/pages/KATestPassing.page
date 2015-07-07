@@ -8,7 +8,7 @@
 				<apex:pageBlockButtons location="bottom">
 					<apex:commandButton id="backButton" action="{!goToPrev}" status="refreshStatus" value="Back" disabled="{!IF(currentQuestion == 0, true, false)}" styleClass="btn btn-warning" reRender="ubjectLabel, themeLabel, questionLabel, questionStatement, answersCheckboxes, answersRadios, backButton, nextButton"/>
 					<apex:commandButton id="nextButton" action="{!goToNext}" status="refreshStatus" value="Forward" disabled="{!IF(currentQuestion == (totalQuestionsNum - 1), true, false)}" styleClass="btn btn-success" reRender="subjectLabel, themeLabel, questionLabel, questionStatement, answersCheckboxes, answersRadios, backButton, nextButton"/>
-					<apex:commandButton action="{!goToFinish}" status="refreshStatus" value="Finish" styleClass="btn btn-primary"/>
+					<apex:commandButton action="{!goToFinish}" status="refreshStatus" value="Finish" styleClass="btn btn-primary" style="float: right; margin-right: 30% !important"/>
 
 					<apex:outputpanel >
     					<apex:actionstatus id="refreshStatus">

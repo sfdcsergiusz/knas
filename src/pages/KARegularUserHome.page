@@ -3,7 +3,7 @@
 	<apex:include pageName="KANavigationBar"/>
 	<apex:form >
 		<div style="width: 100%; height: 100%;">
-			<apex:pageBlock >
+			<apex:pageBlock rendered="{!activeUser}">
 				<apex:outputpanel >
 					<apex:actionstatus id="resultStatus">
     					<apex:facet name="start">
@@ -56,6 +56,13 @@
 				</apex:pageBlockSection>
 			</apex:pageBlock>
 		</div>
+
+		<apex:pageBlock rendered="{!NOT(activeUser)}">
+			<h1 style="left: 24%; position: absolute"> 
+				You are not active now. Please, wait for approval. 
+			</h1>	
+		</apex:pageBlock>
+
 	</apex:form>
 
 	<script>

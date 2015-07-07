@@ -62,7 +62,7 @@
         					Creating New Question
         				</h1>
 
-        				<apex:commandButton value="Close" onclick="closeCreatingQuestion(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+        				<apex:commandButton value="Cancel" onclick="closeCreatingQuestion(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
         				<apex:commandButton value="Create" action="{!createQuestion}" reRender="commonSection, createQuestion" status="refreshStatusQuest" styleClass="btn btn-primary" style="float: right;"/>
         				<br/>
         				<br/>

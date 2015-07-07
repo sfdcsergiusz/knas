@@ -94,11 +94,20 @@
 								<apex:column value="{!user.First_Name__c} {!user.Last_Name__c}" headerValue="Full Name"/>
 								<apex:column value="{!user.Name}" headerValue="Username"/>
 								<apex:column value="{!user.CreatedDate}" headerValue="Registered"/>
+								<apex:column headerValue="Activity">
+									<apex:commandButton value="Freeze" action="{!changeActivity}" reRender="usersSection" status="refreshStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, true, false)}">
+										<apex:param name="activeUserId" value="{!user.Id}"/>
+									</apex:commandButton>	
+									<apex:commandButton value="Activate" action="{!changeActivity}" reRender="usersSection" status="refreshStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, false, true)}">
+										<apex:param name="activeUserId" value="{!user.Id}"/>
+									</apex:commandButton>	
+								</apex:column>
 								<apex:column headerValue="Actions">
 									<apex:commandButton value="Render Information" action="{!renderUser}" reRender="userSection, usersSection" status="refreshStatus" styleClass="btn btn-link">
 										<apex:param name="rendUserId" value="{!user.Id}"/>
 									</apex:commandButton>
 								</apex:column>
+									
 						</apex:pageBlockTable>
 					</apex:pageBlockSection>
 				</apex:outputPanel>

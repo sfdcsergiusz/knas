@@ -29,7 +29,7 @@ public with sharing class KACommonUsersController {
 		tmpUser = '';
 
 		users = [
-			SELECT Name, First_Name__c, Last_Name__c, CreatedDate
+			SELECT Name, First_Name__c, Last_Name__c, CreatedDate, IsActive__c
 			FROM Employee__c
 			WHERE IsAdmin__c = false
 		];
@@ -38,7 +38,7 @@ public with sharing class KACommonUsersController {
 	public void typeUser() {
 		String searchUser = '%' + tmpUser + '%';
 		users = [
-			SELECT Name, First_Name__c, Last_Name__c, CreatedDate
+			SELECT Name, First_Name__c, Last_Name__c, CreatedDate, IsActive__c
 			FROM Employee__c
 			WHERE IsAdmin__c = false
 				AND (
@@ -47,6 +47,23 @@ public with sharing class KACommonUsersController {
 					OR Last_Name__c LIKE :searchUser
 				)
 		];
+	}
+
+	public void changeActivity() {
+		Employee__c activeFreezeUser = [
+			SELECT Name, First_Name__c, Last_Name__c, CreatedDate, IsActive__c
+			FROM Employee__c
+			WHERE Id = :ApexPages.currentPage().getParameters().get('activeUserId')
+			LIMIT 1	
+		];
+		activeFreezeUser.IsActive__c = activeFreezeUser.IsActive__c ? false : true;
+		update activeFreezeUser;
+
+		users = [
+			SELECT Name, First_Name__c, Last_Name__c, CreatedDate, IsActive__c
+			FROM Employee__c
+			WHERE IsAdmin__c = false
+		];		
 	}
 
 	public void renderUser() {
