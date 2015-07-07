@@ -75,6 +75,26 @@
   			-webkit-margin-before: -10px !important;
   			-webkit-margin-after: 10px !important;
 		}
+		.subjectDiv {
+			border-radius: .45em;
+			padding: 6px 2px 6px 5px;
+			background-color: rgba(255, 162, 0, 0.38);
+		}
+		.themeDiv {
+			border-radius: .45em;
+			padding: 4px 2px 4px 5px;
+			background-color: rgba(255, 162, 0, 0.16);
+		}
+		.subjectResDiv {
+			border-radius: .45em;
+			padding: 5px 2px 5px 5px;
+			background-color: rgba(175, 187, 234, 0.38);
+		}
+		.themeResDiv {
+			border-radius: .45em;
+			padding: 3px 2px 3px 5px;
+			background-color: rgba(175, 187, 234, 0.16);
+		}
 	</style>
 
 	<div style="width: 65%; left: 0%; position: absolute;">
@@ -144,29 +164,60 @@
 							<apex:outputField value="{!renderedUser.CreatedDate}"/>
 						</apex:pageBlockSection>
 						<apex:pageBlockSection columns="1">
+							<apex:variable value="{!0}" var="testCounter"/>
+							<apex:variable value="{!0}" var="testResult"/>
+							<apex:variable value="{!0}" var="themeCounter"/>
+							<apex:variable value="{!0}" var="themeResult"/>
+
 							<apex:repeat value="{!renderedStatistic}" var="subjectKey">
-								{!subjectKey.Name}
+
+								<div class="subjectDiv">
+									{!subjectKey.Name}
+								</div>
 
 								<apex:pageBlockSection columns="1">
-									<apex:repeat value="{!renderedStatistic[subjectKey]}" var="themeKey">
-									{!themeKey.Name}
 
+									<apex:repeat value="{!renderedStatistic[subjectKey]}" var="themeKey">
+
+										<div class="themeDiv">
+											{!themeKey.Name}
+										</div>
 										<apex:pageBlockSection columns="2">
 											<apex:repeat value="{!renderedStatistic[subjectKey][themeKey]}" var="testKey">
 												{!testKey.Name}
 												<apex:panelGroup>
+													<apex:variable value="{!testCounter + 1}" var="testCounter"/>
 													<apex:variable value="{!renderedStatistic[subjectKey][themeKey][testKey].Result__c}" var="tmpResult"/>
+													<apex:variable var="testResult" value="{!(testResult + tmpResult)}"/>
 													<h4 class="resultH">
-														<apex:outputLabel value="{!tmpResult}%" styleClass="label label-danger resultLabel" rendered="{!IF(tmpResult < 33, true, false)}"/>
+														<apex:outputLabel value="NOT PASSED" styleClass="label label-default resultLabel" rendered="{!IF(tmpResult = -1, true, false)}"/>
+														<apex:outputLabel value="{!tmpResult}%" styleClass="label label-default resultLabel" rendered="{!IF(tmpResult = 0, true, false)}"/>
+														<apex:outputLabel value="{!tmpResult}%" styleClass="label label-danger resultLabel" rendered="{!IF(AND(tmpResult > 0, tmpResult < 33), true, false)}"/>
 														<apex:outputLabel value="{!tmpResult}%" styleClass="label label-warning resultLabel" rendered="{!IF(AND(tmpResult > 33, tmpResult < 67), true, false)}"/>
 														<apex:outputLabel value="{!tmpResult}%" styleClass="label label-success resultLabel" rendered="{!IF(tmpResult > 67, true, false)}"/>
 													</h4>
 												</apex:panelGroup>
 											</apex:repeat>
 										</apex:pageBlockSection>
+										<apex:panelGroup>
+											<div class="themeResDiv">
+												Theme Total: {!IF(testCounter = 0, 'there is no any ', FLOOR(testResult / testCounter))}%
+											</div>
+											<apex:variable value="{!themeResult + testResult}" var="themeResult"/>
+											<apex:variable value="{!themeCounter + testCounter}" var="themeCounter"/>
+											<apex:variable value="{!0}" var="testCounter"/>
+											<apex:variable value="{!0}" var="testResult"/>
+										</apex:panelGroup>
 
 									</apex:repeat>
 								</apex:pageBlockSection>
+								<apex:panelGroup>
+									<div class="subjectResDiv">
+										Subject Total: {!IF(themeCounter = 0, 'there is no any ', FLOOR(themeResult / themeCounter))}%
+									</div>
+									<apex:variable value="{!0}" var="themeCounter"/>
+									<apex:variable value="{!0}" var="themeResult"/>
+								</apex:panelGroup>
 
 							</apex:repeat>
 						</apex:pageBlockSection>

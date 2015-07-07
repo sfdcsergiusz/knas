@@ -20,7 +20,7 @@ public with sharing class KACommonTestsController {
 		themeStatistic = new List<TestTheme__c>();
 
 		subjects = [
-			SELECT Name,
+			SELECT Name, Themes_Number__c,
 			(
 				SELECT Name, Questions_Number__c, Tests_Number__c
 				FROM Themes__r
@@ -41,7 +41,7 @@ public with sharing class KACommonTestsController {
 	public void typeSubject() {
 		String searchSubject = '%' + tmpSubject + '%';
 		subjects = [
-			SELECT Name,
+			SELECT Name, Themes_Number__c,
 			(
 				SELECT Name, Questions_Number__c, Tests_Number__c
 				FROM Themes__r

@@ -36,9 +36,10 @@
 						<apex:column value="{!upcomingTest.Task__r.AssignTime__c}" headerValue="Time Of Assignment"/>
 						<apex:column value="{!upcomingTest.Task__r.Test__r.Subject__r.Name}" headerValue="Subject"/>
 						<apex:column value="{!upcomingTest.Task__r.Test__r.Name}" headerValue="Test Title"/>
-						<apex:column rendered="{!IF(upcomingTests.size > 0, true, false)}">
+						<apex:column value="{!upcomingTest.Task__r.Status__c}" headerValue="Task Status"/>
+						<apex:column>
 							<apex:facet name="header">Action</apex:facet>
-								<apex:commandButton value="Launch" action="{!launchTest}" reRender="upcomingTable" styleClass="btn btn-link" title="Start test passing">
+								<apex:commandButton value="Launch" action="{!launchTest}" reRender="upcomingTable" styleClass="btn btn-link" title="Start test passing" disabled="{!IF(upcomingTest.Task__r.Status__c = 'Scheduled', false, true)}">
 									<apex:param name="launchedTestId" value="{!upcomingTest.Task__r.Test__r.Id}" assignTo="{!launchedTestId}"/>
 								</apex:commandButton>
 						</apex:column>

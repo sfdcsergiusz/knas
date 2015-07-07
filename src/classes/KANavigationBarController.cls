@@ -4,6 +4,7 @@ public with sharing class KANavigationBarController {
 	public Boolean isStartPage { get; private set; }
 	public Boolean isAdminPage { get; private set; }
 	public PageReference target { get; private set; }
+	public String showingPageName { get; private set; }
 
 	private PageReference currentPage { private get; private set; }
 
@@ -30,6 +31,8 @@ public with sharing class KANavigationBarController {
 			];
 			browserUser = ! browsers.isEmpty() ? browsers.get(0) : null;
 		}
+
+		showingPageName = KAPageConstants.pageNames.get(currentPage.getUrl().split('/apex/')[1].toUpperCase());
 	}
 
 	public PageReference onLoad() {

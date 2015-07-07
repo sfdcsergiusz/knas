@@ -11,17 +11,70 @@
 			font-size: 24px !important;
 		}
 		.pbSubsection {
+			width: 100%;
 			padding: 0px !important;
 		}
 		.data2Col {
 			padding: 0px 0px !important;
 		}
-		span > .apexp {
+		body .bPageBlock {
+			border-top-width: 1px !important;
+		}
+		.subjectRepeat > .apexp, span > .apexp {
 			width: 100% !important;
 			margin: 0 !important;
 		}
-		body .bPageBlock {
-			border-top-width: 1px !important;
+		.subjectRepeat > .apexp > div > .pbBody > div > .pbSubsection {
+			-webkit-transition-duration: 0.45s;
+			-moz-transition-duration: 0.45s;
+			-o-transition-duration: 0.45s;
+			transition-duration: 0.45s;
+			transition-delay: 0.2s;
+			overflow: hidden;
+			max-height: 0px;
+		}
+		.subjectRepeat:hover > .apexp > div > .pbBody > div > .pbSubsection {
+			-webkit-transition-duration: 0.45s;
+			-moz-transition-duration: 0.45s;
+			-o-transition-duration: 0.45s;
+			transition-duration: 0.45s;
+			transition-delay: 0.2s;
+			max-height: 600px;
+			overflow-y: auto;
+		}
+		.subjectRepeat > .apexp > div > .pbBody > .hoverDiv > .inputDiv {
+			-webkit-transition-duration: 0.45s;
+			-moz-transition-duration: 0.45s;
+			-o-transition-duration: 0.45s;
+			transition-duration: 0.2s;
+			transition-delay: 0.5s;
+			visibility: hidden;
+			opacity: 0;
+		}
+		.subjectRepeat:hover > .apexp > div > .pbBody > .hoverDiv > .inputDiv {
+			-webkit-transition-duration: 0.45s;
+			-moz-transition-duration: 0.45s;
+			-o-transition-duration: 0.45s;
+			transition-duration: 0.2s;
+			transition-delay: 0.5s;
+			visibility: visible;
+			opacity: 1;
+		}
+		.subjectRepeat > .apexp > div > .pbBody > .hoverDiv {
+			-webkit-transition-duration: 0.25s;
+			-moz-transition-duration: 0.25s;
+			-o-transition-duration: 0.25s;
+			transition-duration: 0.25s;
+			transform: matrix(1, 0, 0, 1, 0, -2);
+			opacity: 0.77;
+		}
+		.subjectRepeat:hover > .apexp > div > .pbBody > .hoverDiv {
+			-webkit-transition-duration: 0.25s;
+			-moz-transition-duration: 0.25s;
+			-o-transition-duration: 0.25s;
+			transition-duration: 0.25s;
+			transform: matrix(1, 0, 0, 1, 0, 0);
+			opacity: 1;
 		}
 	</style>
 
@@ -37,48 +90,54 @@
 			</apex:actionRegion>
 			<apex:outputPanel id="subjectSection">
 				<apex:repeat value="{!subjects}" var="subject">
-					<apex:pageBlock>
+					<div class="subjectRepeat">
+						<apex:pageBlock>
 
-						<apex:actionRegion>
-							<apex:outputPanel layout="none">
-								<div style="position: relative; bottom: -7px; height: 0; left: 50px">
-									<h3>
-										<apex:outputLabel value="{!subject.Name}" style="margin: 0px !important; border-radius: .25em .25em 0 0 !important; border: 1px solid #BBB !important;; border-bottom-style: none !important;"/>
-									</h3>
-									<apex:commandButton value="List" action="{!goToSubjectList}" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" reRender="subjectSection" title="View all questions for this subject">
-											<apex:param name="listParam" value="{!subject.Name}"/>
-									</apex:commandButton>	
-									<apex:commandButton value="Delete" action="{!deleteSubject}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" title="Delete this subject">
-										<apex:param name="deleteParam" value="{!subject.Name}"/>
-									</apex:commandButton>
-								</div>
-								<apex:commandButton value="Create Theme" action="{!createTheme}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-success" style="float: right;">
-									<apex:param name="subjectName" value="{!subject.Name}"/>
-								</apex:commandButton>
-								<apex:inputText value="{!tmpTheme}" html-placeholder="Please, input new theme..." style="width: 34% !important; float: right;" html-autocomplete="off"/>
-							</apex:outputPanel>
-						</apex:actionRegion>
+							<apex:actionRegion>
+								<apex:outputPanel layout="none">
+									<div class="hoverDiv" style="height: 37px;">
+										<div style="position: relative; bottom: -7px; height: 0; left: 50px">
+											<apex:commandButton value="List" action="{!goToSubjectList}" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" reRender="subjectSection" title="View all questions for this subject">
+												<apex:param name="listParam" value="{!subject.Name}"/>
+											</apex:commandButton>
+											<apex:commandButton value="Delete" action="{!deleteSubject}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" title="Delete this subject">
+												<apex:param name="deleteParam" value="{!subject.Name}"/>
+											</apex:commandButton>
+											<apex:commandLink value="{!subject.Themes_Number__c} themes" styleClass="btn btn-link" style="padding: 2px 25px !important; margin: 0px 0px 6px !important; line-height: normal !important; color: #2F933C !important; pointer-events: none; cursor: default;"/>
+											<apex:outputLabel value="{!subject.Name}" style="margin: 0px 0px 0px 10px !important; border-radius: .25em .25em 0 0 !important; border: 1px solid #BBB !important;; border-bottom-style: none !important;"/>
+										</div>
+										<div class="inputDiv">
+											<apex:commandButton value="Create Theme" action="{!createTheme}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-success" style="float: right;">
+												<apex:param name="subjectName" value="{!subject.Name}"/>
+											</apex:commandButton>
+											<apex:inputText value="{!tmpTheme}" html-placeholder="Please, input new theme..." style="width: 34% !important; float: right;" html-autocomplete="off"/>
+										</div>
+									</div>
+								</apex:outputPanel>
+							</apex:actionRegion>
 
-						<apex:pageBlockSection columns="1">
-							<apex:pageBlockTable value="{!subject.Themes__r}" var="theme" columnsWidth="30%, 30%, 40%">
-								<apex:column value="{!theme.Name}"/>
-								<apex:column value="{!theme.Questions_Number__c}"/>
-								<apex:column headerValue="Actions">
-									<apex:outputPanel layout="none">
-										<apex:commandButton value="List" action="{!goToThemeList}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection" title="List of questions for chosen theme">
-											<apex:param name="listParam" value="{!theme.Name}"/>
-										</apex:commandButton>
-										<apex:commandButton value="Upload CSV" action="{!goToUploadCSV}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection" title="Import questions with CSV file for chosen theme">
-											<apex:param name="CSVParam" value="{!theme.Id}"/>
-										</apex:commandButton>		
-										<apex:commandButton value="Delete" action="{!deleteTheme}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete chosen theme">
-											<apex:param name="deleteParam" value="{!theme.Name}"/>
-										</apex:commandButton>		
-									</apex:outputPanel>
-								</apex:column>
-							</apex:pageBlockTable>
-						</apex:pageBlockSection>
-					</apex:pageBlock>
+							<apex:pageBlockSection columns="1">
+								<apex:pageBlockTable value="{!subject.Themes__r}" var="theme" columnsWidth="30%, 30%, 40%">
+									<apex:column headerValue="Subject Themes" value="{!theme.Name}"/>
+									<apex:column headerValue="Questions In Theme" value="{!theme.Questions_Number__c}"/>
+									<apex:column headerValue="Actions">
+										<apex:outputPanel layout="none">
+											<apex:commandButton value="List" action="{!goToThemeList}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection" title="List of questions for chosen theme">
+												<apex:param name="listParam" value="{!theme.Name}"/>
+											</apex:commandButton>
+											<apex:commandButton value="Upload CSV" action="{!goToUploadCSV}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection" title="Import questions with CSV file for chosen theme">
+												<apex:param name="CSVParam" value="{!theme.Id}"/>
+											</apex:commandButton>
+											<apex:commandButton value="Delete" action="{!deleteTheme}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete chosen theme">
+												<apex:param name="deleteParam" value="{!theme.Name}"/>
+											</apex:commandButton>
+										</apex:outputPanel>
+									</apex:column>
+								</apex:pageBlockTable>
+							</apex:pageBlockSection>
+
+						</apex:pageBlock>
+					</div>
 				</apex:repeat>
 			</apex:outputPanel>
 

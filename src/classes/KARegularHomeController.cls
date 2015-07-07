@@ -52,6 +52,14 @@ public with sharing class KARegularHomeController {
 
 	public PageReference launchTest() {
 		if (launchedTestId != null && launchedTestId != '') {
+			Task__c currentTask = [
+				SELECT Status__c
+				FROM Task__c
+				WHERE Test__r.Id = :launchedTestId
+			];
+			currentTask.Status__c = 'Failed';
+			update currentTask;
+
 			return new PageReference('/apex/KATestPassing?test=' + launchedTestId);
 		}
 		return null;

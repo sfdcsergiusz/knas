@@ -11,15 +11,15 @@
 					<apex:commandButton action="{!goToFinish}" status="refreshStatus" value="Finish" styleClass="btn btn-primary" style="float: right; margin-right: 30% !important"/>
 
 					<apex:outputpanel >
-    					<apex:actionstatus id="refreshStatus">
-        					<apex:facet name="start">
-            					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
-                					<div class="waitingHolder">
-                    					<img class="waitingImage" src="{!$Resource.spinner}" title="Refreshing. Please Wait..." />
-                					</div>
-            					</div>
-        					</apex:facet>
-        					<script>
+						<apex:actionstatus id="refreshStatus">
+							<apex:facet name="start">
+								<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
+									<div class="waitingHolder">
+										<img class="waitingImage" src="{!$Resource.spinner}" title="Refreshing. Please Wait..." />
+									</div>
+								</div>
+							</apex:facet>
+							<script>
 								var checkboxes = document.getElementById('j_id0:j_id2:j_id3:j_id8:answersCheckboxes').parentNode.parentNode;
 								var radiobuttons = document.getElementById('j_id0:j_id2:j_id3:j_id8:answersRadios').parentNode.parentNode;
 								if ('{!questionType}' == 'multiple') {
@@ -31,7 +31,7 @@
 									radiobuttons.style.cssText = 'display:table-row !important';
 								}
 							</script>
-    					</apex:actionstatus>
+						</apex:actionstatus>
 					</apex:outputpanel>
 				</apex:pageBlockButtons>
 
@@ -71,6 +71,8 @@
 				<apex:outputPanel id="questionStatement">
 					<h3>
 						{!questions[currentQuestion].Statement__c}
+						<br/>
+						Choose {!currRightAnswers} answer(s).
 					</h3>
 				</apex:outputPanel>
 
@@ -123,47 +125,40 @@
 	<div style="position: absolute; top: 47px; left: 50%; width: 100%;">
 		<apex:outputPanel layout="none">
 			<apex:outputLabel id="testTimer" style="color: #8B3A3A !important;">
-				00:1111110:20
+				{!currentTest.Duration__c}:00
 			</apex:outputLabel>
 		</apex:outputPanel>
 	</div>
 
 	<apex:form >
 		<apex:actionFunction action="{!finishTest}" name="outOfTime">
-    	</apex:actionFunction>
+		</apex:actionFunction>
 	</apex:form>
 
 	<script>
-	var testTimer = document.querySelector("label[id*='testTimer']");
-	var time = testTimer.innerHTML;
-	var arr = time.split(":");
-  	function startTimer() {
-	    if (arr[2] == 0) {
-	      	if (arr[1] == 0) {
-	        	if (arr[0] == 0) {
-	          		alert("Время вышло");
-	          		outOfTime();
-	          		return;
-	        	}
-	        	arr[0]--;
-	        	arr[1] = 60;
-	        	if (arr[0] < 10) {
-	        		arr[0] = "0" + arr[0];
-	        	}
-	      	}
-	      	arr[1]--;
-	      	if (arr[1] < 10) {
-	      		arr[1] = "0" + arr[1];
-	      	}
-	      	arr[2] = 59;
-	    }
-	    else arr[2]--;
-	    if (arr[2] < 10) {
-	    	arr[2] = "0" + arr[2];
-	    }
-	    testTimer.innerHTML = arr[0]+":"+arr[1]+":"+arr[2];
-	    setTimeout(startTimer, 1000);
-	}
-	startTimer();
+		var testTimer = document.querySelector("label[id*='testTimer']");
+		var time = testTimer.innerHTML;
+		var arr = time.split(":");
+		function startTimer() {
+			if (arr[1] == 0) {
+				if (arr[0] == 0) {
+					alert("Время вышло");
+					outOfTime();
+					return;
+				}
+				arr[0]--;
+				if (arr[0] < 10) {
+					arr[0] = "0" + arr[0];
+				}
+				arr[1] = 59;
+			}
+			else arr[1]--;
+			if (arr[1] < 10) {
+				arr[1] = "0" + arr[1];
+			}
+			testTimer.innerHTML = arr[0]+":"+arr[1];
+			setTimeout(startTimer, 1000);
+		}
+		startTimer();
 	</script>
 </apex:page>

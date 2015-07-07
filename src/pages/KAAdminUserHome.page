@@ -35,6 +35,7 @@
 					<apex:pageBlockTable id="recentTasksTable" value="{!recentTasks}" var="task">
 						<apex:column value="{!task.Task__r.CreatedDate}" headerValue="Created On"/>
 						<apex:column value="{!task.Employee__r.First_Name__c} {!task.Employee__r.Last_Name__c}" headerValue="User"/>
+						<apex:column value="{!task.Task__r.Test__r.Name}" headerValue="Test Title"/>
 						<apex:column value="{!task.Task__r.Status__c}" headerValue="Status"/>
 						<apex:column value="{!task.Task__r.AssignTime__c}" headerValue="Time Of Assignment"/>
 					</apex:pageBlockTable>

@@ -11,12 +11,13 @@
 			font-size: 24px !important;
 		}
 		.pbSubsection {
+			width: 100% !important;
 			padding: 0px !important;
 		}
 		.data2Col {
 			padding: 0px 0px !important;
 		}
-		span> .apexp {
+		.subjectRepeat > .apexp, span > .apexp {
 			width: 100% !important;
 			margin: 0 !important;
 		}
@@ -52,6 +53,40 @@
 			opacity: 1;
 			right: 25%;
 		}
+		.subjectRepeat > .apexp > div > .pbBody > div > .pbSubsection {
+			-webkit-transition-duration: 0.45s;
+			-moz-transition-duration: 0.45s;
+			-o-transition-duration: 0.45s;
+			transition-duration: 0.45s;
+			transition-delay: 0.2s;
+			overflow: hidden;
+			max-height: 0px;
+		}
+		.subjectRepeat:hover > .apexp > div > .pbBody > div > .pbSubsection {
+			-webkit-transition-duration: 0.45s;
+			-moz-transition-duration: 0.45s;
+			-o-transition-duration: 0.45s;
+			transition-duration: 0.45s;
+			transition-delay: 0.2s;
+			max-height: 600px;
+			overflow-y: auto;
+		}
+		.subjectRepeat > .apexp > div > .pbBody > .hoverDiv {
+			-webkit-transition-duration: 0.25s;
+			-moz-transition-duration: 0.25s;
+			-o-transition-duration: 0.25s;
+			transition-duration: 0.25s;
+			transform: matrix(1, 0, 0, 1, 0, -2);
+			opacity: 0.77;
+		}
+		.subjectRepeat:hover > .apexp > div > .pbBody > .hoverDiv {
+			-webkit-transition-duration: 0.25s;
+			-moz-transition-duration: 0.25s;
+			-o-transition-duration: 0.25s;
+			transition-duration: 0.25s;
+			transform: matrix(1, 0, 0, 1, 0, 0);
+			opacity: 1;
+		}
 	</style>
 
 	<apex:form id="showForm">
@@ -65,64 +100,72 @@
 			</apex:actionRegion>
 			<apex:outputPanel id="subjectSection">
 				<apex:repeat value="{!subjects}" var="subject">
-					<apex:pageBlock>
+					<div class="subjectRepeat">
+						<apex:pageBlock>
 
-						<apex:actionRegion>
-							<apex:outputPanel layout="none">
-								<div style="position: relative; bottom: -7px; height: 37px; left: 50px; z-index: 4;">
-									<h3>
-										<apex:outputLabel value="{!subject.Name}" style="margin: 0px !important; border-radius: .25em .25em 0 0 !important; border: 1px solid #BBB !important;; border-bottom-style: none !important;"/>
-									</h3>
-								</div>
-							</apex:outputPanel>
-						</apex:actionRegion>
+							<apex:actionRegion>
+								<apex:outputPanel layout="none">
+									<div class="hoverDiv" style="height: 37px;">
+										<div style="position: relative; bottom: -7px; height: 37px; left: 50px; z-index: 4;">
+											<apex:commandButton value="List" action="{!goToSubjectList}" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" reRender="subjectSection" title="View all questions for this subject">
+												<apex:param name="listParam" value="{!subject.Name}"/>
+											</apex:commandButton>
+											<apex:commandLink value="{!subject.Themes_Number__c} themes" styleClass="btn btn-link" style="padding: 2px 25px !important; margin: 0px 0px 6px !important; line-height: normal !important; color: #2F933C !important; pointer-events: none; cursor: default;"/>
+											<h3>
+												<apex:outputLabel value="{!subject.Name}" style="margin: 0px !important; border-radius: .25em .25em 0 0 !important; border: 1px solid #BBB !important;; border-bottom-style: none !important;"/>
+											</h3>
+										</div>
+									</div>
+								</apex:outputPanel>
+							</apex:actionRegion>
 
-						<apex:pageBlockSection columns="1">
-							<apex:pageBlockTable value="{!subject.Themes__r}" var="theme" columnsWidth="20%, 20%, 15%, 20%, 25%">
-								<apex:column value="{!theme.Name}"/>
-								<apex:column value="{!theme.Questions_Number__c}"/>
-								<apex:column value="{!theme.Tests_Number__c}" headerValue="Number of Tests"/>
-								<apex:column headerValue="Stats">
-									<div class="dropRow">
-										<div class="hiddenRow">
-											<apex:outputPanel id="themeStats">
-												<apex:outputPanel rendered="{!IF(OR(themeStatistic.size == 0, AND(themeStatistic.size > 0, themeStatistic[0].Theme__r.Id != theme.Id)), true, false)}">
-													<apex:outputLabel value="Please, wait. We are searching..."/>
-													<apex:actionSupport id="actionStat" event="onmouseover" action="{!createThemeStatistic}" reRender="themeStats" status="testStatStatus">
-														<apex:param name="statTheme" value="{!theme.Id}"/>
-													</apex:actionSupport>
+							<apex:pageBlockSection columns="1">
+								<apex:pageBlockTable value="{!subject.Themes__r}" var="theme" columnsWidth="20%, 20%, 15%, 20%, 25%">
+									<apex:column value="{!theme.Name}"/>
+									<apex:column value="{!theme.Questions_Number__c}"/>
+									<apex:column value="{!theme.Tests_Number__c}" headerValue="Used In Tests"/>
+									<apex:column headerValue="Stats">
+										<div class="dropRow">
+											<div class="hiddenRow">
+												<apex:outputPanel id="themeStats">
+													<apex:outputPanel rendered="{!IF(AND(theme.Tests_Number__c != 0, OR(themeStatistic.size == 0, AND(themeStatistic.size > 0, themeStatistic[0].Theme__r.Id != theme.Id))), true, false)}">
+														<apex:outputLabel value="Please, wait. We are searching..."/>
+														<apex:actionSupport id="actionStat" event="onmouseover" action="{!createThemeStatistic}" reRender="themeStats" status="testStatStatus">
+															<apex:param name="statTheme" value="{!theme.Id}"/>
+														</apex:actionSupport>
+													</apex:outputPanel>
+													<apex:outputPanel>
+														<apex:repeat value="{!themeStatistic}" var="testStat">
+															<apex:outputLabel value="{!testStat.Test__r.Name}"/>
+															<apex:outputLabel value="Dur.: {!testStat.Test__r.Duration__c}"/>
+															<apex:outputLabel value="Num.: {!testStat.Questions_Captured__c}"/>
+															<apex:actionStatus id="testStatStatus">
+																<apex:facet name="start">
+
+																</apex:facet>
+																<apex:facet name="stop">
+																	<apex:commandButton value="Delete" styleClass="btn btn-link" action="{!deleteTest}" reRender="showForm, createForm" status="refreshStatus">
+																		<apex:param name="testToDelete" value="{!testStat.Test__r.Id}"/>
+																	</apex:commandButton>
+																</apex:facet>
+															</apex:actionStatus>
+															<br/>
+														</apex:repeat>
+													</apex:outputPanel>
 												</apex:outputPanel>
-												<apex:outputPanel>
-													<apex:repeat value="{!themeStatistic}" var="testStat">
-														<apex:outputLabel value="{!testStat.Test__r.Name}"/>
-														<apex:outputLabel value="Time: {!testStat.Test__r.Duration__c}"/>
-														<apex:outputLabel value="Questions: {!testStat.Questions_Captured__c}"/>
-														<apex:actionStatus id="testStatStatus">
-															<apex:facet name="start">
-
-															</apex:facet>
-															<apex:facet name="stop">
-																<apex:commandButton value="Delete" styleClass="btn btn-link" action="{!deleteTest}" reRender="showForm, createForm" status="refreshStatus">
-																	<apex:param name="testToDelete" value="{!testStat.Test__r.Id}"/>
-																</apex:commandButton>
-															</apex:facet>
-														</apex:actionStatus>
-														<br/>
-													</apex:repeat>
-												</apex:outputPanel>
+											</div>
+											<apex:outputPanel id="testActions" layout="none" rendered="{!IF(theme.Tests_Number__c != 0, true, false)}">
+													<apex:commandLink value="Connected Tests List" style="pointer-events: none; cursor: default;"/>
 											</apex:outputPanel>
 										</div>
-										<apex:outputPanel id="testActions" layout="none">
-												<apex:commandLink value="Connected Tests List" style="pointer-events: none; cursor: default;"/>
-										</apex:outputPanel>
-									</div>
-								</apex:column>
-								<apex:column headerValue="Actions">
-									<apex:commandButton value="Quick Test Create" onclick="openCreatingTest('{!theme.Id}'); return false;" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
-								</apex:column>
-							</apex:pageBlockTable>
-						</apex:pageBlockSection>
-					</apex:pageBlock>
+									</apex:column>
+									<apex:column headerValue="Actions">
+										<apex:commandButton value="Quick Test Create" onclick="openCreatingTest('{!theme.Id}'); return false;" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
+									</apex:column>
+								</apex:pageBlockTable>
+							</apex:pageBlockSection>
+						</apex:pageBlock>
+					</div>
 				</apex:repeat>
 			</apex:outputPanel>
 

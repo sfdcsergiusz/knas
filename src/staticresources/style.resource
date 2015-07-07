@@ -157,9 +157,11 @@
 			.btn.focus,
 			.btn:active.focus,
 			.btn.active.focus {
+				/*Button Outline
 				outline: thin dotted !important;
 				outline: 5px auto -webkit-focus-ring-color !important;
-				outline-offset: -2px !important;
+				outline-offset: -2px !important;*/
+				outline: 0 !important;
 			}
 			.btn:hover,
 			.btn:focus,

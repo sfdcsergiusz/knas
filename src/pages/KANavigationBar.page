@@ -1,5 +1,6 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KANavigationBarController" docType="HTML-5.0" action="{!onLoad}">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+
 	<script>
 		var browserId = document.cookie.split('BrowserId=')[1].split(';')[0];
 		var isStartPage = ('{!isStartPage}' === "true");
@@ -31,6 +32,7 @@
 				window.location.href = "KARegularUserHome";
 			}
 		}
+
 	</script>
 
 	<style>
@@ -72,7 +74,6 @@
 		opacity: 0.9;
 		top: 20px;
 	}
-
 	</style>
 
 
@@ -105,7 +106,9 @@
 						<li style="float: right !important;">
 							<apex:commandLink value="{!IF(browserUser != null, browserUser.Employee__r.First_Name__c, 'Hello!')}" style="font-size: 16px; color: #FFA200 !important; pointer-events: none; cursor: default;"/>
 						</li>
-
+						<li style="float: right !important;">
+							<apex:commandLink value="{!showingPageName}" style="font-size: 16px; font-weight: bold; color: #FFA200 !important; pointer-events: none; cursor: default;"/>
+						</li>
 					</ul>
 				</div>
 			</div>

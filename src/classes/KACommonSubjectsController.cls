@@ -8,16 +8,7 @@ public with sharing class KACommonSubjectsController {
 	public KACommonSubjectsController() {
 		tmpSubject = '';
 
-		subjects = [
-			SELECT Name,
-			(
-				SELECT Name, Questions_Number__c
-				FROM Themes__r
-				LIMIT 50000
-			)
-			FROM Subject__c
-			LIMIT 50000
-		];
+		selectAllSubjects();
 	}
 
 	public PageReference goHome() {
@@ -27,7 +18,7 @@ public with sharing class KACommonSubjectsController {
 	public void typeSubject() {
 		String searchSubject = '%' + tmpSubject + '%';
 		subjects = [
-			SELECT Name,
+			SELECT Name, Themes_Number__c,
 			(
 				SELECT Name, Questions_Number__c
 				FROM Themes__r
@@ -35,6 +26,7 @@ public with sharing class KACommonSubjectsController {
 			)
 			FROM Subject__c
 			WHERE Name LIKE :searchSubject
+			ORDER BY Name ASC
 			LIMIT 50000
 		];
 	}
@@ -46,23 +38,14 @@ public with sharing class KACommonSubjectsController {
 
 			tmpSubject = '';
 
-			subjects = [
-				SELECT Name,
-				(
-					SELECT Name, Questions_Number__c
-					FROM Themes__r
-					LIMIT 50000
-				)
-				FROM Subject__c
-				LIMIT 50000
-			];
+			selectAllSubjects();
 		}
 	}
 
 	public void createTheme() {
 		if (tmpTheme != null && tmpTheme != '') {
 			Subject__c tmpSubjectObject = [
-				SELECT Name
+				SELECT Name, Themes_Number__c
 				FROM Subject__c
 				WHERE Name = :ApexPages.currentPage().getParameters().get('subjectName')
 				LIMIT 1
@@ -72,16 +55,7 @@ public with sharing class KACommonSubjectsController {
 
 			tmpTheme = '';
 
-			subjects = [
-				SELECT Name,
-				(
-					SELECT Name, Questions_Number__c
-					FROM Themes__r
-					LIMIT 50000
-				)
-				FROM Subject__c
-				LIMIT 50000
-			];
+			selectAllSubjects();
 		}
 	}
 
@@ -94,16 +68,7 @@ public with sharing class KACommonSubjectsController {
 		];
 		delete tmpSubjectObject;
 
-		subjects = [
-			SELECT Name,
-			(
-				SELECT Name, Questions_Number__c
-				FROM Themes__r
-				LIMIT 50000
-			)
-			FROM Subject__c
-			LIMIT 50000
-		];
+		selectAllSubjects();
 	}
 
 	public void deleteTheme() {
@@ -115,16 +80,7 @@ public with sharing class KACommonSubjectsController {
 		];
 		delete tmpThemeObject;
 
-		subjects = [
-			SELECT Name,
-			(
-				SELECT Name, Questions_Number__c
-				FROM Themes__r
-				LIMIT 50000
-			)
-			FROM Subject__c
-			LIMIT 50000
-		];
+		selectAllSubjects();
 	}
 
 	public PageReference goToThemeList() {
@@ -137,6 +93,20 @@ public with sharing class KACommonSubjectsController {
 
 	public PageReference goToUploadCSV() {
 		return new PageReference('/apex/KAImportQuestionsCSV?themeId=' + ApexPages.currentPage().getParameters().get('CSVParam'));
+	}
+
+	private void selectAllSubjects() {
+		subjects = [
+			SELECT Name, Themes_Number__c,
+			(
+				SELECT Name, Questions_Number__c
+				FROM Themes__r
+				LIMIT 50000
+			)
+			FROM Subject__c
+			ORDER BY Name ASC
+			LIMIT 50000
+		];
 	}
 
 }

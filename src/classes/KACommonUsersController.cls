@@ -120,7 +120,7 @@ public with sharing class KACommonUsersController {
 									Duration__c = tmpTestTheme.Test__r.Duration__c
 								),
 								new Pass_History__c(
-									Result__c = 0
+									Result__c = -1
 								)
 							);
 						}

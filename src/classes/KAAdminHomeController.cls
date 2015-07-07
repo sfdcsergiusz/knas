@@ -42,7 +42,7 @@ public with sharing class KAAdminHomeController {
 
 	public void refreshRecentTasks() {
 		recentTasks = [
-			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c, Task__r.Status__c, Task__r.AssignTime__c, Task__r.CreatedDate
+			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c, Task__r.Status__c, Task__r.AssignTime__c, Task__r.CreatedDate, Task__r.Test__r.Name
 			FROM Employee_Task__c
 			ORDER BY CreatedDate DESC
 			LIMIT 50000
@@ -68,6 +68,20 @@ public with sharing class KAAdminHomeController {
 			];
 			if (suitableTests.size() > 0) {
 				preCreatedTask.Test__c = suitableTests.get(0).Id;
+
+				List<Employee_Task__c> existingEmploTasks = [
+					SELECT Task__r.Id
+					FROM Employee_Task__c
+					WHERE Task__r.Test__c = :preCreatedTask.Test__c AND Employee__c =:chosenEmployee
+				];
+				if ( ! existingEmploTasks.isEmpty()) {
+					List<Task__c> deletingTasks = new List<Task__c>();
+					for (Employee_Task__c tmpEmploTask : existingEmploTasks) {
+						deletingTasks.add(tmpEmploTask.Task__r);
+					}
+					delete deletingTasks;
+				}
+
 				insert preCreatedTask;
 
 				List<Task__c> suitableTasks = [

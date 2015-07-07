@@ -3,10 +3,12 @@ public with sharing class KATestPassingController {
 	public List<String> multipleAnswers { get; set; }
 	public String singleAnswer { get; set; }
 
+	public Test__c currentTest { get; private set; }
 	public List<Question__c> questions { get; private set; }
 	public Map<String, Boolean> variants { get; private set; }
 	public Integer currentQuestion { get; private set; }
 	public Integer totalQuestionsNum { get; private set; }
+	public Integer currRightAnswers { get; private set; }
 	public String questionType { get; private set; }
 
 	public Boolean isEnableBlock1 { get; private set; }
@@ -23,6 +25,7 @@ public with sharing class KATestPassingController {
 	public KATestPassingController() {
 		currentQuestion = 0;
 
+		questions = new List<Question__c>();
 		multipleAnswers = new List<String>();
 		variants = new Map<String, Boolean>();
 
@@ -42,13 +45,15 @@ public with sharing class KATestPassingController {
 				userId = tmpBrowsers.get(0).Employee__r.Id;
 
 				List<TestTheme__c> correspThemes = [
-					SELECT Theme__r.Id
+					SELECT Theme__r.Id, Questions_Captured__c
 					FROM TestTheme__c
 					WHERE Test__r.Id = :testId
 				];
 
 				if ( ! correspThemes.isEmpty()) {
-					questions = [
+					totalQuestionsNum = Integer.valueOf(correspThemes.get(0).Questions_Captured__c);
+
+					List<Question__c> acceptableQuestions = [
 						SELECT Id, Statement__c, Theme__r.Subject__r.Name, Theme__r.Name,
 						(
 							SELECT Variant__c, Right__c
@@ -58,7 +63,17 @@ public with sharing class KATestPassingController {
 						WHERE Theme__r.Id = :correspThemes.get(0).Theme__r.Id
 						LIMIT 50000
 					];
-					totalQuestionsNum = questions.size();
+					Map<Integer, Integer> questionsMix = returnRandoms(totalQuestionsNum, totalQuestionsNum);
+					List<Integer> questionsMixKeyList = new List<Integer>(questionsMix.keySet());
+					for (Integer i = 0; i < questionsMix.keySet().size(); i++) {
+						questions.add(
+							acceptableQuestions.get(
+								questionsMix.get(
+									questionsMixKeyList.get(i)
+								)
+							)
+						);
+					}
 
 					appliedAnswers = new List<List<String>>();
 					for (Integer i = 0; i < totalQuestionsNum; i++) {
@@ -67,9 +82,17 @@ public with sharing class KATestPassingController {
 
 					subAppliedAnswer = new String[1];
 					variants = getVariants(currentQuestion);
+					updateCurrentRightAnswers();
 				}
 			}
 		}
+		currentTest = [
+			SELECT Id, Duration__c
+			FROM Test__c
+			WHERE Id = :testId
+			LIMIT 1
+		];
+
 		this.isEnableBlock1 = true;
 		this.isEnableBlock2 = false;
 	}
@@ -117,12 +140,6 @@ public with sharing class KATestPassingController {
 			WHERE Id = :userId
 			LIMIT 1
 		];
-		Test__c currentTest = [
-			SELECT Id
-			FROM Test__c
-			WHERE Id = :testId
-			LIMIT 1
-		];
 		List<Pass_History__c> oldHistory = [
 			SELECT Id
 			FROM Pass_History__c
@@ -133,15 +150,63 @@ public with sharing class KATestPassingController {
 		Pass_History__c newestResult = new Pass_History__c(Employee__c = currentEmployee.Id, Test__c = currentTest.Id, Result__c = getResults());
 		insert newestResult;
 
+		Task__c currentTask = [
+				SELECT Status__c
+				FROM Task__c
+				WHERE Test__r.Id = :testId
+			];
+		currentTask.Status__c = 'Passed';
+		update currentTask;
+
 		return new PageReference('/apex/KARegularUserHome');
 	}
 
+	private void doSingleTransfer(Boolean direction) {
+		if (questionType == 'multiple') {
+			appliedAnswers.set(currentQuestion, new List<String>(multipleAnswers));
+			multipleAnswers.clear();
+		}
+		else if (questionType == 'single') {
+			subAppliedAnswer[0] = singleAnswer;
+			appliedAnswers.set(currentQuestion, new List<String>(subAppliedAnswer));
+			singleAnswer = '';
+		}
+		if (direction != null) {
+			if (direction) {
+				currentQuestion++;
+			}
+			else {
+				currentQuestion--;
+			}
+			variants = getVariants(currentQuestion);
+		}
+		else {
+
+		}
+		updateCurrentRightAnswers();
+	}
+
 	private Map<String, Boolean> getVariants(Integer questionPosition) {
-		List<Answer__c> tmpVariants = [
+		List<Answer__c> tmpVariants = new List<Answer__c>();
+
+		List<Answer__c> tmpInitialVariants = [
 			SELECT Variant__c, Right__c
 			FROM Answer__c
 			WHERE Question__r.Id = :questions[questionPosition].Id
 		];
+
+		Map<Integer, Integer> variantsMix = returnRandoms(tmpInitialVariants.size(), tmpInitialVariants.size());
+		List<Integer> variantsMixKeyList = new List<Integer>(variantsMix.keySet());
+		for (Integer i = 0; i < variantsMix.keySet().size(); i++) {
+			tmpVariants.add(
+				tmpInitialVariants.get(
+					variantsMix.get(
+						variantsMixKeyList.get(i)
+					)
+				)
+			);
+		}
+
 		Map<String, Boolean> resultVariants = new Map<String, Boolean>();
 		{
 			Integer rights = 0;
@@ -182,28 +247,15 @@ public with sharing class KATestPassingController {
 		return resultVariants;
 	}
 
-	private void doSingleTransfer(Boolean direction) {
-		if (questionType == 'multiple') {
-			appliedAnswers.set(currentQuestion, new List<String>(multipleAnswers));
-			multipleAnswers.clear();
-		}
-		else if (questionType == 'single') {
-			subAppliedAnswer[0] = singleAnswer;
-			appliedAnswers.set(currentQuestion, new List<String>(subAppliedAnswer));
-			singleAnswer = '';
-		}
-		if (direction != null) {
-			if (direction) {
-				currentQuestion++;
+	private void updateCurrentRightAnswers() {
+		List<Answer__c> currRightAnswersList = questions.get(currentQuestion).Answers__r;
+		for (Integer i = 0; i < currRightAnswersList.size(); i++) {
+			if ( ! currRightAnswersList.get(i).Right__c) {
+				currRightAnswersList.remove(i);
+				i--;
 			}
-			else {
-				currentQuestion--;
-			}
-			variants = getVariants(currentQuestion);
 		}
-		else {
-
-		}
+		currRightAnswers = currRightAnswersList.size();
 	}
 
 	private Double getResults() {
@@ -228,6 +280,19 @@ public with sharing class KATestPassingController {
 			}
 		}
 		return 100 * rightAnswers / totalQuestionsNum;
+	}
+
+	private Map<Integer, Integer> returnRandoms(Integer upperLimit, Integer numberOfRands) {
+		Map<Integer, Integer> randomResultMap = new Map<Integer, Integer>();
+		for (Integer i = 0; i < numberOfRands; i++) {
+			Integer rand;
+			do {
+				rand = Math.mod(Math.round(Math.random()*1000), upperLimit);
+			}
+			while (randomResultMap.get(rand) != null);
+			randomResultMap.put(rand, rand);
+		}
+		return randomResultMap;
 	}
 
 }
