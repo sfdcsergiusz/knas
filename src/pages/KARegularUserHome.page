@@ -39,9 +39,10 @@
 						<apex:column value="{!upcomingTest.Task__r.Status__c}" headerValue="Task Status"/>
 						<apex:column>
 							<apex:facet name="header">Action</apex:facet>
-								<apex:commandButton value="Launch" action="{!launchTest}" reRender="upcomingTable" styleClass="btn btn-link" title="Start test passing" disabled="{!IF(upcomingTest.Task__r.Status__c = 'Scheduled', false, true)}">
+								<apex:commandButton value="Launch" action="{!launchTest}" reRender="upcomingTable" styleClass="btn btn-link" title="Start test passing" rendered="{!IF(upcomingTest.Task__r.Status__c = 'Scheduled', true, false)}">
 									<apex:param name="launchedTestId" value="{!upcomingTest.Task__r.Test__r.Id}" assignTo="{!launchedTestId}"/>
 								</apex:commandButton>
+								<apex:commandButton value="" styleClass="btn btn-link" style="pointer-events: none; cursor: default;" rendered="{!IF(upcomingTest.Task__r.Status__c = 'Scheduled', false, true)}"/>
 						</apex:column>
 					</apex:pageBlockTable>
 				</apex:pageBlockSection>
@@ -59,9 +60,9 @@
 		</div>
 
 		<apex:pageBlock rendered="{!NOT(activeUser)}">
-			<h1 style="left: 24%; position: absolute"> 
-				You are not active now. Please, wait for approval. 
-			</h1>	
+			<h1 style="left: 24%; position: absolute">
+				You are not active now. Please, wait for approval.
+			</h1>
 		</apex:pageBlock>
 
 	</apex:form>
