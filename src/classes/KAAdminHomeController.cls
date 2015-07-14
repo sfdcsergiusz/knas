@@ -99,8 +99,9 @@ public with sharing class KAAdminHomeController {
 				if (suitableTasks.size() > 0 && suitableEmployees.size() > 0) {
 					preCreatedEmployeeTask.Task__c = suitableTasks.get(0).Id;
 					preCreatedEmployeeTask.Employee__c = suitableEmployees.get(0).Id;
+					preCreatedEmployeeTask.IsEmailQueue__c = true;
 					insert preCreatedEmployeeTask;
-				}
+				}	
 			}
 		}
 		PageReference updatingPage = new PageReference('/apex/KAAdminUserHome');

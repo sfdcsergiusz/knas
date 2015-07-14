@@ -2,19 +2,19 @@
 <apex:include pageName="KANavigationBar"/>
 <style type="text/css">
   .importButton {
-    top: 94px !important;
-    left: 40% !important;
-    position: absolute !important;
+	top: 94px !important;
+	left: 40% !important;
+	position: absolute !important;
   }
   .importFile {
-    top: 10% !important;
-    left: 10% !important;
-    position: absolute !important;
+	top: 10% !important;
+	left: 10% !important;
+	position: absolute !important;
   }
-  .importToDatabase {
-    top: 94px !important;
-    left: 80% !important;
-    position: absolute !important;
+  /*.importToDatabase {
+	top: 94px !important;
+	left: 80% !important;
+	position: absolute !important;
   }
   .hiddenRow {
    padding: 10px;
@@ -24,54 +24,88 @@
    opacity: 0;
    position: absolute;
    left: 40%;
-   top: 5%;
+   top: 10%;
    -webkit-transition-duration: 0.3s; /* анимационное выдвижение для всех браузеров*/
-   -moz-transition-duration: 0.3s;
+   /*-moz-transition-duration: 0.3s;
    -o-transition-duration: 0.3s;
    transition-duration: 0.3s;
 
    -webkit-border-radius: 0px 0px 5px 5px; /* закругление границ для всех браузеров*/
-   -moz-border-radius: 0px 0px 5px 5px;
+   /*-moz-border-radius: 0px 0px 5px 5px;
 
    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2) inset;
-         -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2) inset;
-              box-shadow:0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2) inset;
+		 -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2) inset;
+			  box-shadow:0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2) inset;
   }
   .dropRow:hover .hiddenRow {
    visibility: visible;
    opacity: 1;
-   top: 15%;
+   top: 20%;
   }
   .dropRow .hiddenRow:hover {
    visibility: visible;
    opacity: 0.4;
-   top: 15%;
+   top: 20%;
   }
+  .errorLabel, .infoLabel {
+  	visibility: visible;
+  	-webkit-transition-duration: 0.6s;
+   -moz-transition-duration: 0.6s;
+   -o-transition-duration: 0.6s;
+   transition-duration: 0.6s;
+  }*/
   
 </style> 
-  <apex:form >
-    <apex:pageMessages/>   
-        <apex:pageBlock >
-            <apex:pageBlockSection columns="1">
-              <apex:outputPanel layout="none">
-              <apex:panelGroup>
-              <apex:inputFile value="{!csvFileBody}"  filename="{!csvAsString}"/>
-                <div class="dropRow">
-                  <apex:commandButton value="Import Question" action="{!importCSVFile}" styleClass="importButton"/>
-                    <div class="hiddenRow">
-                      Display questions
-                    </div>               
-                </div> 
-                <apex:commandButton value="Import to database" action="{!insertToDatabase}" styleClass="importToDatabase"/> 
-               </apex:panelGroup>
-               </apex:outputPanel>
-            </apex:pageBlockSection>
-        </apex:pageBlock>
-        <apex:pageBlock >
-           <apex:pageBlockTable value="{!queList}" var="que">
-              <apex:column value="{!que.Statement__c}" />
-              <apex:column value="{!que.Level__c}" />
-         </apex:pageBlockTable>
-      </apex:pageBlock>
-  </apex:form>
+	<div style="width: 100%; margin: auto; position: fixed; top: 40%; text-align: center;">
+		<h1>
+			<apex:outputText id="errorLabel" style="color: red" value="{!errorMessage}" rendered="{!IF(ISBLANK(errorMessage), false, true)}"/>
+			<apex:outputText id="infoLabel" style="color: green" value="{!infoMessage}" rendered="{!IF(ISBLANK(infoMessage), false, true)}"/>
+		</h1> 
+	</div>
+	<apex:form >
+		<apex:pageBlock >
+			<apex:pageBlockSection columns="1">
+				<apex:outputPanel layout="none">
+					<apex:panelGroup>						             
+						<apex:inputFile value="{!csvFileBody}"  filename="{!csvAsString}"/>
+						<!--<div class="dropRow">-->
+							<apex:commandButton value="Import Question" action="{!importCSVFile}" styleClass="importButton btn btn-primary" title="Display imported data and save it in database "/>
+							<!--<div class="hiddenRow">
+								Display questions
+							</div> -->              
+						<!--</div> -->
+					</apex:panelGroup>
+				</apex:outputPanel>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+		<apex:pageBlock >
+			<apex:pageBlockTable value="{!queList}" var="que">
+				<apex:column value="{!que.Statement__c}" />
+				<apex:column value="{!que.Level__c}" />
+			</apex:pageBlockTable>
+		</apex:pageBlock>
+	</apex:form>
+
+	<script>
+		var errorLabel = document.querySelector("span[id*='errorLabel']");
+		var infoLabel = document.querySelector("span[id*='infoLabel']");
+		if (errorLabel != null) {
+			setTimeout(
+				function() {
+					errorLabel.style.visibility = 'hidden';
+				}, 
+				5000
+			);
+		}
+		if (infoLabel != null) {
+			setTimeout(
+				function() {
+					infoLabel.style.visibility = 'hidden';
+				}, 
+				5000
+			);
+		}
+		
+	</script>
+
 </apex:page>
