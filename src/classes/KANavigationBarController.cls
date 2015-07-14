@@ -40,7 +40,7 @@ public with sharing class KANavigationBarController {
 
 		if (getLoginCookie() != null) {
 			List<Browser__c> browsers = [
-				SELECT Identifier__c, Employee__r.Name, Employee__r.Password__c, Employee__r.IsAdmin__c, Employee__r.First_Name__c, Employee__r.Last_Name__c
+				SELECT Identifier__c, Employee__r.Name, Employee__r.Password__c, Employee__r.IsAdmin__c, Employee__r.IsActive__c, Employee__r.First_Name__c, Employee__r.Last_Name__c
 				FROM Browser__c
 				WHERE Identifier__c = :getLoginCookie().getValue()
 				LIMIT 1

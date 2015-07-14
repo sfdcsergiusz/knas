@@ -34,7 +34,7 @@
 
 					<apex:pageBlockButtons location="bottom">
 						<apex:commandButton value="SIGN IN" action="{!login}" styleClass="btn btn-success"/>
-						<apex:commandButton value="Sign Up" action="{!register}" styleClass="btn btn-warning"/>
+						<apex:commandButton value="Sign Up" onclick="startRegistering(); return false;" styleClass="btn btn-warning"/>
 						<apex:commandButton value="Reset Password" action="{!resetPass}" styleClass="btn btn-link" title="Send new password to your email" reRender="messages"/>
 					</apex:pageBlockButtons>
 
@@ -42,17 +42,21 @@
 
 						<apex:pageBlockSectionItem>
 							<apex:outputLabel for="inputUsername" value="Login: "/>
-							<apex:inputText id="inputUsername" value="{!username}" html-placeholder="Please, input your email login..." required="false"/>
+							<apex:inputText id="inputUsername" value="{!username}" html-placeholder="Please, input your email login..." html-pattern="[A-Za-z0-9]+@codeswat\.com" title="Please, use only Roman alphabet and pattern like 'mailname@codeswat.com'." required="true"/>
 						</apex:pageBlockSectionItem>
 						<apex:pageBlockSectionItem>
 							<apex:outputLabel for="inputPass" value="Password: "/>
-							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." required="false"/>
+							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." html-pattern="[\s\S]{8,24}" title="Password must be from 8 to 24 symbols." required="false"/>
 						</apex:pageBlockSectionItem>
 					</apex:pageBlockSection>
 
 				</apex:pageBlock>
 			</div>
 		</div>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction action="{!register}" name="startRegistering" status="loadingStatus"/>
 	</apex:form>
 
 </apex:page>

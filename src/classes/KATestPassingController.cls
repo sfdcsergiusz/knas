@@ -4,6 +4,8 @@ public with sharing class KATestPassingController {
 	public String singleAnswer { get; set; }
 
 	public Test__c currentTest { get; private set; }
+	public Employee__c currentUser { get; private set; }
+
 	public List<Question__c> questions { get; private set; }
 	public Map<String, Boolean> variants { get; private set; }
 	public Integer currentQuestion { get; private set; }
@@ -11,30 +13,121 @@ public with sharing class KATestPassingController {
 	public Integer currRightAnswers { get; private set; }
 	public String questionType { get; private set; }
 
-	public Boolean isEnableBlock1 { get; private set; }
-	public Boolean isEnableBlock2 { get; private set; }
+	public Boolean isGreetingBlockEnabled { get; private set; }
+	public Boolean isTestBlockEnabled { get; private set; }
+	public Boolean isFinishBlockEnabled { get; private set; }
+	public Boolean isRestrictingBlockEnabled { get; private set; }
 
 	public List<List<String>> appliedAnswers { get; private set; }
 
 	private List<String> subAppliedAnswer { private get; private set; }
-	private String userId { private get; private set; }
-	private String testId { private get; private set; }
 	private PageReference currentPage;
 
 
 	public KATestPassingController() {
-		currentQuestion = 0;
-
-		questions = new List<Question__c>();
-		multipleAnswers = new List<String>();
-		variants = new Map<String, Boolean>();
-
 		currentPage = ApexPages.currentPage();
-		testId = currentPage.getParameters().get('test');
 
+		this.isFinishBlockEnabled = false;
+		this.isTestBlockEnabled = false;
+
+		if (checkTestExistence()) {
+			this.isGreetingBlockEnabled = true;
+			this.isRestrictingBlockEnabled = false;
+		}
+		else {
+			this.isGreetingBlockEnabled = false;
+			this.isRestrictingBlockEnabled = true;
+		}
+	}
+
+	public PageReference goBack() {
+		PageReference returningPage = new PageReference('/apex/KARegularUserHome');
+		returningPage.setRedirect(true);
+		return returningPage;
+	}
+
+	public void startTest() {
+		if (checkTestExistence() && checkUserAvailability() && checkTaskStatusSuitable()) {
+			questions = new List<Question__c>();
+			currentQuestion = 0;
+
+			multipleAnswers = new List<String>();
+			variants = new Map<String, Boolean>();
+
+			List<TestTheme__c> correspThemes = [
+				SELECT Theme__r.Id, Questions_Captured__c
+				FROM TestTheme__c
+				WHERE Test__r.Id = :currentTest.Id
+			];
+
+			if ( ! correspThemes.isEmpty()) {
+				totalQuestionsNum = Integer.valueOf(correspThemes.get(0).Questions_Captured__c);
+
+				List<Question__c> acceptableQuestions = [
+					SELECT Id, Statement__c, Theme__r.Subject__r.Name, Theme__r.Name,
+					(
+						SELECT Variant__c, Right__c
+						FROM Answers__r
+					)
+					FROM Question__c
+					WHERE Theme__r.Id = :correspThemes.get(0).Theme__r.Id
+					LIMIT 50000
+				];
+				Map<Integer, Integer> questionsMix = returnRandoms(totalQuestionsNum, totalQuestionsNum);
+				for (Integer randomQuestion : questionsMix.keySet()) {
+					questions.add(
+						acceptableQuestions.get(
+							randomQuestion
+						)
+					);
+				}
+
+				appliedAnswers = new List<List<String>>();
+				for (Integer i = 0; i < totalQuestionsNum; i++) {
+					appliedAnswers.add(new List<String>());
+				}
+
+				subAppliedAnswer = new String[1];
+				variants = getVariants(currentQuestion);
+				updateCurrentRightAnswers();
+
+
+			}
+		}
+
+		this.isGreetingBlockEnabled = false;
+		if (totalQuestionsNum != null) {
+			this.isTestBlockEnabled = true;
+			this.isRestrictingBlockEnabled = false;
+		}
+		else {
+			this.isTestBlockEnabled = false;
+			this.isRestrictingBlockEnabled = true;
+		}
+	}
+
+	private Boolean checkTestExistence() {
+		if (currentTest != null) {
+			return true;
+		}
+		else {
+			List<Test__c> checkTestExistenceList = [
+				SELECT Id, Duration__c, Subject__r.Name
+				FROM Test__c
+				WHERE Id = :currentPage.getParameters().get('test')
+				LIMIT 1
+			];
+			if ( ! checkTestExistenceList.isEmpty()) {
+				currentTest = checkTestExistenceList.get(0);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private Boolean checkUserAvailability() {
 		Cookie tmpCookie = currentPage.getCookies().get('Identifier');
-
-		if (testId != null && tmpCookie != null) {
+		if (currentTest.Id != null && tmpCookie != null) {
 			List<Browser__c> tmpBrowsers = [
 				SELECT Employee__r.Id
 				FROM Browser__c
@@ -42,63 +135,40 @@ public with sharing class KATestPassingController {
 				LIMIT 1
 			];
 			if ( ! tmpBrowsers.isEmpty()) {
-				userId = tmpBrowsers.get(0).Employee__r.Id;
-
-				List<TestTheme__c> correspThemes = [
-					SELECT Theme__r.Id, Questions_Captured__c
-					FROM TestTheme__c
-					WHERE Test__r.Id = :testId
+				currentUser = [
+					SELECT Id, First_Name__c
+					FROM Employee__c
+					WHERE Id = :tmpBrowsers.get(0).Employee__r.Id
+					LIMIT 1
 				];
-
-				if ( ! correspThemes.isEmpty()) {
-					totalQuestionsNum = Integer.valueOf(correspThemes.get(0).Questions_Captured__c);
-
-					List<Question__c> acceptableQuestions = [
-						SELECT Id, Statement__c, Theme__r.Subject__r.Name, Theme__r.Name,
-						(
-							SELECT Variant__c, Right__c
-							FROM Answers__r
-						)
-						FROM Question__c
-						WHERE Theme__r.Id = :correspThemes.get(0).Theme__r.Id
-						LIMIT 50000
-					];
-					Map<Integer, Integer> questionsMix = returnRandoms(totalQuestionsNum, totalQuestionsNum);
-					List<Integer> questionsMixKeyList = new List<Integer>(questionsMix.keySet());
-					for (Integer i = 0; i < questionsMix.keySet().size(); i++) {
-						questions.add(
-							acceptableQuestions.get(
-								questionsMix.get(
-									questionsMixKeyList.get(i)
-								)
-							)
-						);
-					}
-
-					appliedAnswers = new List<List<String>>();
-					for (Integer i = 0; i < totalQuestionsNum; i++) {
-						appliedAnswers.add(new List<String>());
-					}
-
-					subAppliedAnswer = new String[1];
-					variants = getVariants(currentQuestion);
-					updateCurrentRightAnswers();
-				}
+				return true;
 			}
 		}
-		currentTest = [
-			SELECT Id, Duration__c
-			FROM Test__c
-			WHERE Id = :testId
-			LIMIT 1
-		];
-
-		this.isEnableBlock1 = true;
-		this.isEnableBlock2 = false;
+		return false;
 	}
 
-	public PageReference goHome() {
-		return new PageReference('/apex/KARegularUserHome');
+	private Boolean checkTaskStatusSuitable() {
+		List<Employee_Task__c> checkTaskStatusList = [
+			SELECT Task__r.Status__c
+			FROM Employee_Task__c
+			WHERE Employee__r.Id = :currentUser.Id AND Task__r.Test__r.Id = :currentTest.Id
+			LIMIT 1
+		];
+		if ( ! checkTaskStatusList.isEmpty()) {
+			if (checkTaskStatusList.get(0).Task__r.Status__c == 'Scheduled') {
+				Task__c currentTask = [
+					SELECT Id
+					FROM Task__c
+					WHERE Id = :checkTaskStatusList.get(0).Task__r.Id
+					LIMIT 1
+				];
+				currentTask.Status__c = 'Failed';
+				update currentTask;
+
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public List<SelectOption> getVariantOptions() {
@@ -119,14 +189,14 @@ public with sharing class KATestPassingController {
 
 	public void goToFinish() {
 		doSingleTransfer(null);
-		this.isEnableBlock1 = false;
-		this.isEnableBlock2 = true;
+		this.isTestBlockEnabled = false;
+		this.isFinishBlockEnabled = true;
 
 	}
 
 	public void goToQuestions() {
-		this.isEnableBlock1 = true;
-		this.isEnableBlock2 = false;
+		this.isTestBlockEnabled = true;
+		this.isFinishBlockEnabled = false;
 
 		String newCurrQuest = ApexPages.currentPage().getParameters().get('questOnEdit');
 		currentQuestion = Integer.valueOf(newCurrQuest);
@@ -134,31 +204,34 @@ public with sharing class KATestPassingController {
 	}
 
 	public PageReference finishTest() {
-		Employee__c currentEmployee = [
-			SELECT Id
-			FROM Employee__c
-			WHERE Id = :userId
-			LIMIT 1
-		];
 		List<Pass_History__c> oldHistory = [
 			SELECT Id
 			FROM Pass_History__c
-			WHERE Test__r.Id = :testId AND Employee__r.Id = :userId
+			WHERE Test__r.Id = :currentTest.Id AND Employee__r.Id = :currentUser.Id
 		];
 		delete oldHistory;
 
-		Pass_History__c newestResult = new Pass_History__c(Employee__c = currentEmployee.Id, Test__c = currentTest.Id, Result__c = getResults());
+		Pass_History__c newestResult = new Pass_History__c(Employee__c = currentUser.Id, Test__c = currentTest.Id, Result__c = getResults());
 		insert newestResult;
 
+		Employee_Task__c currentEmpTask = [
+			SELECT Task__r.Status__c
+			FROM Employee_Task__c
+			WHERE Task__r.Test__r.Id = :currentTest.Id AND Employee__r.Id = :currentUser.Id
+		];
+
 		Task__c currentTask = [
-				SELECT Status__c
-				FROM Task__c
-				WHERE Test__r.Id = :testId
-			];
+			SELECT Id
+			FROM Task__c
+			WHERE Id = :currentEmpTask.Task__r.Id
+			LIMIT 1
+		];
 		currentTask.Status__c = 'Passed';
 		update currentTask;
 
-		return new PageReference('/apex/KARegularUserHome');
+		PageReference returningPage = new PageReference('/apex/KARegularUserHome');
+		returningPage.setRedirect(true);
+		return returningPage;
 	}
 
 	private void doSingleTransfer(Boolean direction) {
@@ -196,13 +269,10 @@ public with sharing class KATestPassingController {
 		];
 
 		Map<Integer, Integer> variantsMix = returnRandoms(tmpInitialVariants.size(), tmpInitialVariants.size());
-		List<Integer> variantsMixKeyList = new List<Integer>(variantsMix.keySet());
-		for (Integer i = 0; i < variantsMix.keySet().size(); i++) {
+		for (Integer randomVariant : variantsMix.keySet()) {
 			tmpVariants.add(
 				tmpInitialVariants.get(
-					variantsMix.get(
-						variantsMixKeyList.get(i)
-					)
+					randomVariant
 				)
 			);
 		}

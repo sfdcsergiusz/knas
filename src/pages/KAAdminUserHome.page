@@ -6,8 +6,7 @@
 		.chooseColumn:hover {
 			cursor: pointer;
 		}
-		.shadowEffect
-		{
+		.shadowEffect {
 			position: absolute;
 			width: 100%;
 			left: 0;
@@ -15,6 +14,48 @@
 		    -webkit-box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
 		       -moz-box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
 		            box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
+		}
+		.settingsImgDiv {
+			position: fixed;
+			top: 100px;
+			right: -40px;
+			width: 80px;
+		}
+		.settingsDiv {
+			position: fixed;
+			top: 100px;
+			right: -50%;
+			background-color: #FFA200;
+			border: 2px solid;
+			border-radius: 8px 0px 0px 8px;
+			padding: 4px 4px 4px 4px;
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+		}
+		.settingsImg {
+			width: 40px;
+			left: 0px;
+			position: relative;
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+		}
+		.settingsImgDiv:hover .settingsImg {
+			left: 40px;
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+		}
+		.settingsImgDiv:hover .settingsDiv {
+			right: 0;
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
 		}
 	</style>
 
@@ -156,6 +197,15 @@
 			</apex:outputpanel>
 		</apex:pageBlock>
 	</apex:form>
+
+	<div class="settingsImgDiv">
+		<img class="settingsImg" src="{!$Resource.controlPanel}"/>
+		<div class="settingsDiv">
+			<apex:form>
+				<apex:commandButton value="Switch On Emailing" styleClass="btn btn-default"/>
+			</apex:form>
+		</div>
+	</div>
 
 	<script>
 		function openCreatingTask() {

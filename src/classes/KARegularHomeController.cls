@@ -6,7 +6,7 @@ public with sharing class KARegularHomeController {
 	public String lastTestResult { get; set; }
 	public Datetime lastTimeResult { get; set; }
 
-	public Boolean activeUser { get; private set; }
+	public Boolean isUserActive { get; private set; }
 	public List<Pass_History__c> statistics { get; private set; }
 	public List<Employee_Task__c> upcomingTests { get; private set; }
 	public List<Pass_History__c> passedTests { get; private set; }
@@ -26,7 +26,7 @@ public with sharing class KARegularHomeController {
 
 			if ( ! tmpBrowsers.isEmpty()) {
 				userId = tmpBrowsers.get(0).Employee__r.Id;
-				activeUser = tmpBrowsers.get(0).Employee__r.IsActive__c;
+				isUserActive = tmpBrowsers.get(0).Employee__r.IsActive__c;
 
 				upcomingTests = [
 					SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id, Task__r.Status__c
@@ -52,14 +52,6 @@ public with sharing class KARegularHomeController {
 
 	public PageReference launchTest() {
 		if (launchedTestId != null && launchedTestId != '') {
-			Task__c currentTask = [
-				SELECT Status__c
-				FROM Task__c
-				WHERE Test__r.Id = :launchedTestId
-			];
-			currentTask.Status__c = 'Failed';
-			update currentTask;
-
 			return new PageReference('/apex/KATestPassing?test=' + launchedTestId);
 		}
 		return null;

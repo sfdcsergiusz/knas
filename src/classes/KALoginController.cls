@@ -58,12 +58,36 @@ public with sharing class KALoginController {
 
 	public void resetPass() {
 		List<Employee__c> existingEmployees = [
-			SELECT First_Name__c, Id
+			SELECT Name, First_Name__c, Waiting_Reset__c
 			FROM Employee__c
 			WHERE Name = :username
 		];
 		if ( ! existingEmployees.isEmpty()) {
-			List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
+			Employee__c resettingUser = existingEmployees.get(0);
+			if ( ! resettingUser.Waiting_Reset__c) {
+				resettingUser.Action_Hash__c = EncodingUtil.convertToHex(
+					Crypto.generateDigest(
+						'MD5',
+						Blob.valueOf(
+							String.valueOf(
+								Datetime.now()
+							)
+							+
+							String.valueOf(
+								Math.round(
+									Math.random() * 1000
+								)
+							)
+							+
+							resettingUser.Name
+						)
+					)
+				);
+				resettingUser.Waiting_Reset__c = true;
+			}
+
+
+			/*List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
 			Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
 			List<String> sendTo = new List<String>();
 			sendTo.add(username);
@@ -76,7 +100,7 @@ public with sharing class KALoginController {
 				username + '">this link</a>' );
 			mails.add(email);
       		Messaging.sendEmail(mails);
-
+			*/
       		this.isSend = true;
 		}
 		else {

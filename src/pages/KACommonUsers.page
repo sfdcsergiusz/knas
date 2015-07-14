@@ -102,7 +102,7 @@
 			<apex:pageBlock>
 				<apex:actionRegion>
 					<apex:outputPanel layout="none">
-						<apex:inputText value="{!tmpUser}" html-placeholder="Please, input sought-for user name..." style="margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
+						<apex:inputText value="{!tmpUser}" html-placeholder="Please, input user name..." style="margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
 							<apex:actionSupport event="onkeyup" action="{!typeUser}" reRender="usersSection" status="refreshStatus"/>
 						</apex:inputText>
 					</apex:outputPanel>
@@ -110,24 +110,24 @@
 
 				<apex:outputPanel id="usersSection">
 					<apex:pageBlockSection columns="1">
-						<apex:pageBlockTable value="{!users}" var="user" columnsWidth="40%, 15%, 15%, 30%">
+						<apex:pageBlockTable value="{!users}" var="user" columnsWidth="40%, 15%, 15%, 15, 15%">
 								<apex:column value="{!user.First_Name__c} {!user.Last_Name__c}" headerValue="Full Name"/>
 								<apex:column value="{!user.Name}" headerValue="Username"/>
 								<apex:column value="{!user.CreatedDate}" headerValue="Registered"/>
 								<apex:column headerValue="Activity">
 									<apex:commandButton value="Freeze" action="{!changeActivity}" reRender="usersSection" status="refreshStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, true, false)}">
 										<apex:param name="activeUserId" value="{!user.Id}"/>
-									</apex:commandButton>	
+									</apex:commandButton>
 									<apex:commandButton value="Activate" action="{!changeActivity}" reRender="usersSection" status="refreshStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, false, true)}">
 										<apex:param name="activeUserId" value="{!user.Id}"/>
-									</apex:commandButton>	
+									</apex:commandButton>
 								</apex:column>
 								<apex:column headerValue="Actions">
 									<apex:commandButton value="Render Information" action="{!renderUser}" reRender="userSection, usersSection" status="refreshStatus" styleClass="btn btn-link">
 										<apex:param name="rendUserId" value="{!user.Id}"/>
 									</apex:commandButton>
 								</apex:column>
-									
+
 						</apex:pageBlockTable>
 					</apex:pageBlockSection>
 				</apex:outputPanel>
@@ -201,7 +201,7 @@
 										</apex:pageBlockSection>
 										<apex:panelGroup>
 											<div class="themeResDiv">
-												Theme Total: {!IF(testCounter = 0, 'there is no any ', FLOOR(testResult / testCounter))}%
+												Theme Total: {!IF(OR(testCounter = 0, AND(testCounter > 0, testResult = -1 * testCounter)), 'there is no any ', FLOOR(testResult / testCounter))}%
 											</div>
 											<apex:variable value="{!themeResult + testResult}" var="themeResult"/>
 											<apex:variable value="{!themeCounter + testCounter}" var="themeCounter"/>
@@ -213,7 +213,7 @@
 								</apex:pageBlockSection>
 								<apex:panelGroup>
 									<div class="subjectResDiv">
-										Subject Total: {!IF(themeCounter = 0, 'there is no any ', FLOOR(themeResult / themeCounter))}%
+										Subject Total: {!IF(OR(themeCounter = 0, AND(themeCounter > 0, themeResult = -1 * themeCounter)), 'there is no any ', FLOOR(themeResult / themeCounter))}%
 									</div>
 									<apex:variable value="{!0}" var="themeCounter"/>
 									<apex:variable value="{!0}" var="themeResult"/>

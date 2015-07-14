@@ -2,37 +2,32 @@
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
 
 	<script>
+		var userName = '{!browserUser.Employee__r.First_Name__c}';
+
 		var browserId = document.cookie.split('BrowserId=')[1].split(';')[0];
 		var isStartPage = ('{!isStartPage}' === "true");
 		var isAdminPage = ('{!isAdminPage}' === "true");
 		var isUserAdmin = ('{!browserUser.Employee__r.IsAdmin__c}' === "true");
+		var isUserActive = ('{!browserUser.Employee__r.IsActive__c}' === "true");
 		var areIdsEqual = (browserId == '{!browserUser.Identifier__c}');
 
-		if (isStartPage && areIdsEqual) {
-			if ( ! '{!browserUser.Employee__r.IsAdmin__c}') {
-				window.stop();
+		function accordanceRedirect() {
+			window.stop();
+			if ( ! isUserAdmin) {
 				window.location.href = "KARegularUserHome";
 			}
 			else {
-				window.stop();
 				window.location.href = "KAAdminUserHome";
 			}
 		}
-		else if ( ! isStartPage && ! areIdsEqual) {
+
+		if ( ! isStartPage && ! areIdsEqual) {
 			window.stop();
 			window.location.href = "KALogin";
 		}
-		else if ( ! isStartPage && ! (isAdminPage == isUserAdmin)) {
-			if (isUserAdmin) {
-				window.stop();
-				window.location.href = "KAAdminUserHome";
-			}
-			else {
-				window.stop();
-				window.location.href = "KARegularUserHome";
-			}
+		else if ((isStartPage && areIdsEqual) || ( ! isStartPage && ! (isAdminPage == isUserAdmin)) || ( ! isStartPage && ! isUserActive && ! window.location.href.includes("Home"))) {
+			accordanceRedirect();
 		}
-
 	</script>
 
 	<style>
@@ -44,7 +39,7 @@
 		border-top-color: #9d9d9d;
 		border-bottom: 0;
 
-		-webkit-transition-duration: 0.3s; /* анимационное выдвижение для всех браузеров*/
+		-webkit-transition-duration: 0.3s;
 		-moz-transition-duration: 0.3s;
 		-o-transition-duration: 0.3s;
 		transition-duration: 0.3s;
@@ -58,12 +53,12 @@
 		opacity: 0;
 		position: absolute;
 		top: 15px;
-		-webkit-transition-duration: 0.3s; /* анимационное выдвижение для всех браузеров*/
+		-webkit-transition-duration: 0.3s;
 		-moz-transition-duration: 0.3s;
 		-o-transition-duration: 0.3s;
 		transition-duration: 0.3s;
 
-		-webkit-border-radius: 0px 0px 5px 5px; /* закругление границ для всех браузеров*/
+		-webkit-border-radius: 0px 0px 5px 5px;
 		-moz-border-radius: 0px 0px 5px 5px;
 	}
 	.dropPanel:hover .hiddenPanel {
@@ -101,7 +96,7 @@
 							<apex:commandLink value="Home" style="font-size: 16px;" action="{!goHome}"/>
 						</li>
 						<li style="float: right !important; margin-right: 1.5em;">
-							<apex:commandLink value="Logout" style="font-size: 16px;" action="{!makeLogout}"/>
+							<apex:commandLink value="Logout" style="font-size: 16px;" action="{!makeLogout}" rendered="{!IF(isStartPage, false, true)}"/>
 						</li>
 						<li style="float: right !important;">
 							<apex:commandLink value="{!IF(browserUser != null, browserUser.Employee__r.First_Name__c, 'Hello!')}" style="font-size: 16px; color: #FFA200 !important; pointer-events: none; cursor: default;"/>

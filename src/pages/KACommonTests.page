@@ -123,7 +123,7 @@
 								<apex:pageBlockTable value="{!subject.Themes__r}" var="theme" columnsWidth="20%, 20%, 15%, 20%, 25%">
 									<apex:column value="{!theme.Name}"/>
 									<apex:column value="{!theme.Questions_Number__c}"/>
-									<apex:column value="{!theme.Tests_Number__c}" headerValue="Used In Tests"/>
+									<apex:column value="{!theme.Tests_Number__c}" headerValue="Number Of Tests"/>
 									<apex:column headerValue="Stats">
 										<div class="dropRow">
 											<div class="hiddenRow">
@@ -137,8 +137,8 @@
 													<apex:outputPanel>
 														<apex:repeat value="{!themeStatistic}" var="testStat">
 															<apex:outputLabel value="{!testStat.Test__r.Name}"/>
-															<apex:outputLabel value="Dur.: {!testStat.Test__r.Duration__c}"/>
-															<apex:outputLabel value="Num.: {!testStat.Questions_Captured__c}"/>
+															<apex:outputLabel value="Time: {!testStat.Test__r.Duration__c}"/>
+															<apex:outputLabel value="Questions: {!testStat.Questions_Captured__c}"/>
 															<apex:actionStatus id="testStatStatus">
 																<apex:facet name="start">
 

@@ -83,7 +83,7 @@
 			<apex:actionRegion>
 				<apex:outputPanel layout="none">
 					<apex:commandButton value="Create Subject" action="{!createSubject}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-primary" style="float: left; margin: 16px 12px 12px 12px !important;"/>
-					<apex:inputText value="{!tmpSubject}" html-placeholder="Please, input sought-for subject name..." style="width: 73% !important; float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
+					<apex:inputText value="{!tmpSubject}" html-placeholder="Please, input subject name..." style="width: 73% !important; float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
 						<apex:actionSupport event="onkeyup" action="{!typeSubject}" reRender="subjectSection" status="refreshStatus"/>
 					</apex:inputText>
 				</apex:outputPanel>
