@@ -42,11 +42,11 @@
 
 						<apex:pageBlockSectionItem>
 							<apex:outputLabel for="inputUsername" value="Login: "/>
-							<apex:inputText id="inputUsername" value="{!username}" html-placeholder="Please, input your email login..." html-pattern="[A-Za-z0-9]+@codeswat\.com" title="Please, use only Roman alphabet and pattern like 'mailname@codeswat.com'." required="true"/>
+							<apex:inputText id="inputUsername" value="{!username}" html-placeholder="Please, input your email login..." html-pattern="[\s\S]+@codeswat\.com" title="Please, use only Roman alphabet and pattern like 'mailname@codeswat.com'." required="true"/>
 						</apex:pageBlockSectionItem>
 						<apex:pageBlockSectionItem>
 							<apex:outputLabel for="inputPass" value="Password: "/>
-							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." html-pattern="[\s\S]{8,24}" title="Password must be from 8 to 24 symbols." required="false"/>
+							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." html-pattern="[\s\S]{4,24}" title="Password must be from 8 to 24 symbols." required="false"/>
 						</apex:pageBlockSectionItem>
 					</apex:pageBlockSection>
 

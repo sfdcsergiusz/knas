@@ -202,7 +202,8 @@
 		<img class="settingsImg" src="{!$Resource.controlPanel}"/>
 		<div class="settingsDiv">
 			<apex:form>
-				<apex:commandButton value="Switch On Emailing" styleClass="btn btn-default"/>
+				<apex:commandButton value="Switch On Emailing" action="{!switchOnEmailing}" styleClass="btn btn-danger" rendered="{!IF(scheduledJobs.size == 0, true, false)}"/>
+				<apex:commandButton value="Emailing Is Already Switched" styleClass="btn btn-default" rendered="{!IF(scheduledJobs.size != 0, true, false)}" disabled="true"/>
 			</apex:form>
 		</div>
 	</div>

@@ -8,6 +8,12 @@
 		}
 	</style>
 
+	<div class="upNavigationImgDiv">
+		<a href="apex/KACommonSubjects">		
+			<img src="{!$Resource.upLink}" class="upNavigationImg"/>		
+		</a>
+	</div>
+
 	<apex:form >
 		<apex:pageBlock >
 			<apex:pageBlockSection id="commonSection" columns="1">

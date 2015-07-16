@@ -6,7 +6,7 @@ public with sharing class KAAdminHomeController {
 
 	public List<Employee__c> employees { get; set; }
 	public List<Test__c> tests { get; set ;}
-
+	
 	public String tmpEmployee { get; set; }
 	public String tmpTest { get; set; }
 
@@ -16,6 +16,7 @@ public with sharing class KAAdminHomeController {
 	public Task__c preCreatedTask { get; set; }
 	public Employee_Task__c preCreatedEmployeeTask { get; set; }
 
+	public List<CronJobDetail> scheduledJobs { get; private set; }
 
 	public KAAdminHomeController() {
 		refreshRecentTasks();
@@ -25,6 +26,10 @@ public with sharing class KAAdminHomeController {
 		tests = new List<Test__c>();
 		preCreatedTask = new Task__c();
 		preCreatedEmployeeTask = new Employee_Task__c();
+		scheduledJobs = [
+			SELECT Id 
+			FROM CronJobDetail
+		];
 	}
 
 	public PageReference goHome() {
@@ -149,6 +154,10 @@ public with sharing class KAAdminHomeController {
 		];
 		tmpTest = varTest.Name + ' ' + varTest.Subject__r.Name;
 		tests.clear();
+	}
+
+	public void switchOnEmailing () {
+		System.schedule('Daily emails', '0 0 9,10,11,12,13,14,15,16,17,18 * * ?', new KAEmailHandler());
 	}
 
 }

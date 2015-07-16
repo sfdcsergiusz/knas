@@ -97,6 +97,12 @@
 		}
 	</style>
 
+	<div class="upNavigationImgDiv">
+		<a href="apex/KAAdminUserHome">		
+			<img src="{!$Resource.upLink}" class="upNavigationImg"/>		
+		</a>
+	</div>
+
 	<div style="width: 65%; left: 0%; position: absolute;">
 		<apex:form>
 			<apex:pageBlock>

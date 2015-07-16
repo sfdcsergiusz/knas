@@ -1995,3 +1995,54 @@
 			}
 
 			/*Custom features*/
+			.upNavigationImg {
+			width: 40px;
+			left: 81px;
+			top: -21px;
+			position: relative;
+			-webkit-transition-duration: 0.1s;
+			-moz-transition-duration: 0.1s;
+			-o-transition-duration: 0.1s;
+			transition-duration: 0.1s;
+			}
+			.upNavigationImgDiv {
+				z-index: 999;
+				position: absolute;
+				opacity: 0.6;
+				top: 100px;
+				left: -80px;
+				width: 80px;
+				height: 0px;
+				border: 3px solid;
+				-webkit-transition-duration: 0.1s;
+				-moz-transition-duration: 0.1s;
+				-o-transition-duration: 0.1s;
+				transition-duration: 0.1s;
+			}
+			.upNavigationImgDiv:hover{
+				z-index: 999;
+				position: absolute;
+				opacity: 1;
+				top: 100px;
+				width: 80px;
+				left: -70px;
+				-webkit-transition-duration: 0.1s;
+				-moz-transition-duration: 0.1s;
+				-o-transition-duration: 0.1s;
+				transition-duration: 0.1s;
+			}
+			.upNavigationImgDiv:active{
+				z-index: 999;
+				position: absolute;
+				opacity: 1;
+				top: 103px;
+				width: 80px;
+				left: -70px;
+				-webkit-transition-duration: 0.1s;
+				-moz-transition-duration: 0.1s;
+				-o-transition-duration: 0.1s;
+				transition-duration: 0.1s;
+			}
+			a[href]:after {
+				content: initial !important;
+			}

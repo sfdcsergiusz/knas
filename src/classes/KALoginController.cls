@@ -84,6 +84,7 @@ public with sharing class KALoginController {
 					)
 				);
 				resettingUser.Waiting_Reset__c = true;
+				update resettingUser;
 			}
 
 
