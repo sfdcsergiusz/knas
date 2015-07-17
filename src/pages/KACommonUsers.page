@@ -56,6 +56,10 @@
 			overflow: auto;
 			height: 560px !important;
 		}
+		.pbBody {
+			overflow: auto;
+			margin: 3px !important;
+		}
 		.pbSubsection {
 			padding-bottom: 0px !important;
 			padding-top: 0px !important
@@ -98,12 +102,12 @@
 	</style>
 
 	<div class="upNavigationImgDiv">
-		<a href="apex/KAAdminUserHome">		
-			<img src="{!$Resource.upLink}" class="upNavigationImg"/>		
+		<a href="apex/KAAdminUserHome">
+			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
 		</a>
 	</div>
 
-	<div style="width: 65%; left: 0%; position: absolute;">
+	<div style="width: 65%; left: 0%; position: absolute; overflow: auto;">
 		<apex:form >
 			<apex:pageBlock >
 				<apex:actionRegion >
@@ -116,24 +120,21 @@
 
 				<apex:outputPanel id="usersSection">
 					<apex:pageBlockSection columns="1">
-						<apex:pageBlockTable value="{!users}" var="user" columnsWidth="40%, 15%, 15%, 15, 15%">
+						<apex:pageBlockTable value="{!users}" var="user" columnsWidth="20%, 15%, 15%, 15">
 								<apex:column value="{!user.First_Name__c} {!user.Last_Name__c}" headerValue="Full Name"/>
 								<apex:column value="{!user.Name}" headerValue="Username"/>
 								<apex:column value="{!user.CreatedDate}" headerValue="Registered"/>
-								<apex:column headerValue="Activity">
+								<apex:column headerValue="Actions">
 									<apex:commandButton value="Freeze" action="{!changeActivity}" reRender="usersSection" status="refreshWholeStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, true, false)}">
 										<apex:param name="activeUserId" value="{!user.Id}"/>
 									</apex:commandButton>
 									<apex:commandButton value="Activate" action="{!changeActivity}" reRender="usersSection" status="refreshWholeStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, false, true)}">
 										<apex:param name="activeUserId" value="{!user.Id}"/>
 									</apex:commandButton>
-								</apex:column>
-								<apex:column headerValue="Actions">
-									<apex:commandButton value="Render Information" action="{!renderUser}" reRender="userSection, usersSection" status="refreshWholeStatus" styleClass="btn btn-link">
+									<apex:commandButton value="Details" action="{!renderUser}" reRender="userSection, usersSection" status="refreshWholeStatus" styleClass="btn btn-link">
 										<apex:param name="rendUserId" value="{!user.Id}"/>
 									</apex:commandButton>
 								</apex:column>
-
 						</apex:pageBlockTable>
 					</apex:pageBlockSection>
 				</apex:outputPanel>

@@ -58,12 +58,6 @@
 			-o-transition-duration: 0.3s;
 			transition-duration: 0.3s;
 		}
-		.enableEmailingButton {
-			-webkit-transition: all 0.5s ease-in-out;
-			-moz-transition: all 0.5s ease-in-out;
-			-o-transition: all 0.5s ease-in-out;
-			transition: all 0.5s ease-in-out;
-		}
 	</style>
 
 	<apex:form >
@@ -219,27 +213,24 @@
 		<img class="settingsImg" src="{!$Resource.controlPanel}"/>
 		<div class="settingsDiv">
 			<apex:form id="emailingSettingForm">
-				<apex:commandButton id="enableEmailingButton" value="Switch On Emailing" onclick="switchOnEmailingJS(); return false;" styleClass="btn btn-danger enableEmailingButton" rendered="{!IF(scheduledJobs.size == 0, true, false)}"/>
-				<apex:commandButton id="disableEmailingButton" value="Emailing Is Already Switched" styleClass="btn btn-default" rendered="{!IF(scheduledJobs.size != 0, true, false)}" disabled="true"/>
-				<apex:actionFunction name="switchOnEmailing" action="{!switchOnEmailing}" reRender="emailingSettingForm"/>
+				<apex:commandButton id="enableEmailingButton" value="Switch On Emailing" onclick="switchEmailingJS(); return false;" styleClass="btn btn-danger refreshButton" rendered="{!IF(scheduledTriggers.size == 0, true, false)}"/>
+				<apex:commandButton id="disableEmailingButton" value="Switch Off Emailing" onclick="switchEmailingJS(); return false;" styleClass="btn btn-primary refreshButton" rendered="{!IF(scheduledTriggers.size != 0, true, false)}"/>
+				<apex:actionFunction name="switchEmailing" action="{!switchEmailing}" reRender="emailingSettingForm"/>
 				<script>
-					function switchOnEmailingJS() {
-						var enableButton = document.querySelector('input[id*="enableEmailingButton"');
-						enableButton.disabled = true;
-						var transform = 'rotate(360deg)';
-						enableButton.style.webkitTransform = transform;
-						enableButton.style.mozTransform	= transform;
-						enableButton.style.msTransform = transform;
-						enableButton.style.oTransform = transform;
-						enableButton.style.transform = transform;
+					function switchEmailingJS() {
 						setTimeout(
 							function() {
-								switchOnEmailing();
+								switchEmailing();
 							},
 							300
 						);
 					}
 				</script>
+				<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+					<script>
+						createMessage('{!JSENCODE(notificMap.currentMessage)}');
+					</script>
+				</apex:outputPanel>
 			</apex:form>
 		</div>
 	</div>

@@ -91,6 +91,7 @@ public with sharing class KALoginController {
 					)
 				);
 				resettingUser.Waiting_Reset__c = true;
+				update resettingUser;
 			}
 			notificMap.addSuccess('Please, check your e-mail for creating new password.');
 		}

@@ -16,7 +16,7 @@ public with sharing class KAAdminHomeController {
 	public Task__c preCreatedTask { get; set; }
 	public Employee_Task__c preCreatedEmployeeTask { get; set; }
 
-	public List<CronJobDetail> scheduledJobs { get; private set; }
+	public List<CronTrigger> scheduledTriggers { get; private set; }
 	public KANotificationMapWrapper notificMap { get; private set; }
 
 	public KAAdminHomeController() {
@@ -28,9 +28,9 @@ public with sharing class KAAdminHomeController {
 		tests = new List<Test__c>();
 		preCreatedTask = new Task__c();
 		preCreatedEmployeeTask = new Employee_Task__c();
-		scheduledJobs = [
+		scheduledTriggers = [
 			SELECT Id
-			FROM CronJobDetail
+			FROM CronTrigger
 		];
 	}
 
@@ -184,12 +184,22 @@ public with sharing class KAAdminHomeController {
 		tests.clear();
 	}
 
-	public void switchOnEmailing () {
-		System.schedule('Daily emails', '0 0 9,10,11,12,13,14,15,16,17,18 * * ?', new KAEmailHandler());
+	public void switchEmailing () {
+		if (scheduledTriggers.size() > 0) {
+			for (CronTrigger scheduledTrigger : scheduledTriggers) {
+				System.abortJob(scheduledTrigger.Id);
+			}
 
-		scheduledJobs = [
+			notificMap.addInfo('Email distribution was switched on.');
+		}
+		else {
+			System.schedule('Daily emails', '0 0 9,10,11,12,13,14,15,16,17,18 * * ?', new KAEmailHandler());
+
+			notificMap.addInfo('Email distribution was switched off.');
+		}
+		scheduledTriggers = [
 			SELECT Id
-			FROM CronJobDetail
+			FROM CronTrigger
 		];
 	}
 

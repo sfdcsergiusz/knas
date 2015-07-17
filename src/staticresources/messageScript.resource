@@ -20,6 +20,7 @@ function createMessage(currentMessage) {
 
 	var message = document.createElement('div');
 	message.style.zIndex = '1000';
+	message.style.cursor = 'pointer';
 
 	var type = currentMessage.split(':splitter:')[0];
 
@@ -39,6 +40,10 @@ function createMessage(currentMessage) {
 		}
 
 		document.body.appendChild(message);
+		message.onclick = function() {
+			message.style.right = '-50%';
+		}
+
 		showMessageTimer = setTimeout(
 			function() {
 				message.style.right = '1%';
