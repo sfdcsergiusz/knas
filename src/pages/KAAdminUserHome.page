@@ -12,9 +12,9 @@
 			width: 100%;
 			left: 0;
 
-		    -webkit-box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
-		       -moz-box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
-		            box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
+			-webkit-box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
+			   -moz-box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
+					box-shadow:0 12px 150px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6) inset;
 		}
 		.settingsImgDiv {
 			position: fixed;
@@ -58,11 +58,17 @@
 			-o-transition-duration: 0.3s;
 			transition-duration: 0.3s;
 		}
+		.enableEmailingButton {
+			-webkit-transition: all 0.5s ease-in-out;
+			-moz-transition: all 0.5s ease-in-out;
+			-o-transition: all 0.5s ease-in-out;
+			transition: all 0.5s ease-in-out;
+		}
 	</style>
 
-	<apex:form>
+	<apex:form >
 		<div style="width: 100%; height: 100%;">
-			<apex:pageBlock>
+			<apex:pageBlock >
 
 				<apex:pageBlockButtons location="top">
 
@@ -70,8 +76,8 @@
 
 				<apex:pageBlockSection id="tasksSection" title="Recent Tasks" columns="1">
 					<apex:outputPanel layout="none">
-						<apex:commandButton value="Refresh" action="{!refreshRecentTasks}" status="refreshStatus" reRender="recentTasksTable" styleClass="btn btn-success" style="float: right;"/>
-						<apex:commandButton value="Create Task" onclick="openCreatingTask(); return false;" reRender="recentTasksTable" styleClass="btn btn-primary"/>
+						<apex:commandButton value="Refresh" action="{!refreshRecentTasks}" status="refreshStatus" reRender="tasksSection" styleClass="btn btn-success refreshButton" style="float: right;"/>
+						<apex:commandButton value="Create Task" onclick="openCreatingTask(); return false;" reRender="tasksSection" styleClass="btn btn-primary"/>
 					</apex:outputPanel>
 
 					<apex:pageBlockTable id="recentTasksTable" value="{!recentTasks}" var="task">
@@ -83,9 +89,9 @@
 					</apex:pageBlockTable>
 				</apex:pageBlockSection>
 
-				<apex:pageBlockSection title="Recent Results" columns="1">
+				<apex:pageBlockSection id="resultsSection" title="Recent Results" columns="1">
 					<apex:outputPanel layout="none">
-						<apex:commandButton value="Refresh" action="{!refreshRecentResults}" status="refreshStatus" reRender="recentResultsTable" styleClass="btn btn-success" style="float: right;"/>
+						<apex:commandButton value="Refresh" action="{!refreshRecentResults}" status="refreshStatus" reRender="resultsSection" styleClass="btn btn-success refreshButton" style="float: right;"/>
 					</apex:outputPanel>
 
 					<apex:pageBlockTable id="recentResultsTable" value="{!recentResults}" var="result">
@@ -99,13 +105,13 @@
 
 				<apex:outputpanel >
 					<apex:actionstatus id="refreshStatus">
-    					<apex:facet name="start">
-        					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
-            					<div class="waitingHolder">
-                					<img class="waitingImage" src="{!$Resource.spinner}"/>
-            					</div>
-        					</div>
-    					</apex:facet>
+						<apex:facet name="start">
+							<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
+								<div class="waitingHolder">
+									<img class="waitingImage" src="{!$Resource.spinner}"/>
+								</div>
+							</div>
+						</apex:facet>
 					</apex:actionstatus>
 				</apex:outputpanel>
 
@@ -113,8 +119,8 @@
 		</div>
 	</apex:form>
 
-	<apex:form>
-		<apex:pageBlock>
+	<apex:form >
+		<apex:pageBlock >
 			<apex:outputpanel id="createTask" style="display: none;">
 				<apex:outputpanel id="innerCreateTask">
 					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
@@ -128,17 +134,17 @@
 						<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
 
 							<h1>
-		    					Creating New Task
-		    				</h1>
+								Creating New Task
+							</h1>
 
-		    				<apex:commandButton value="Cancel" onclick="closeCreatingTask(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
-		    				<apex:commandButton value="Create" action="{!createNewTask}" reRender="innerCreateTask, tasksSection" status="refreshStatusTask" styleClass="btn btn-primary" style="float: right;"/>
+							<apex:commandButton value="Cancel" onclick="closeCreatingTask(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+							<apex:commandButton value="Create" action="{!createNewTask}" reRender="innerCreateTask, tasksSection" status="refreshStatusTask" styleClass="btn btn-primary" style="float: right;"/>
 
-		    				<br/>
+							<br/>
 
-		    				<!-- Employee Choosing -->
+							<!-- Employee Choosing -->
 
-							<apex:actionRegion>
+							<apex:actionRegion >
 								<apex:outputLabel value="Employee" style="float: left"/>
 								<apex:inputText id="inputEmployee" value="{!tmpEmployee}" html-placeholder="Please, input employee name or surname...">
 									<apex:actionSupport event="onkeyup" action="{!typeEmployee}" reRender="employeesTable"/>
@@ -146,48 +152,48 @@
 							</apex:actionRegion>
 
 							<div class="shadowEffect">
-		    					<apex:pageBlockTable id="employeesTable" value="{!employees}" var="employee" style="overflow:scroll; border: none;" align="left">
-		    						<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Name" onclick="chooseEmployeeAF('{!employee.Id}');">
-		    							<h5><apex:outputText value="{!employee.First_Name__c}"/></h5>
-		    						</apex:column>
-		    						<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Surname" onclick="chooseEmployeeAF('{!employee.Id}');">
-		    							<h5><apex:outputText value="{!employee.Last_Name__c}"/></h5>
-		    						</apex:column>
-		    					</apex:pageBlockTable>
-		    				</div>
+								<apex:pageBlockTable id="employeesTable" value="{!employees}" var="employee" style="overflow:scroll; border: none;" align="left">
+									<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Name" onclick="chooseEmployeeAF('{!employee.Id}');">
+										<h5><apex:outputText value="{!employee.First_Name__c}"/></h5>
+									</apex:column>
+									<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Surname" onclick="chooseEmployeeAF('{!employee.Id}');">
+										<h5><apex:outputText value="{!employee.Last_Name__c}"/></h5>
+									</apex:column>
+								</apex:pageBlockTable>
+							</div>
 
-		    				<apex:actionFunction action="{!chooseEmployee}" name="chooseEmployeeAF" reRender="employeesTable, inputEmployee" status="refreshStatusTask">
-		    					<apex:param name="chosenEmployee" value=""/>
-		    				</apex:actionFunction>
+							<apex:actionFunction action="{!chooseEmployee}" name="chooseEmployeeAF" reRender="employeesTable, inputEmployee" status="refreshStatusTask">
+								<apex:param name="chosenEmployee" value=""/>
+							</apex:actionFunction>
 
-		    				<!-- Test Choosing -->
+							<!-- Test Choosing -->
 
-		    				<apex:actionRegion>
-		    					<apex:outputLabel value="Test Name" style="float: left"/>
+							<apex:actionRegion >
+								<apex:outputLabel value="Test Name" style="float: left"/>
 								<apex:inputText id="inputTest" value="{!tmpTest}" html-placeholder="Please, input test name or subject...">
 									<apex:actionSupport event="onkeyup" action="{!typeTest}" reRender="testsTable"/>
 								</apex:inputText>
 							</apex:actionRegion>
 
 							<div class="shadowEffect">
-		    					<apex:pageBlockTable id="testsTable" value="{!tests}" var="test" style="overflow:scroll; border: none;" align="left">
-		    						<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Test Title" onclick="chooseTestAF('{!test.Id}');" style="">
-		    							<h5><apex:outputText value="{!test.Name}"/></h5>
-		    						</apex:column>
-		    						<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Subject" onclick="chooseTestAF('{!test.Id}');">
-		    							<h5><apex:outputText value="{!test.Subject__r.Name}"/></h5>
-		    						</apex:column>
-		    					</apex:pageBlockTable>
-		    				</div>
+								<apex:pageBlockTable id="testsTable" value="{!tests}" var="test" style="overflow:scroll; border: none;" align="left">
+									<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Test Title" onclick="chooseTestAF('{!test.Id}');" style="">
+										<h5><apex:outputText value="{!test.Name}"/></h5>
+									</apex:column>
+									<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Subject" onclick="chooseTestAF('{!test.Id}');">
+										<h5><apex:outputText value="{!test.Subject__r.Name}"/></h5>
+									</apex:column>
+								</apex:pageBlockTable>
+							</div>
 
-		    				<apex:actionFunction action="{!chooseTest}" name="chooseTestAF" reRender="testsTable, inputTest" status="refreshStatusTask">
-		    					<apex:param name="chosenTest" value=""/>
-		    				</apex:actionFunction>
+							<apex:actionFunction action="{!chooseTest}" name="chooseTestAF" reRender="testsTable, inputTest" status="refreshStatusTask">
+								<apex:param name="chosenTest" value=""/>
+							</apex:actionFunction>
 
-		    				<!-- DateTime Choosing -->
+							<!-- DateTime Choosing -->
 
-		    				<apex:outputLabel value="Date And Time" style="float: left"/>
-		    				<apex:inputField value="{!preCreatedTask.AssignTime__c}" required="false" html-placeholder="Please, input assignment date and time"/>
+							<apex:outputLabel value="Date And Time" style="float: left"/>
+							<apex:inputField value="{!preCreatedTask.AssignTime__c}" required="false" html-placeholder="Please, input assignment date and time"/>
 
 						</div>
 					</div>
@@ -198,11 +204,11 @@
 			<apex:outputpanel >
 				<apex:actionstatus id="refreshStatusTask">
 					<apex:facet name="start">
-    					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
-        					<div class="waitingHolder">
-            					<img class="waitingImage" src="{!$Resource.spinner}"/>
-        					</div>
-    					</div>
+						<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
+							<div class="waitingHolder">
+								<img class="waitingImage" src="{!$Resource.spinner}"/>
+							</div>
+						</div>
 					</apex:facet>
 				</apex:actionstatus>
 			</apex:outputpanel>
@@ -212,9 +218,28 @@
 	<div class="settingsImgDiv">
 		<img class="settingsImg" src="{!$Resource.controlPanel}"/>
 		<div class="settingsDiv">
-			<apex:form>
-				<apex:commandButton value="Switch On Emailing" action="{!switchOnEmailing}" styleClass="btn btn-danger" rendered="{!IF(scheduledJobs.size == 0, true, false)}"/>
-				<apex:commandButton value="Emailing Is Already Switched" styleClass="btn btn-default" rendered="{!IF(scheduledJobs.size != 0, true, false)}" disabled="true"/>
+			<apex:form id="emailingSettingForm">
+				<apex:commandButton id="enableEmailingButton" value="Switch On Emailing" onclick="switchOnEmailingJS(); return false;" styleClass="btn btn-danger enableEmailingButton" rendered="{!IF(scheduledJobs.size == 0, true, false)}"/>
+				<apex:commandButton id="disableEmailingButton" value="Emailing Is Already Switched" styleClass="btn btn-default" rendered="{!IF(scheduledJobs.size != 0, true, false)}" disabled="true"/>
+				<apex:actionFunction name="switchOnEmailing" action="{!switchOnEmailing}" reRender="emailingSettingForm"/>
+				<script>
+					function switchOnEmailingJS() {
+						var enableButton = document.querySelector('input[id*="enableEmailingButton"');
+						enableButton.disabled = true;
+						var transform = 'rotate(360deg)';
+						enableButton.style.webkitTransform = transform;
+						enableButton.style.mozTransform	= transform;
+						enableButton.style.msTransform = transform;
+						enableButton.style.oTransform = transform;
+						enableButton.style.transform = transform;
+						setTimeout(
+							function() {
+								switchOnEmailing();
+							},
+							300
+						);
+					}
+				</script>
 			</apex:form>
 		</div>
 	</div>

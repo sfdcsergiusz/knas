@@ -10,8 +10,8 @@
 	</style>
 
 	<div class="upNavigationImgDiv">
-		<a href="apex/KACommonSubjects">		
-			<img src="{!$Resource.upLink}" class="upNavigationImg"/>		
+		<a href="apex/KACommonSubjects">
+			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
 		</a>
 	</div>
 
@@ -21,7 +21,7 @@
 				<apex:outputPanel layout="none">
 					<apex:commandButton value="Create Question" onclick="openCreatingQuestion(); return false;" styleClass="btn btn-primary" style="float: left;"/>
 					<apex:outputLabel value="for {!subjectName} {!themeName}" style="line-height: 2.1 !important;"/>
-					<apex:commandButton value="Refresh" action="{!refreshQuestions}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-success" style="float: right;"/>
+					<apex:commandButton value="Refresh" action="{!refreshQuestions}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-success refreshButton" style="float: right;"/>
 				</apex:outputPanel>
 
 				<apex:pageBlockTable value="{!questions}" var="question">

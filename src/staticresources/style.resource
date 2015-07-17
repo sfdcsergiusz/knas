@@ -2123,7 +2123,7 @@
 			}
 			a[href]:after {
 				content: initial !important;
-
+			}
 			.messageDiv {
 				position: fixed;
 				top: 77px;
@@ -2133,4 +2133,32 @@
 				-moz-transition-duration: 0.25s;
 				-o-transition-duration: 0.25s;
 				transition-duration: 0.25s;
+			}
+			.refreshButton {
+				-webkit-transition: all 0.5s ease-in-out;
+				-moz-transition: all 0.5s ease-in-out;
+				-o-transition: all 0.5s ease-in-out;
+				transition: all 0.5s ease-in-out;
+			}
+			.refreshButton:active {
+				-webkit-transition: all 0.5s ease-in-out;
+				-moz-transition: all 0.5s ease-in-out;
+				-o-transition: all 0.5s ease-in-out;
+				transition: all 0.5s ease-in-out;
+				webkitTransform: rotate(360deg);
+				mozTransform: rotate(360deg);
+				msTransform: rotate(360deg);
+				oTransform: rotate(360deg);
+				transform: rotate(360deg);
+			}
+			.refreshButton:focus {
+				-webkit-transition: all 0.5s ease-in-out;
+				-moz-transition: all 0.5s ease-in-out;
+				-o-transition: all 0.5s ease-in-out;
+				transition: all 0.5s ease-in-out;
+				webkitTransform: rotate(360deg);
+				mozTransform: rotate(360deg);
+				msTransform: rotate(360deg);
+				oTransform: rotate(360deg);
+				transform: rotate(360deg);
 			}

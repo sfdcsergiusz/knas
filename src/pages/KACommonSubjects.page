@@ -80,8 +80,8 @@
 	</style>
 
 	<div class="upNavigationImgDiv">
-		<a href="apex/KAAdminUserHome">		
-			<img src="{!$Resource.upLink}" class="upNavigationImg"/>		
+		<a href="apex/KAAdminUserHome">
+			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
 		</a>
 	</div>
 
@@ -93,7 +93,7 @@
 					<apex:inputText id="subjectInput" value="{!tmpSubject}" html-placeholder="Please, input subject name..." style="width: 54% !important; float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
 						<apex:actionSupport event="onkeyup" action="{!typeSubject}" reRender="subjectSection" status="refreshStatus"/>
 					</apex:inputText>
-					<apex:commandButton id="resettingButton" value="Reset Search" action="{!resetSearch}" reRender="subjectSection, subjectInput" status="refreshWholeStatus" styleClass="btn btn-link" style="float: left; margin: 16px 12px 12px 12px !important;"/>
+					<apex:commandButton id="resettingButton" value="Reset Search" action="{!resetSearch}" reRender="subjectSection, subjectInput, resettingButton" status="refreshWholeStatus" styleClass="btn btn-link refreshButton" style="float: left; margin: 16px 12px 12px 12px !important;"/>
 					<apex:commandButton id="expandingButton" value="Expand All" onclick="expandAllInsets(); return false;" styleClass="btn btn-default" style="float: left; margin: 16px 12px 12px 12px !important; border: 1px solid #ccc !important;"/>
 				</apex:outputPanel>
 			</apex:actionRegion>
@@ -156,7 +156,7 @@
 				</apex:repeat>
 			</apex:outputPanel>
 
-			<apex:outputpanel>
+			<apex:outputpanel >
 				<apex:actionstatus id="refreshStatus">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%; top: 135px;">
@@ -168,7 +168,7 @@
 				</apex:actionstatus>
 			</apex:outputpanel>
 
-			<apex:outputpanel>
+			<apex:outputpanel >
 				<apex:actionstatus id="refreshWholeStatus">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%;">

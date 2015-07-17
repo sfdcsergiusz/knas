@@ -29,7 +29,7 @@ public with sharing class KAAdminHomeController {
 		preCreatedTask = new Task__c();
 		preCreatedEmployeeTask = new Employee_Task__c();
 		scheduledJobs = [
-			SELECT Id 
+			SELECT Id
 			FROM CronJobDetail
 		];
 	}
@@ -186,6 +186,11 @@ public with sharing class KAAdminHomeController {
 
 	public void switchOnEmailing () {
 		System.schedule('Daily emails', '0 0 9,10,11,12,13,14,15,16,17,18 * * ?', new KAEmailHandler());
+
+		scheduledJobs = [
+			SELECT Id
+			FROM CronJobDetail
+		];
 	}
 
 }

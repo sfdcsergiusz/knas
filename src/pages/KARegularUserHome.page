@@ -2,7 +2,7 @@
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
 	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
-	<apex:form>
+	<apex:form >
 		<div style="{!IF(NOT(isUserActive), 'position: fixed; width: 100%; height: 100%; background-image: url(' + URLFOR($Resource.waitingBackground) + '); background-repeat-y: no-repeat; background-repeat-x: no-repeat; background-size: cover;', 'width: 100%; height: 100%;')}">
 
 			<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}" layout="none">
@@ -13,7 +13,7 @@
 			</apex:outputPanel>
 
 			<apex:pageBlock rendered="{!isUserActive}">
-				<apex:outputpanel>
+				<apex:outputpanel >
 					<apex:actionstatus id="resultStatus">
     					<apex:facet name="start">
         					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; opacity: 0.8; width: 100%;">

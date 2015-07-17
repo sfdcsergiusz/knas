@@ -11,7 +11,7 @@
     <apex:form >
         <apex:pageblock >
             <apex:pageBlockSection columns="1">
-                <apex:outputLabel value = "{!recentResults[0].Employee__r.Last_Name__c} {!recentResults[0].Employee__r.First_Name__c}"/>
+                <apex:outputLabel value="{!recentResults[0].Employee__r.Last_Name__c} {!recentResults[0].Employee__r.First_Name__c}"/>
                 <apex:pageBlockTable id="statisticTable" value="{!recentResults}" var="result">
                     <apex:column value="{!result.CreatedDate}">
                         <apex:facet name="header">
