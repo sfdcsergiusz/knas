@@ -1,8 +1,17 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KARegularHomeController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
-	<apex:form >
-		<div style="width: 100%; height: 100%;">
+	<apex:form>
+		<div style="{!IF(NOT(isUserActive), 'position: fixed; width: 100%; height: 100%; background-image: url(' + URLFOR($Resource.waitingBackground) + '); background-repeat-y: no-repeat; background-repeat-x: no-repeat; background-size: cover;', 'width: 100%; height: 100%;')}">
+
+			<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}" layout="none">
+				<script>
+					createMessage('{!JSENCODE(notificMap.currentMessage)}');
+					clearTimeout(hideMessageTimer);
+				</script>
+			</apex:outputPanel>
+
 			<apex:pageBlock rendered="{!isUserActive}">
 				<apex:outputpanel>
 					<apex:actionstatus id="resultStatus">
@@ -37,7 +46,7 @@
 						<apex:column value="{!upcomingTest.Task__r.Test__r.Subject__r.Name}" headerValue="Subject"/>
 						<apex:column value="{!upcomingTest.Task__r.Test__r.Name}" headerValue="Test Title"/>
 						<apex:column value="{!upcomingTest.Task__r.Status__c}" headerValue="Task Status"/>
-						<apex:column>
+						<apex:column >
 							<apex:facet name="header">Action</apex:facet>
 								<apex:commandButton value="Launch" action="{!launchTest}" reRender="upcomingTable" styleClass="btn btn-link" title="Start test passing" rendered="{!IF(upcomingTest.Task__r.Status__c = 'Scheduled', true, false)}">
 									<apex:param name="launchedTestId" value="{!upcomingTest.Task__r.Test__r.Id}" assignTo="{!launchedTestId}"/>
@@ -58,12 +67,6 @@
 				</apex:pageBlockSection>
 			</apex:pageBlock>
 		</div>
-
-		<apex:pageBlock rendered="{!NOT(isUserActive)}">
-			<h1 style="left: 24%; position: absolute">
-				You are not active now. Please, wait for approval.
-			</h1>
-		</apex:pageBlock>
 
 	</apex:form>
 

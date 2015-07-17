@@ -1,5 +1,6 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KAAdminHomeController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:includeScript value="{!$Resource.messageScript}"/>
 	<apex:include pageName="KANavigationBar"/>
 
 	<style>
@@ -67,7 +68,7 @@
 
 				</apex:pageBlockButtons>
 
-				<apex:pageBlockSection title="Recent Tasks" columns="1">
+				<apex:pageBlockSection id="tasksSection" title="Recent Tasks" columns="1">
 					<apex:outputPanel layout="none">
 						<apex:commandButton value="Refresh" action="{!refreshRecentTasks}" status="refreshStatus" reRender="recentTasksTable" styleClass="btn btn-success" style="float: right;"/>
 						<apex:commandButton value="Create Task" onclick="openCreatingTask(); return false;" reRender="recentTasksTable" styleClass="btn btn-primary"/>
@@ -115,76 +116,86 @@
 	<apex:form>
 		<apex:pageBlock>
 			<apex:outputpanel id="createTask" style="display: none;">
-				<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
-					<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+				<apex:outputpanel id="innerCreateTask">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
 
-						<h1>
-	    					Creating New Task
-	    				</h1>
 
-	    				<apex:commandButton value="Cancel" onclick="closeCreatingTask(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
-	    				<apex:commandButton value="Create" action="{!createNewTask}" styleClass="btn btn-primary" style="float: right;"/>
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
+						<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
 
-	    				<br/>
+							<h1>
+		    					Creating New Task
+		    				</h1>
 
-	    				<!-- Employee Choosing -->
+		    				<apex:commandButton value="Cancel" onclick="closeCreatingTask(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+		    				<apex:commandButton value="Create" action="{!createNewTask}" reRender="innerCreateTask, tasksSection" status="refreshStatusTask" styleClass="btn btn-primary" style="float: right;"/>
 
-						<apex:actionRegion >
-							<apex:outputLabel value="Employee" style="float: left"/>
-							<apex:inputText id="inputEmployee" value="{!tmpEmployee}" html-placeholder="Please, input employee name or surname...">
-								<apex:actionSupport event="onkeyup" action="{!typeEmployee}" reRender="employeesTable"/>
-							</apex:inputText>
-						</apex:actionRegion>
+		    				<br/>
 
-						<div class="shadowEffect">
-	    					<apex:pageBlockTable id="employeesTable" value="{!employees}" var="employee" style="overflow:scroll; border: none;" align="left">
-	    						<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Name" onclick="chooseEmployeeAF('{!employee.Id}');">
-	    							<h5><apex:outputText value="{!employee.First_Name__c}"/></h5>
-	    						</apex:column>
-	    						<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Surname" onclick="chooseEmployeeAF('{!employee.Id}');">
-	    							<h5><apex:outputText value="{!employee.Last_Name__c}"/></h5>
-	    						</apex:column>
-	    					</apex:pageBlockTable>
-	    				</div>
+		    				<!-- Employee Choosing -->
 
-	    				<apex:actionFunction action="{!chooseEmployee}" name="chooseEmployeeAF" reRender="employeesTable, inputEmployee" status="refreshStatusTask">
-	    					<apex:param name="chosenEmployee" value=""/>
-	    				</apex:actionFunction>
+							<apex:actionRegion>
+								<apex:outputLabel value="Employee" style="float: left"/>
+								<apex:inputText id="inputEmployee" value="{!tmpEmployee}" html-placeholder="Please, input employee name or surname...">
+									<apex:actionSupport event="onkeyup" action="{!typeEmployee}" reRender="employeesTable"/>
+								</apex:inputText>
+							</apex:actionRegion>
 
-	    				<!-- Test Choosing -->
+							<div class="shadowEffect">
+		    					<apex:pageBlockTable id="employeesTable" value="{!employees}" var="employee" style="overflow:scroll; border: none;" align="left">
+		    						<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Name" onclick="chooseEmployeeAF('{!employee.Id}');">
+		    							<h5><apex:outputText value="{!employee.First_Name__c}"/></h5>
+		    						</apex:column>
+		    						<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Surname" onclick="chooseEmployeeAF('{!employee.Id}');">
+		    							<h5><apex:outputText value="{!employee.Last_Name__c}"/></h5>
+		    						</apex:column>
+		    					</apex:pageBlockTable>
+		    				</div>
 
-	    				<apex:actionRegion >
-	    					<apex:outputLabel value="Test Name" style="float: left"/>
-							<apex:inputText id="inputTest" value="{!tmpTest}" html-placeholder="Please, input test name or subject...">
-								<apex:actionSupport event="onkeyup" action="{!typeTest}" reRender="testsTable"/>
-							</apex:inputText>
-						</apex:actionRegion>
+		    				<apex:actionFunction action="{!chooseEmployee}" name="chooseEmployeeAF" reRender="employeesTable, inputEmployee" status="refreshStatusTask">
+		    					<apex:param name="chosenEmployee" value=""/>
+		    				</apex:actionFunction>
 
-						<div class="shadowEffect">
-	    					<apex:pageBlockTable id="testsTable" value="{!tests}" var="test" style="overflow:scroll; border: none;" align="left">
-	    						<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Test Title" onclick="chooseTestAF('{!test.Id}');" style="">
-	    							<h5><apex:outputText value="{!test.Name}"/></h5>
-	    						</apex:column>
-	    						<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Subject" onclick="chooseTestAF('{!test.Id}');">
-	    							<h5><apex:outputText value="{!test.Subject__r.Name}"/></h5>
-	    						</apex:column>
-	    					</apex:pageBlockTable>
-	    				</div>
+		    				<!-- Test Choosing -->
 
-	    				<apex:actionFunction action="{!chooseTest}" name="chooseTestAF" reRender="testsTable, inputTest" status="refreshStatusTask">
-	    					<apex:param name="chosenTest" value=""/>
-	    				</apex:actionFunction>
+		    				<apex:actionRegion>
+		    					<apex:outputLabel value="Test Name" style="float: left"/>
+								<apex:inputText id="inputTest" value="{!tmpTest}" html-placeholder="Please, input test name or subject...">
+									<apex:actionSupport event="onkeyup" action="{!typeTest}" reRender="testsTable"/>
+								</apex:inputText>
+							</apex:actionRegion>
 
-	    				<!-- DateTime Choosing -->
+							<div class="shadowEffect">
+		    					<apex:pageBlockTable id="testsTable" value="{!tests}" var="test" style="overflow:scroll; border: none;" align="left">
+		    						<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Test Title" onclick="chooseTestAF('{!test.Id}');" style="">
+		    							<h5><apex:outputText value="{!test.Name}"/></h5>
+		    						</apex:column>
+		    						<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Subject" onclick="chooseTestAF('{!test.Id}');">
+		    							<h5><apex:outputText value="{!test.Subject__r.Name}"/></h5>
+		    						</apex:column>
+		    					</apex:pageBlockTable>
+		    				</div>
 
-	    				<apex:outputLabel value="Date And Time" style="float: left"/>
-	    				<apex:inputField value="{!preCreatedTask.AssignTime__c}" required="false" html-placeholder="Please, input assignment date and time"/>
+		    				<apex:actionFunction action="{!chooseTest}" name="chooseTestAF" reRender="testsTable, inputTest" status="refreshStatusTask">
+		    					<apex:param name="chosenTest" value=""/>
+		    				</apex:actionFunction>
 
+		    				<!-- DateTime Choosing -->
+
+		    				<apex:outputLabel value="Date And Time" style="float: left"/>
+		    				<apex:inputField value="{!preCreatedTask.AssignTime__c}" required="false" html-placeholder="Please, input assignment date and time"/>
+
+						</div>
 					</div>
-				</div>
+
+				</apex:outputPanel>
 			</apex:outputpanel>
 
-			<apex:outputpanel>
+			<apex:outputpanel >
 				<apex:actionstatus id="refreshStatusTask">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">

@@ -1,8 +1,9 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KARegisterController">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
-	<apex:outputpanel>
+	<apex:outputpanel >
 		<apex:actionstatus id="loadingStatus">
 			<apex:facet name="start">
 				<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
@@ -14,12 +15,20 @@
 		</apex:actionstatus>
 	</apex:outputpanel>
 
+	<apex:outputPanel id="messages">
+		<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+			<script>
+				createMessage('{!JSENCODE(notificMap.currentMessage)}');
+			</script>
+		</apex:outputPanel>
+	</apex:outputPanel>
+
 	<apex:form >
 		<div style="width: 100%; height: 100%;">
 			<div style="width: 50%; margin: auto; position: relative; top: 140px;">
-				<apex:pageBlock >
+				<apex:pageBlock>
 
-					<apex:actionFunction name="setIdentifier" action="{!setIdentifier}" reRender="inputSection">
+					<apex:actionFunction name="setIdentifier" action="{!setIdentifier}" reRender="inputSection" status="loadingStatus">
 						<apex:param name="mainId" value=""/>
 					</apex:actionFunction>
 
@@ -27,26 +36,26 @@
 						setIdentifier(browserId);
 					</script>
 
-					<apex:pageBlockButtons location="bottom">
+					<apex:pageBlockButtons id="buttons" location="bottom">
 						<apex:commandButton value="Sign In" onclick="startLogining(); return false;" styleClass="btn btn-warning"/>
-						<apex:commandButton value="SIGN UP" action="{!register}" styleClass="btn btn-success"/>
+						<apex:commandButton value="SIGN UP" action="{!register}" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-success"/>
 					</apex:pageBlockButtons>
 
 					<apex:pageBlockSection id="inputSection" columns="1">
 						<apex:pageBlockSectionItem >
-							<apex:outputLabel for="inputUsername" value="Username: "/>
-							<apex:inputText id="inputUsername" value="{!username}" html-placeholder="Please, input your email login..." html-pattern="[A-Za-z0-9]+@codeswat\.com" title="Please, use only Roman alphabet and pattern like 'mailname@codeswat.com'." required="true"/>
+							<apex:outputLabel for="inputUsername" value="* Username: "/>
+							<apex:inputText id="inputUsername" value="{!username}" html-placeholder="Please, input your email login..." html-pattern="[\s\S]+@codeswat\.com" title="Please, use only Roman alphabet and pattern like 'mailname@codeswat.com'." required="true"/>
 						</apex:pageBlockSectionItem>
 						<apex:pageBlockSectionItem >
-							<apex:outputLabel for="inputPass" value="Password: "/>
-							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." html-pattern="[\s\S]{8,24}" title="Password must be from 8 to 24 symbols." required="true"/>
+							<apex:outputLabel for="inputPass" value="* Password: "/>
+							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." html-pattern="[\s\S]{8,24}" title="Password must be from 8 to 24 symbols." />
 						</apex:pageBlockSectionItem>
 						<apex:pageBlockSectionItem >
-							<apex:outputLabel for="inputFirstName" value="First Name: "/>
+							<apex:outputLabel for="inputFirstName" value="* First Name: "/>
 							<apex:inputText id="inputFirstName" value="{!firstName}" html-placeholder="Please, input your first name..." html-pattern="[A-Za-z]+" title="Only Roman alphabet symbols are allowed." required="true"/>
 						</apex:pageBlockSectionItem>
 						<apex:pageBlockSectionItem >
-							<apex:outputLabel for="inputLastName" value="Last Name: "/>
+							<apex:outputLabel for="inputLastName" value="* Last Name: "/>
 							<apex:inputText id="inputLastName" value="{!lastName}" html-placeholder="Please, input your surname..." html-pattern="[A-Za-z]+" title="Only Roman alphabet symbols are allowed." required="true"/>
 						</apex:pageBlockSectionItem>
 					</apex:pageBlockSection>
@@ -56,7 +65,7 @@
 		</div>
 	</apex:form>
 
-	<apex:form>
+	<apex:form >
 		<apex:actionFunction action="{!login}" name="startLogining" status="loadingStatus"/>
 	</apex:form>
 </apex:page>

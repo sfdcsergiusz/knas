@@ -5,11 +5,14 @@ public with sharing class KARegisterController {
 	public String firstName { get; set; }
 	public String lastName { get; set; }
 
-	private PageReference currentPage;
+	public KANotificationMapWrapper notificMap { get; private set; }
 
 	private Browser__c browserId { private get; private set; }
 
+	private PageReference currentPage;
+
 	public KARegisterController() {
+		notificMap = new KANotificationMapWrapper();
 		currentPage = ApexPages.currentPage();
 		browserId = new Browser__c();
 	}
@@ -33,19 +36,36 @@ public with sharing class KARegisterController {
 		}
 	}
 
-	private boolean registerNewEmployee() {
-		Employee__c newestEmployee = new Employee__c(
-		    Name = username,
-		    Password__c = EncodingUtil.convertToHex(Crypto.generateDigest('MD5', Blob.valueOf(password))),
-		    First_Name__c = firstName,
-		    Last_Name__c = lastName
-		);
-		Database.SaveResult employeeSaveResult = Database.insert(newestEmployee);
-		if (employeeSaveResult.isSuccess()) {
-			browserId.Employee__c = newestEmployee.Id;
-			insert browserId;
+	private Boolean registerNewEmployee() {
+		if (username == '' || password == '' || firstName == '' || lastName == '') {
+			if (username == '') {
+				notificMap.addDanger('Please, enter username.');
+			}
+			else if (password == '') {
+				notificMap.addDanger('Please, enter password.');
+			}
+			else if (firstName == '') {
+				notificMap.addDanger('Please, enter first name.');
+			}
+			else if (lastName == '') {
+				notificMap.addDanger('Please, enter last name.');
+			}
 		}
-		return employeeSaveResult.isSuccess();
+		else {
+			Employee__c newestEmployee = new Employee__c(
+			    Name = username,
+			    Password__c = EncodingUtil.convertToHex(Crypto.generateDigest('MD5', Blob.valueOf(password))),
+			    First_Name__c = firstName,
+			    Last_Name__c = lastName
+			);
+			Database.SaveResult employeeSaveResult = Database.insert(newestEmployee);
+			if (employeeSaveResult.isSuccess()) {
+				browserId.Employee__c = newestEmployee.Id;
+				insert browserId;
+			}
+			return employeeSaveResult.isSuccess();
+		}
+		return false;
 	}
 
 	private void setLoginCookie(String id) {

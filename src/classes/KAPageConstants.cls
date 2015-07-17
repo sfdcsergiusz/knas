@@ -6,6 +6,7 @@ public with sharing class KAPageConstants {
 	};
 
 	public static Map<String, String> pageNames = new MAP<String, String>();
+
 	static {
 		pageNames.put('KAADMINUSERHOME', 'Admin Panel');
 		pageNames.put('KACOMMONSUBJECTS', 'Subjects Control');

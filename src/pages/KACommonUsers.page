@@ -104,9 +104,9 @@
 	</div>
 
 	<div style="width: 65%; left: 0%; position: absolute;">
-		<apex:form>
-			<apex:pageBlock>
-				<apex:actionRegion>
+		<apex:form >
+			<apex:pageBlock >
+				<apex:actionRegion >
 					<apex:outputPanel layout="none">
 						<apex:inputText value="{!tmpUser}" html-placeholder="Please, input user name..." style="margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
 							<apex:actionSupport event="onkeyup" action="{!typeUser}" reRender="usersSection" status="refreshStatus"/>
@@ -121,15 +121,15 @@
 								<apex:column value="{!user.Name}" headerValue="Username"/>
 								<apex:column value="{!user.CreatedDate}" headerValue="Registered"/>
 								<apex:column headerValue="Activity">
-									<apex:commandButton value="Freeze" action="{!changeActivity}" reRender="usersSection" status="refreshStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, true, false)}">
+									<apex:commandButton value="Freeze" action="{!changeActivity}" reRender="usersSection" status="refreshWholeStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, true, false)}">
 										<apex:param name="activeUserId" value="{!user.Id}"/>
 									</apex:commandButton>
-									<apex:commandButton value="Activate" action="{!changeActivity}" reRender="usersSection" status="refreshStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, false, true)}">
+									<apex:commandButton value="Activate" action="{!changeActivity}" reRender="usersSection" status="refreshWholeStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, false, true)}">
 										<apex:param name="activeUserId" value="{!user.Id}"/>
 									</apex:commandButton>
 								</apex:column>
 								<apex:column headerValue="Actions">
-									<apex:commandButton value="Render Information" action="{!renderUser}" reRender="userSection, usersSection" status="refreshStatus" styleClass="btn btn-link">
+									<apex:commandButton value="Render Information" action="{!renderUser}" reRender="userSection, usersSection" status="refreshWholeStatus" styleClass="btn btn-link">
 										<apex:param name="rendUserId" value="{!user.Id}"/>
 									</apex:commandButton>
 								</apex:column>
@@ -149,13 +149,25 @@
 						</apex:facet>
 					</apex:actionstatus>
 				</apex:outputpanel>
+
+				<apex:outputpanel >
+					<apex:actionstatus id="refreshWholeStatus">
+						<apex:facet name="start">
+							<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.6; width: 100%;">
+								<div class="waitingHolder" style="top: 25%;">
+									<img class="waitingImage" src="{!$Resource.spinner}"/>
+								</div>
+							</div>
+						</apex:facet>
+					</apex:actionstatus>
+				</apex:outputpanel>
 			</apex:pageBlock>
 		</apex:form>
 	</div>
 
-	<div class="movingBlock" style="width: 40%; right: -1%; top: 72px; position: absolute; height: 80%;">
+	<div class="movingBlock" style="width: 40%; right: 0%; top: 72px; position: absolute; height: 80%;">
 		<apex:form styleClass="movedBlock">
-			<apex:pageBlock>
+			<apex:pageBlock >
 				<div style="margin: 3% 3% auto; border-bottom: 15px solid transparent;">
 					<h3>
 						<apex:outputLabel value="User Detailed Information" styleClass="label label-warning"/>
@@ -191,7 +203,7 @@
 										<apex:pageBlockSection columns="2">
 											<apex:repeat value="{!renderedStatistic[subjectKey][themeKey]}" var="testKey">
 												{!testKey.Name}
-												<apex:panelGroup>
+												<apex:panelGroup >
 													<apex:variable value="{!testCounter + 1}" var="testCounter"/>
 													<apex:variable value="{!renderedStatistic[subjectKey][themeKey][testKey].Result__c}" var="tmpResult"/>
 													<apex:variable var="testResult" value="{!(testResult + tmpResult)}"/>
@@ -205,7 +217,7 @@
 												</apex:panelGroup>
 											</apex:repeat>
 										</apex:pageBlockSection>
-										<apex:panelGroup>
+										<apex:panelGroup >
 											<div class="themeResDiv">
 												Theme Total: {!IF(OR(testCounter = 0, AND(testCounter > 0, testResult = -1 * testCounter)), 'there is no any ', FLOOR(testResult / testCounter))}%
 											</div>
@@ -217,7 +229,7 @@
 
 									</apex:repeat>
 								</apex:pageBlockSection>
-								<apex:panelGroup>
+								<apex:panelGroup >
 									<div class="subjectResDiv">
 										Subject Total: {!IF(OR(themeCounter = 0, AND(themeCounter > 0, themeResult = -1 * themeCounter)), 'there is no any ', FLOOR(themeResult / themeCounter))}%
 									</div>

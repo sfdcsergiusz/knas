@@ -53,6 +53,15 @@
     <enableReports>true</enableReports>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Themes_Number__c</fullName>
+        <externalId>false</externalId>
+        <label>Themes Number</label>
+        <summaryForeignKey>Theme__c.Subject__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
     <label>Subject</label>
     <listViews>
         <fullName>All</fullName>

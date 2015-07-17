@@ -11,6 +11,8 @@ public with sharing class KACommonTestsController {
 	public Test__c preCreatedTest { get; set; }
 	public List<TestTheme__c> themeStatistic { get; set; }
 
+	public KANotificationMapWrapper notificMap { get; private set; }
+
 	private Theme__c tmpTheme { private get; private set; }
 
 	public KACommonTestsController() {
@@ -18,20 +20,9 @@ public with sharing class KACommonTestsController {
 		preCreatedTestTheme = new TestTheme__c();
 		preCreatedTest = new Test__c();
 		themeStatistic = new List<TestTheme__c>();
+		notificMap = new KANotificationMapWrapper();
 
-		subjects = [
-			SELECT Name, Themes_Number__c,
-			(
-				SELECT Name, Questions_Number__c, Tests_Number__c
-				FROM Themes__r
-				ORDER BY Name ASC
-				LIMIT 50000
-			)
-			FROM Subject__c
-			ORDER BY Name ASC
-			LIMIT 50000
-		];
-
+		selectAllSubjects();
 	}
 
 	public PageReference goHome() {
@@ -49,6 +40,7 @@ public with sharing class KACommonTestsController {
 				LIMIT 50000
 			)
 			FROM Subject__c
+			WHERE Name LIKE :searchSubject
 			ORDER BY Name ASC
 			LIMIT 50000
 		];
@@ -67,26 +59,63 @@ public with sharing class KACommonTestsController {
 	}
 
 	public PageReference createTest() {
+		List<Test__c> checkEqualTestList = [
+			SELECT Name
+			FROM Test__c
+			WHERE Name = :preCreatedTest.Name
+		];
 		List<Subject__c> subjectForTest = [
 			SELECT Id
 			FROM Subject__c
 			WHERE Name = :testSubjectName
 			LIMIT 1
 		];
-		if ( ! subjectForTest.isEmpty()) {
-			preCreatedTest.Subject__c = subjectForTest.get(0).Id;
+
+		if ((preCreatedTestTheme.Questions_Captured__c <= 0 || preCreatedTestTheme.Questions_Captured__c > themeAvailableQuestions) ||
+			checkEqualTestList.size() > 0 || preCreatedTest.Duration__c <= 0 || subjectForTest.isEmpty() ||
+			preCreatedTest.Duration__c == null || preCreatedTestTheme.Questions_Captured__c == null) {
+			if (preCreatedTestTheme.Questions_Captured__c <= 0) {
+				notificMap.addDanger('Number of questions should be more than 0.');
+			}
+			else if (preCreatedTestTheme.Questions_Captured__c > themeAvailableQuestions) {
+				notificMap.addDanger('Number of questions should be less than available: ' + themeAvailableQuestions + '.');
+			}
+			else if (checkEqualTestList.size() > 0) {
+				notificMap.addDanger('Test with name "' + preCreatedTest.Name + '" already exist.');
+			}
+			else if (preCreatedTest.Duration__c <= 0) {
+				notificMap.addDanger('Duration of the test should me more than 0 minutes.');
+			}
+			else if (subjectForTest.isEmpty()) {
+				notificMap.addDanger('Test cannot be created. Please, refresh page.');
+			}
+			else if (preCreatedTest.Duration__c == null) {
+				notificMap.addDanger('Please, enter duration.');
+			}
+			else if (preCreatedTestTheme.Questions_Captured__c == null) {
+				notificMap.addDanger('Please, enter number of questions.');
+			}
 		}
-		insert preCreatedTest;
+		else {
+			preCreatedTest.Subject__c = subjectForTest.get(0).Id;
+			insert preCreatedTest;
 
-		preCreatedTestTheme.Test__c = preCreatedTest.Id;
-		preCreatedTestTheme.Theme__c = tmpTheme.Id;
-		KAUniqueThemeHandler.enablesTrigger = false;
-		insert preCreatedTestTheme;
-		KAUniqueThemeHandler.enablesTrigger = true;
+			preCreatedTestTheme.Test__c = preCreatedTest.Id;
+			preCreatedTestTheme.Theme__c = tmpTheme.Id;
+			insert preCreatedTestTheme;
 
-		PageReference updatingPage = new PageReference('/apex/KACommonTests');
-		updatingPage.setRedirect(true);
-		return updatingPage;
+			notificMap.addSuccess('Test was created. ' + testSubjectName
+				+ ', ' + testThemeName
+				+ ', ' + preCreatedTestTheme.Questions_Captured__c + ' questions'
+				+ ', ' + preCreatedTest.Duration__c + ' minustes.'
+			);
+
+			clearThemeStatistic();
+			selectAllSubjects();
+			preCreatedTest = new Test__c();
+			preCreatedTestTheme = new TestTheme__c();
+		}
+		return null;
 	}
 
 	public void createThemeStatistic() {
@@ -110,31 +139,34 @@ public with sharing class KACommonTestsController {
 		delete deletingTest;
 
 		clearThemeStatistic();
+		selectAllSubjects();
+	}
 
+	public void resetSearch() {
+		tmpSubject = '';
+		selectAllSubjects();
+	}
+
+	public PageReference goToSubjectList() {
+		return new PageReference('/apex/KASubjectQuestionsList?subjectId=' + ApexPages.currentPage().getParameters().get('listParam'));
+	}
+
+	public PageReference goToUploadCSV() {
+		return new PageReference('/apex/KAImportQuestionsCSV?themeId=' + ApexPages.currentPage().getParameters().get('CSVParam'));
+	}
+
+	private void selectAllSubjects() {
 		subjects = [
-			SELECT Name,
+			SELECT Name, Themes_Number__c,
 			(
 				SELECT Name, Questions_Number__c, Tests_Number__c
 				FROM Themes__r
-				ORDER BY Name ASC
 				LIMIT 50000
 			)
 			FROM Subject__c
 			ORDER BY Name ASC
 			LIMIT 50000
 		];
-	}
-
-	public PageReference goToThemeList() {
-		return new PageReference('/apex/KASubjectQuestionsList?themeName=' + ApexPages.currentPage().getParameters().get('listParam'));
-	}
-
-	public PageReference goToSubjectList() {
-		return new PageReference('/apex/KASubjectQuestionsList?subjectName=' + ApexPages.currentPage().getParameters().get('listParam'));
-	}
-
-	public PageReference goToUploadCSV() {
-		return new PageReference('/apex/KAImportQuestionsCSV?themeId=' + ApexPages.currentPage().getParameters().get('CSVParam'));
 	}
 
 }

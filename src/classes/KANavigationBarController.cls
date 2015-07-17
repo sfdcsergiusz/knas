@@ -32,7 +32,7 @@ public with sharing class KANavigationBarController {
 			browserUser = ! browsers.isEmpty() ? browsers.get(0) : null;
 		}
 
-		showingPageName = KAPageConstants.pageNames.get(currentPage.getUrl().split('/apex/')[1].toUpperCase());
+		showingPageName = KAPageConstants.pageNames.get(currentPage.getUrl().split('/apex/')[1].split('\\?')[0].toUpperCase());
 	}
 
 	public PageReference onLoad() {

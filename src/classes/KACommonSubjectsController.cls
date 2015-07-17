@@ -5,8 +5,11 @@ public with sharing class KACommonSubjectsController {
 	public String tmpSubject { get; set; }
 	public String tmpTheme { get; set; }
 
+	public KANotificationMapWrapper notificMap { get; private set; }
+
 	public KACommonSubjectsController() {
 		tmpSubject = '';
+		notificMap = new KANotificationMapWrapper();
 
 		selectAllSubjects();
 	}
@@ -33,29 +36,59 @@ public with sharing class KACommonSubjectsController {
 
 	public void createSubject() {
 		if (tmpSubject != null && tmpSubject != '') {
-			Subject__c preCreatedSubject = new Subject__c(Name = tmpSubject);
-			insert preCreatedSubject;
+			List<Subject__c> checkSubjectsList = [
+				SELECT Id
+				FROM Subject__c
+				WHERE Name = :tmpSubject
+			];
+			if (checkSubjectsList.size() == 0) {
+				Subject__c preCreatedSubject = new Subject__c(Name = tmpSubject);
+				insert preCreatedSubject;
 
-			tmpSubject = '';
-
-			selectAllSubjects();
+				typeSubject();
+				tmpSubject = '';
+			}
+			else {
+				notificMap.addDanger('Subject already exists.');
+			}
+		}
+		else {
+			notificMap.addDanger('Subject name is empty.');
 		}
 	}
 
 	public void createTheme() {
 		if (tmpTheme != null && tmpTheme != '') {
 			Subject__c tmpSubjectObject = [
-				SELECT Name, Themes_Number__c
+				SELECT Name, Themes_Number__c,
+					(
+						SELECT Name
+						FROM Themes__r
+						WHERE Name = :tmpTheme
+					)
 				FROM Subject__c
 				WHERE Name = :ApexPages.currentPage().getParameters().get('subjectName')
 				LIMIT 1
 			];
-			Theme__c preCreatedTheme = new Theme__c(Name = tmpTheme, Subject__c = tmpSubjectObject.Id);
-			insert preCreatedTheme;
+			if (tmpSubjectObject.Themes__r.size() == 0) {
+				Theme__c preCreatedTheme = new Theme__c(Name = tmpTheme, Subject__c = tmpSubjectObject.Id);
+				insert preCreatedTheme;
 
-			tmpTheme = '';
+				tmpTheme = '';
 
-			selectAllSubjects();
+				if (tmpSubject != '') {
+					typeSubject();
+				}
+				else {
+					selectAllSubjects();
+				}
+			}
+			else {
+				notificMap.addDanger('Theme already exists.');
+			}
+		}
+		else {
+			notificMap.addDanger('Theme name is empty.');
 		}
 	}
 
@@ -68,7 +101,12 @@ public with sharing class KACommonSubjectsController {
 		];
 		delete tmpSubjectObject;
 
-		selectAllSubjects();
+		if (tmpSubject != '') {
+			typeSubject();
+		}
+		else {
+			selectAllSubjects();
+		}
 	}
 
 	public void deleteTheme() {
@@ -80,15 +118,25 @@ public with sharing class KACommonSubjectsController {
 		];
 		delete tmpThemeObject;
 
+		if (tmpSubject != '') {
+			typeSubject();
+		}
+		else {
+			selectAllSubjects();
+		}
+	}
+
+	public void resetSearch() {
+		tmpSubject = '';
 		selectAllSubjects();
 	}
 
 	public PageReference goToThemeList() {
-		return new PageReference('/apex/KASubjectQuestionsList?themeName=' + ApexPages.currentPage().getParameters().get('listParam'));
+		return new PageReference('/apex/KASubjectQuestionsList?themeId=' + ApexPages.currentPage().getParameters().get('listParam'));
 	}
 
 	public PageReference goToSubjectList() {
-		return new PageReference('/apex/KASubjectQuestionsList?subjectName=' + ApexPages.currentPage().getParameters().get('listParam'));
+		return new PageReference('/apex/KASubjectQuestionsList?subjectId=' + ApexPages.currentPage().getParameters().get('listParam'));
 	}
 
 	public PageReference goToUploadCSV() {

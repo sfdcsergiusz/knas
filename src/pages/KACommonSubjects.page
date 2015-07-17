@@ -1,5 +1,6 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonSubjectsController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:includeScript value="{!$Resource.messageScript}"/>
 	<apex:include pageName="KANavigationBar"/>
 
 	<style>
@@ -30,7 +31,7 @@
 			-o-transition-duration: 0.45s;
 			transition-duration: 0.45s;
 			transition-delay: 0.2s;
-			overflow: hidden;
+			overflow-y: scroll;
 			max-height: 0px;
 		}
 		.subjectRepeat:hover > .apexp > div > .pbBody > div > .pbSubsection {
@@ -39,8 +40,8 @@
 			-o-transition-duration: 0.45s;
 			transition-duration: 0.45s;
 			transition-delay: 0.2s;
+			overflow-y: scroll;
 			max-height: 600px;
-			overflow-y: auto;
 		}
 		.subjectRepeat > .apexp > div > .pbBody > .hoverDiv > .inputDiv {
 			-webkit-transition-duration: 0.45s;
@@ -84,36 +85,44 @@
 		</a>
 	</div>
 
-	<apex:form>
-		<apex:pageBlock>
-			<apex:actionRegion>
+	<apex:form >
+		<apex:pageBlock >
+			<apex:actionRegion >
 				<apex:outputPanel layout="none">
-					<apex:commandButton value="Create Subject" action="{!createSubject}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-primary" style="float: left; margin: 16px 12px 12px 12px !important;"/>
-					<apex:inputText value="{!tmpSubject}" html-placeholder="Please, input subject name..." style="width: 73% !important; float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
+					<apex:commandButton value="Create Subject" action="{!createSubject}" reRender="subjectSection" status="refreshWholeStatus" styleClass="btn btn-primary" style="float: left; margin: 16px 12px 12px 12px !important;"/>
+					<apex:inputText id="subjectInput" value="{!tmpSubject}" html-placeholder="Please, input subject name..." style="width: 54% !important; float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
 						<apex:actionSupport event="onkeyup" action="{!typeSubject}" reRender="subjectSection" status="refreshStatus"/>
 					</apex:inputText>
+					<apex:commandButton id="resettingButton" value="Reset Search" action="{!resetSearch}" reRender="subjectSection, subjectInput" status="refreshWholeStatus" styleClass="btn btn-link" style="float: left; margin: 16px 12px 12px 12px !important;"/>
+					<apex:commandButton id="expandingButton" value="Expand All" onclick="expandAllInsets(); return false;" styleClass="btn btn-default" style="float: left; margin: 16px 12px 12px 12px !important; border: 1px solid #ccc !important;"/>
 				</apex:outputPanel>
 			</apex:actionRegion>
 			<apex:outputPanel id="subjectSection">
+				<apex:outputPanel layout="none" rendered="{!IF(notificMap.isEmpty, false, true)}">
+					<script>
+						createMessage('{!notificMap.currentMessage}');
+					</script>
+				</apex:outputPanel>
+
 				<apex:repeat value="{!subjects}" var="subject">
 					<div class="subjectRepeat">
-						<apex:pageBlock>
+						<apex:pageBlock >
 
-							<apex:actionRegion>
+							<apex:actionRegion >
 								<apex:outputPanel layout="none">
 									<div class="hoverDiv" style="height: 37px;">
 										<div style="position: relative; bottom: -7px; height: 0; left: 50px">
 											<apex:commandButton value="List" action="{!goToSubjectList}" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" reRender="subjectSection" title="View all questions for this subject">
-												<apex:param name="listParam" value="{!subject.Name}"/>
+												<apex:param name="listParam" value="{!subject.Id}"/>
 											</apex:commandButton>
-											<apex:commandButton value="Delete" action="{!deleteSubject}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" title="Delete this subject">
+											<apex:commandButton value="Delete" action="{!deleteSubject}" reRender="subjectSection" status="refreshWholeStatus" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" title="Delete this subject">
 												<apex:param name="deleteParam" value="{!subject.Name}"/>
 											</apex:commandButton>
 											<apex:commandLink value="{!subject.Themes_Number__c} themes" styleClass="btn btn-link" style="padding: 2px 25px !important; margin: 0px 0px 6px !important; line-height: normal !important; color: #2F933C !important; pointer-events: none; cursor: default;"/>
 											<apex:outputLabel value="{!subject.Name}" style="margin: 0px 0px 0px 10px !important; border-radius: .25em .25em 0 0 !important; border: 1px solid #BBB !important;; border-bottom-style: none !important;"/>
 										</div>
 										<div class="inputDiv">
-											<apex:commandButton value="Create Theme" action="{!createTheme}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-success" style="float: right;">
+											<apex:commandButton value="Create Theme" action="{!createTheme}" reRender="subjectSection" status="refreshWholeStatus" styleClass="btn btn-success" style="float: right;">
 												<apex:param name="subjectName" value="{!subject.Name}"/>
 											</apex:commandButton>
 											<apex:inputText value="{!tmpTheme}" html-placeholder="Please, input new theme..." style="width: 34% !important; float: right;" html-autocomplete="off"/>
@@ -129,12 +138,12 @@
 									<apex:column headerValue="Actions">
 										<apex:outputPanel layout="none">
 											<apex:commandButton value="List" action="{!goToThemeList}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection" title="List of questions for chosen theme">
-												<apex:param name="listParam" value="{!theme.Name}"/>
+												<apex:param name="listParam" value="{!theme.Id}"/>
 											</apex:commandButton>
 											<apex:commandButton value="Upload CSV" action="{!goToUploadCSV}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection" title="Import questions with CSV file for chosen theme">
 												<apex:param name="CSVParam" value="{!theme.Id}"/>
 											</apex:commandButton>
-											<apex:commandButton value="Delete" action="{!deleteTheme}" reRender="subjectSection" status="refreshStatus" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete chosen theme">
+											<apex:commandButton value="Delete" action="{!deleteTheme}" reRender="subjectSection" status="refreshWholeStatus" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete chosen theme">
 												<apex:param name="deleteParam" value="{!theme.Name}"/>
 											</apex:commandButton>
 										</apex:outputPanel>
@@ -147,7 +156,7 @@
 				</apex:repeat>
 			</apex:outputPanel>
 
-			<apex:outputpanel >
+			<apex:outputpanel>
 				<apex:actionstatus id="refreshStatus">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%; top: 135px;">
@@ -158,6 +167,62 @@
 					</apex:facet>
 				</apex:actionstatus>
 			</apex:outputpanel>
+
+			<apex:outputpanel>
+				<apex:actionstatus id="refreshWholeStatus">
+					<apex:facet name="start">
+    					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%;">
+        					<div class="waitingHolder" style="top: 25%;">
+            					<img class="waitingImage" src="{!$Resource.spinner}"/>
+        					</div>
+    					</div>
+					</apex:facet>
+				</apex:actionstatus>
+			</apex:outputpanel>
 		</apex:pageBlock>
 	</apex:form>
+
+	<script>
+		function expandAllInsets() {
+			var expandingCss = '.subjectRepeat > .apexp > div > .pbBody > div > .pbSubsection {max-height: 600px !important;}';
+
+			if (document.querySelector("head > style") == null) {
+				style = document.createElement('style');
+				if ( ! style.styleSheet) {
+					style.appendChild(document.createTextNode(expandingCss));
+				}
+				else {
+					style.styleSheet.cssText = expandingCss;
+				}
+			    document.querySelector("head").appendChild(style);
+			}
+			else {
+				var deletingCss = document.querySelector("head > style");
+			    deletingCss.parentNode.removeChild(deletingCss);
+			}
+
+			var insetButton = document.querySelector("input[id*='expandingButton'");
+			insetButton.value = "Hide All";
+			insetButton.blur();
+			insetButton.onclick = function() {
+				hideAllInsets();
+				return false;
+			}
+		}
+		function hideAllInsets() {
+			if (document.querySelector("head > style") != null) {
+				var deletingCss = document.querySelector("head > style");
+			    deletingCss.parentNode.removeChild(deletingCss);
+			}
+
+			var insetButton = document.querySelector("input[id*='expandingButton'");
+			insetButton.value = "Expand All";
+			insetButton.blur();
+			insetButton.onclick = function() {
+				expandAllInsets();
+				return false;
+			}
+		}
+	</script>
+
 </apex:page>

@@ -6,7 +6,7 @@ public with sharing class KAAdminHomeController {
 
 	public List<Employee__c> employees { get; set; }
 	public List<Test__c> tests { get; set ;}
-	
+
 	public String tmpEmployee { get; set; }
 	public String tmpTest { get; set; }
 
@@ -17,11 +17,13 @@ public with sharing class KAAdminHomeController {
 	public Employee_Task__c preCreatedEmployeeTask { get; set; }
 
 	public List<CronJobDetail> scheduledJobs { get; private set; }
+	public KANotificationMapWrapper notificMap { get; private set; }
 
 	public KAAdminHomeController() {
 		refreshRecentTasks();
 		refreshRecentResults();
 
+		notificMap = new KANotificationMapWrapper();
 		employees = new List<Employee__c>();
 		tests = new List<Test__c>();
 		preCreatedTask = new Task__c();
@@ -64,57 +66,82 @@ public with sharing class KAAdminHomeController {
 	}
 
 	public PageReference createNewTask() {
-		if (preCreatedTask.AssignTime__c != null) {
-			List<Test__c> suitableTests = [
-				SELECT Id
-				FROM Test__c
-				WHERE Id = :chosenTest
-				LIMIT 1
-			];
-			if (suitableTests.size() > 0) {
-				preCreatedTask.Test__c = suitableTests.get(0).Id;
+		List<Employee__c> suitableEmployees = [
+			SELECT Id
+			FROM Employee__c
+			WHERE Id = :chosenEmployee
+			LIMIT 1
+		];
+		List<Test__c> suitableTests = [
+			SELECT Id
+			FROM Test__c
+			WHERE Id = :chosenTest
+			LIMIT 1
+		];
 
-				List<Employee_Task__c> existingEmploTasks = [
-					SELECT Task__r.Id
-					FROM Employee_Task__c
-					WHERE Task__r.Test__c = :preCreatedTask.Test__c AND Employee__c =:chosenEmployee
-				];
-				if ( ! existingEmploTasks.isEmpty()) {
-					List<Task__c> deletingTasks = new List<Task__c>();
-					for (Employee_Task__c tmpEmploTask : existingEmploTasks) {
-						deletingTasks.add(tmpEmploTask.Task__r);
-					}
-					delete deletingTasks;
-				}
-
-				insert preCreatedTask;
-
-				List<Task__c> suitableTasks = [
-					SELECT Id
-					FROM Task__c
-					WHERE Id = :preCreatedTask.Id
-					LIMIT 1
-				];
-				List<Employee__c> suitableEmployees = [
-					SELECT Id
-					FROM Employee__c
-					WHERE Id = :chosenEmployee
-					LIMIT 1
-				];
-				if (suitableTasks.size() > 0 && suitableEmployees.size() > 0) {
-					preCreatedEmployeeTask.Task__c = suitableTasks.get(0).Id;
-					preCreatedEmployeeTask.Employee__c = suitableEmployees.get(0).Id;
-					preCreatedEmployeeTask.IsEmailQueue__c = true;
-					insert preCreatedEmployeeTask;
-				}	
+		if (suitableEmployees.size() == 0 || suitableTests.size() == 0 ||
+			preCreatedTask.AssignTime__c == null || preCreatedTask.AssignTime__c < Datetime.now()) {
+			if (suitableEmployees.size() == 0) {
+				notificMap.addDanger('User doesn\'t exist.');
+			}
+			else if (suitableTests.size() == 0) {
+				notificMap.addDanger('Test doesn\'t exist.');
+			}
+			else if (preCreatedTask.AssignTime__c == null) {
+				notificMap.addDanger('Date shouldn\'t be empty.');
+			}
+			else if (preCreatedTask.AssignTime__c < Datetime.now()) {
+				notificMap.addDanger('Date shouldn\'t be less than present time.');
 			}
 		}
-		PageReference updatingPage = new PageReference('/apex/KAAdminUserHome');
-		updatingPage.setRedirect(true);
-		return updatingPage;
+		else {
+			preCreatedTask.Test__c = suitableTests.get(0).Id;
+
+			List<Employee_Task__c> existingEmploTasks = [
+				SELECT Task__r.Id
+				FROM Employee_Task__c
+				WHERE Task__r.Test__c = :preCreatedTask.Test__c AND Employee__c = :chosenEmployee
+			];
+			if ( ! existingEmploTasks.isEmpty()) {
+				List<Task__c> deletingTasks = new List<Task__c>();
+				for (Employee_Task__c tmpEmploTask : existingEmploTasks) {
+					deletingTasks.add(tmpEmploTask.Task__r);
+				}
+				delete deletingTasks;
+			}
+
+			insert preCreatedTask;
+
+			List<Task__c> suitableTasks = [
+				SELECT Id
+				FROM Task__c
+				WHERE Id = :preCreatedTask.Id
+				LIMIT 1
+			];
+
+			if (suitableTasks.size() > 0) {
+				preCreatedEmployeeTask.Task__c = suitableTasks.get(0).Id;
+				preCreatedEmployeeTask.Employee__c = suitableEmployees.get(0).Id;
+				preCreatedEmployeeTask.IsEmailQueue__c = true;
+				insert preCreatedEmployeeTask;
+
+				notificMap.addSuccess('Task was created for ' + String.valueOf(preCreatedTask.AssignTime__c) + '.');
+
+				refreshRecentTasks();
+				preCreatedTask = new Task__c();
+				preCreatedEmployeeTask = new Employee_Task__c();
+				tmpTest = null;
+				tmpEmployee = null;
+				//PageReference updatingPage = new PageReference('/apex/KAAdminUserHome');
+				//updatingPage.setRedirect(true);
+				//return updatingPage;
+			}
+		}
+		return null;
 	}
 
 	public void typeEmployee() {
+		chosenEmployee = null;
 		String searchEmployee = '%' + tmpEmployee + '%';
 		employees = [
 			SELECT First_Name__c, Last_Name__c
@@ -145,6 +172,7 @@ public with sharing class KAAdminHomeController {
 	}
 
 	public void chooseTest() {
+		chosenTest = null;
 		chosenTest = (Id) ApexPages.currentPage().getParameters().get('chosenTest');
 		Test__c varTest = [
 			SELECT Name, Subject__r.Name

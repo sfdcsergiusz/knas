@@ -1,5 +1,6 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KASubjectQuestionsListController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
 	<style>
@@ -61,107 +62,115 @@
 	<apex:form >
 		<apex:pageBlock >
 			<apex:outputpanel id="createQuestion" style="display: none;">
-				<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
-					<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+				<apex:outputpanel id="innerCreateQuestion">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
 
-						<h1>
-        					Creating New Question
-        				</h1>
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
+						<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
 
-        				<apex:commandButton value="Cancel" onclick="closeCreatingQuestion(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
-        				<apex:commandButton value="Create" action="{!createQuestion}" reRender="commonSection, createQuestion" status="refreshStatusQuest" styleClass="btn btn-primary" style="float: right;"/>
-        				<br/>
-        				<br/>
+							<h1>
+	        					Creating New Question
+	        				</h1>
 
-        				<!-- Subject Choosing -->
+	        				<apex:commandButton value="Cancel" onclick="closeCreatingQuestion(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+	        				<apex:commandButton value="Create" action="{!createQuestion}" reRender="commonSection, innerCreateQuestion" status="refreshStatusQuest" styleClass="btn btn-primary" style="float: right;"/>
+	        				<br/>
+	        				<br/>
 
-    					<apex:actionRegion >
-    						<apex:outputLabel for="inputSubject" value="Subject" style="float: left"/>
-    						<apex:inputText id="inputSubject" value="{!tmpSubject}" html-placeholder="Please, input subject title...">
-    							<apex:actionSupport event="onkeyup" action="{!typeSubject}" reRender="subjectsTable"/>
-    						</apex:inputText>
-    					</apex:actionRegion>
+	        				<!-- Subject Choosing -->
 
-    					<br/>
-    					<div style="position: absolute; width: 90%; margin: 0 auto;">
-        					<apex:pageBlockTable id="subjectsTable" value="{!subjects}" var="subject" style="overflow:scroll; border: none;" align="left">
-        						<apex:column styleClass="chooseColumn" rendered="{!IF(subjects.size > 0, true, false)}" headerValue="Name" onclick="chooseSubjectAF('{!subject.Id}');">
-        							<h4>
-        								<apex:outputText value="{!subject.Name}"/>
-        							</h4>
-        						</apex:column>
-        					</apex:pageBlockTable>
-        				</div>
+	    					<apex:actionRegion >
+	    						<apex:outputLabel for="inputSubject" value="Subject" style="float: left"/>
+	    						<apex:inputText id="inputSubject" value="{!tmpSubject}" html-placeholder="Please, input subject title...">
+	    							<apex:actionSupport event="onkeyup" action="{!typeSubject}" reRender="subjectsTable"/>
+	    						</apex:inputText>
+	    					</apex:actionRegion>
 
-        				<apex:actionFunction action="{!chooseSubject}" name="chooseSubjectAF" reRender="subjectsTable, inputSubject" status="refreshStatusQuest">
-        					<apex:param name="chosenSubject" value=""/>
-        				</apex:actionFunction>
-
-        				<!-- Theme Choosing -->
-
-        				<apex:actionRegion >
-        					<apex:outputLabel for="inputTheme" value="Theme" style="float: left"/>
-    						<apex:inputText id="inputTheme" value="{!tmpTheme}" html-placeholder="Please, input theme title...">
-    							<apex:actionSupport event="onkeyup" action="{!typeTheme}" reRender="themesTable"/>
-    						</apex:inputText>
-    					</apex:actionRegion>
-
-    					<br/>
-    					<div style="position: absolute; width: 90%; margin: 0 auto;">
-        					<apex:pageBlockTable id="themesTable" value="{!themes}" var="theme" style="overflow:scroll; border: none;" align="left">
-        						<apex:column styleClass="chooseColumn" rendered="{!IF(themes.size > 0, true, false)}" headerValue="Name" onclick="chooseThemeAF('{!theme.Id}');">
-        							<h4>
-        								<apex:outputText value="{!theme.Name}"/>
-        							</h4>
-        						</apex:column>
-        					</apex:pageBlockTable>
-        				</div>
-
-        				<apex:actionFunction action="{!chooseTheme}" name="chooseThemeAF" reRender="themesTable, inputSubject, inputTheme" status="refreshStatusQuest">
-        					<apex:param name="chosenTheme" value=""/>
-        				</apex:actionFunction>
-
-        				<!--Statement and Level Inputing -->
-        				<apex:outputLabel for="inputLevel" value="Difficulty" style="float: left"/>
-        				<apex:inputField id="inputLevel" value="{!preCreatedQuestion.Level__c}"/>
-
-        				<apex:outputLabel for="inputStatement" value="Statement" style="float: left"/>
-        				<apex:inputField id="inputStatement" value="{!preCreatedQuestion.Statement__c}" html-placeholder="Please, input the statement of the question..."/>
-
-        				<!-- Answer Creating -->
-
-        				<apex:outputPanel layout="none" id="answersPanel">
-	        				<apex:variable value="{!-1}" var="rowNum"/>
-
-	        				<apex:pageBlockSection columns="1">
-	        					<apex:pageBlockTable value="{!preCreatedAnswers}" var="answer" columnsWidth="3%, 8%, 90%, 10%">
-	        						<apex:column headerValue="#">
-	        							<apex:variable var="rowNum" value="{!rowNum + 1}"/>
+	    					<br/>
+	    					<div style="position: absolute; width: 90%; margin: 0 auto;">
+	        					<apex:pageBlockTable id="subjectsTable" value="{!subjects}" var="subject" style="overflow:scroll; border: none;" align="left">
+	        						<apex:column styleClass="chooseColumn" rendered="{!IF(subjects.size > 0, true, false)}" headerValue="Name" onclick="chooseSubjectAF('{!subject.Id}');">
 	        							<h4>
-	        								<apex:outputLabel value="{!rowNum + 1}" styleClass="label label-primary"/>
+	        								<apex:outputText value="{!subject.Name}"/>
 	        							</h4>
 	        						</apex:column>
-	        						<apex:column headerValue="Right">
-	        							<apex:inputField value="{!answer.Right__c}"/>
-	        						</apex:column>
-	        						<apex:column headerValue="Variant">
-	        							<apex:inputField value="{!answer.Variant__c}" html-placeholder="Please, input the answer..."/>
-	        						</apex:column>
-	        						<apex:column headerValue="Actions">
-	        							<apex:commandButton value="Delete" action="{!reduceAnswer}" styleClass="btn btn-link" reRender="answersPanel" status="refreshStatusQuest" title="Delete this answer">
-		        							<apex:param name="answerIndex" value="{!rowNum}"/>
-	        							</apex:commandButton>
-	        						</apex:column>
-		        				</apex:pageBlockTable>
-		        				<apex:commandButton value="Add answer..." action="{!addAnswer}" styleClass="btn btn-link" reRender="answersPanel" status="refreshStatusQuest" title="Add new answer"/>
-	        				</apex:pageBlockSection>
-	        			</apex:outputPanel>
+	        					</apex:pageBlockTable>
+	        				</div>
 
+	        				<apex:actionFunction action="{!chooseSubject}" name="chooseSubjectAF" reRender="subjectsTable, inputSubject" status="refreshStatusQuest">
+	        					<apex:param name="chosenSubject" value=""/>
+	        				</apex:actionFunction>
+
+	        				<!-- Theme Choosing -->
+
+	        				<apex:actionRegion >
+	        					<apex:outputLabel for="inputTheme" value="Theme" style="float: left"/>
+	    						<apex:inputText id="inputTheme" value="{!tmpTheme}" html-placeholder="Please, input theme title...">
+	    							<apex:actionSupport event="onkeyup" action="{!typeTheme}" reRender="themesTable"/>
+	    						</apex:inputText>
+	    					</apex:actionRegion>
+
+	    					<br/>
+	    					<div style="position: absolute; width: 90%; margin: 0 auto;">
+	        					<apex:pageBlockTable id="themesTable" value="{!themes}" var="theme" style="overflow:scroll; border: none;" align="left">
+	        						<apex:column styleClass="chooseColumn" rendered="{!IF(themes.size > 0, true, false)}" headerValue="Name" onclick="chooseThemeAF('{!theme.Id}');">
+	        							<h4>
+	        								<apex:outputText value="{!theme.Name}"/>
+	        							</h4>
+	        						</apex:column>
+	        					</apex:pageBlockTable>
+	        				</div>
+
+	        				<apex:actionFunction action="{!chooseTheme}" name="chooseThemeAF" reRender="themesTable, inputSubject, inputTheme" status="refreshStatusQuest">
+	        					<apex:param name="chosenTheme" value=""/>
+	        				</apex:actionFunction>
+
+	        				<!--Statement and Level Inputing -->
+	        				<apex:outputLabel for="inputLevel" value="Difficulty" style="float: left"/>
+	        				<apex:inputField id="inputLevel" value="{!preCreatedQuestion.Level__c}"/>
+
+	        				<apex:outputLabel for="inputStatement" value="Statement" style="float: left"/>
+	        				<apex:inputField id="inputStatement" value="{!preCreatedQuestion.Statement__c}" html-placeholder="Please, input the statement of the question..."/>
+
+	        				<!-- Answer Creating -->
+
+	        				<apex:outputPanel layout="none" id="answersPanel">
+		        				<apex:variable value="{!-1}" var="rowNum"/>
+
+		        				<apex:pageBlockSection columns="1">
+		        					<apex:pageBlockTable value="{!preCreatedAnswers}" var="answer" columnsWidth="3%, 8%, 90%, 10%">
+		        						<apex:column headerValue="#">
+		        							<apex:variable var="rowNum" value="{!rowNum + 1}"/>
+		        							<h4>
+		        								<apex:outputLabel value="{!rowNum + 1}" styleClass="label label-primary"/>
+		        							</h4>
+		        						</apex:column>
+		        						<apex:column headerValue="Right">
+		        							<apex:inputField value="{!answer.Right__c}"/>
+		        						</apex:column>
+		        						<apex:column headerValue="Variant">
+		        							<apex:inputField value="{!answer.Variant__c}" html-placeholder="Please, input the answer..."/>
+		        						</apex:column>
+		        						<apex:column headerValue="Actions">
+		        							<apex:commandButton value="Delete" action="{!reduceAnswer}" styleClass="btn btn-link" reRender="answersPanel" status="refreshStatusQuest" title="Delete this answer">
+			        							<apex:param name="answerIndex" value="{!rowNum}"/>
+		        							</apex:commandButton>
+		        						</apex:column>
+			        				</apex:pageBlockTable>
+			        				<apex:commandButton value="Add answer..." action="{!addAnswer}" styleClass="btn btn-link" reRender="answersPanel" status="refreshStatusQuest" title="Add new answer"/>
+		        				</apex:pageBlockSection>
+		        			</apex:outputPanel>
+
+						</div>
 					</div>
-				</div>
+				</apex:outputpanel>
 			</apex:outputpanel>
 
-			<apex:outputpanel>
+			<apex:outputpanel >
 				<apex:actionstatus id="refreshStatusQuest">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">

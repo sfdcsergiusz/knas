@@ -75,9 +75,7 @@ public with sharing class KAImportQuestionsCSVController {
 
 
 		   	if ( ! quelist.isEmpty()) {
-				KAUniqueThemeHandler.enablesTrigger = false;
 				insert quelist;
-				KAUniqueThemeHandler.enablesTrigger = true;
 			}
 			for (Integer i = 0; i < quelist.size(); i++) {
 				for (Integer j = 0; j < rightAnswers[i].size(); j++) {

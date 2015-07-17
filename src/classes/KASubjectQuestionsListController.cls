@@ -12,15 +12,20 @@ public with sharing class KASubjectQuestionsListController {
 	public Id chosenTheme { get; set; }
 
 	public List<Question__c> questions { get; set; }
+	public String subjectId { get; set; }
+	public String themeId { get; set; }
 	public String subjectName { get; set; }
 	public String themeName { get; set; }
 
 	public Question__c preCreatedQuestion { get; set; }
 	public List<Answer__c> preCreatedAnswers { get; set; }
 
+	public KANotificationMapWrapper notificMap { get; private set; }
+
 	private PageReference currentPage;
 
 	public KASubjectQuestionsListController() {
+		notificMap = new KANotificationMapWrapper();
 		subjects = new List<Subject__c>();
 		themes = new List<Theme__c>();
 		preCreatedQuestion = new Question__c();
@@ -30,8 +35,29 @@ public with sharing class KASubjectQuestionsListController {
 		}
 
 		currentPage = ApexPages.currentPage();
-		themeName = currentPage.getParameters().get('themeName');
-		subjectName = currentPage.getParameters().get('subjectName');
+		themeId = currentPage.getParameters().get('themeId');
+		subjectId = currentPage.getParameters().get('subjectId');
+
+		if (themeId != null) {
+			themeName = [
+				SELECT Name
+				FROM Theme__c
+				WHERE Id = :themeId
+			].get(0).Name;
+			subjectName = [
+				SELECT Name, Subject__r.Name
+				FROM Theme__c
+				WHERE Id = :themeId
+			].get(0).Subject__r.Name;
+		}
+		if (subjectId != null) {
+			subjectName = [
+				SELECT Name
+				FROM Subject__c
+				WHERE Id = :subjectId
+			].get(0).Name;
+		}
+
 		refreshQuestions();
 	}
 
@@ -45,34 +71,34 @@ public with sharing class KASubjectQuestionsListController {
 	}
 
 	public void refreshQuestions() {
-		if (themeName != null) {
+		if (themeId != null) {
 			questions = [
-				SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name
+				SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id
 				FROM Question__c
-				WHERE Theme__r.Name = :themeName
+				WHERE Theme__r.Id = :themeId
 				ORDER BY CreatedDate DESC
 				LIMIT 50000
 			];
 			if (questions.size() > 0) {
-				subjectName = questions[0].Theme__r.Subject__r.Name;
+				subjectId = questions[0].Theme__r.Subject__r.Id;
 			}
 			else {
-				subjectName = [
-					SELECT Subject__r.Name
+				subjectId = [
+					SELECT Subject__r.Id
 					FROM Theme__c
-					WHERE Name = :themeName
+					WHERE Id = :themeId
 					LIMIT 1
-					].Subject__r.Name;
+					].Subject__r.Id;
 			}
 
 			tmpSubject = subjectName;
 			tmpTheme = themeName;
 		}
-		else if (subjectName != null) {
+		else if (subjectId != null) {
 			questions = [
-				SELECT Name, Level__c, Statement__c, CreatedDate,  Theme__r.Name, Theme__r.Subject__r.Name
+				SELECT Name, Level__c, Statement__c, CreatedDate,  Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id
 				FROM Question__c
-				WHERE Theme__r.Subject__r.Name = :subjectName
+				WHERE Theme__r.Subject__r.Id = :subjectId
 				ORDER BY CreatedDate DESC
 				LIMIT 50000
 			];
@@ -81,6 +107,7 @@ public with sharing class KASubjectQuestionsListController {
 	}
 
 	public void typeSubject() {
+		chosenSubject = null;
 		String searchSubject = '%' + tmpSubject + '%';
 		subjects = [
 			SELECT Name
@@ -90,6 +117,7 @@ public with sharing class KASubjectQuestionsListController {
 	}
 
 	public void typeTheme() {
+		chosenTheme = null;
 		String searchSubject = '%' + tmpSubject + '%';
 		String searchTheme = '%' + tmpTheme + '%';
 		themes = [
@@ -134,41 +162,63 @@ public with sharing class KASubjectQuestionsListController {
 	}
 
 	public PageReference createQuestion() {
-		Theme__c varTheme = [
+		List<Theme__c> checkThemeExistenceList = [
 			SELECT Name
 			FROM Theme__c
 			WHERE Name LIKE :tmpTheme AND Subject__r.Name LIKE :tmpSubject
 		];
-		preCreatedQuestion.Theme__c = varTheme.Id;
-		insert preCreatedQuestion;
-
-		List<Answer__c> preInsertedAnswers = new List<Answer__c>();
+		Boolean hasAnswersEmpties = false;
+		Boolean hasAnswersRights = false;
 		for (Integer i = 0; i < preCreatedAnswers.size(); i++) {
-			if (preCreatedAnswers[i].Variant__c != null && preCreatedAnswers[i].Variant__c != '') {
-				preCreatedAnswers[i].Question__c = preCreatedQuestion.Id;
-
-				preInsertedAnswers.add(preCreatedAnswers[i]);
+			if (preCreatedAnswers[i].Variant__c == null || preCreatedAnswers[i].Variant__c == '') {
+				hasAnswersEmpties = true;
+				break;
+			}
+			if (preCreatedAnswers[i].Right__c == true) {
+				hasAnswersRights = true;
 			}
 		}
-		insert preInsertedAnswers;
 
-		preCreatedQuestion = new Question__c();
-		preCreatedAnswers.clear();
-		for (Integer i = 0; i < 3; i++) {
-			preCreatedAnswers.add(new Answer__c());
-		}
-
-		refreshQuestions();
-		if (themeName != null) {
-			PageReference updatingPage = new PageReference('/apex/KASubjectQuestionsList?themeName='+themeName);
-			updatingPage.setRedirect(true);
-			return updatingPage;
+		if (checkThemeExistenceList.size() == 0 || preCreatedQuestion.Statement__c == '' || hasAnswersEmpties || ( ! hasAnswersRights) ||
+			preCreatedQuestion.Level__c == null) {
+			if (checkThemeExistenceList.size() == 0) {
+				notificMap.addDanger('Please, check question\'s subject and theme');
+			}
+			else if (preCreatedQuestion.Statement__c == '' || preCreatedQuestion.Statement__c == null) {
+				notificMap.addDanger('Please, enter the statement.');
+			}
+			else if (hasAnswersEmpties) {
+				notificMap.addDanger('Please, fill all the answers you requested.');
+			}
+			else if ( ! hasAnswersRights) {
+				notificMap.addDanger('Please, add at least one right variant');
+			}
+			else if (preCreatedQuestion.Level__c == null) {
+				notificMap.addDanger('Please, choose the difficulty level.');
+			}
 		}
 		else {
-			PageReference updatingPage = new PageReference('/apex/KASubjectQuestionsList?subjectName='+subjectName);
-			updatingPage.setRedirect(true);
-			return updatingPage;
+			preCreatedQuestion.Theme__c = checkThemeExistenceList.get(0).Id;
+			insert preCreatedQuestion;
+
+			List<Answer__c> preInsertedAnswers = new List<Answer__c>();
+			for (Integer i = 0; i < preCreatedAnswers.size(); i++) {
+					preCreatedAnswers[i].Question__c = preCreatedQuestion.Id;
+					preInsertedAnswers.add(preCreatedAnswers[i]);
+			}
+			insert preInsertedAnswers;
+
+			notificMap.addSuccess('Question was created.');
+
+			preCreatedQuestion = new Question__c();
+			preCreatedAnswers.clear();
+			for (Integer i = 0; i < 3; i++) {
+				preCreatedAnswers.add(new Answer__c());
+			}
+
+			refreshQuestions();
 		}
+		return null;
 	}
 
 	public void deleteQuestion() {

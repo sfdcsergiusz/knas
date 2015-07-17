@@ -1,8 +1,9 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KALoginController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
-	<apex:outputpanel>
+	<apex:outputpanel >
 		<apex:actionstatus id="loadingStatus">
 			<apex:facet name="start">
 				<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
@@ -14,16 +15,18 @@
 		</apex:actionstatus>
 	</apex:outputpanel>
 
-	<apex:form>
+	<apex:form >
 		<div style="width: 100%; height: 100%;">
 			<div style="width: 50%; margin: auto; position: relative; top: 140px;">
 				<apex:outputPanel id="messages">
-					<h2 style="left: 40%; position: relative;">
-						<apex:outputLabel rendered="{!isSend}" value="Please, check your e-mail to create new password"/>
-						<apex:outputLabel rendered="{!noSend}" value="Wrong username" style="color: rgb(202, 86, 86) !important;"/>
-					</h2>
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
 				</apex:outputPanel>
-				<apex:pageBlock>
+
+				<apex:pageBlock >
 					<apex:actionFunction name="setIdentifier" action="{!setIdentifier}" reRender="inputSection" status="loadingStatus">
 						<apex:param name="mainId" value=""/>
 					</apex:actionFunction>
@@ -32,21 +35,21 @@
 						setIdentifier(browserId);
 					</script>
 
-					<apex:pageBlockButtons location="bottom">
-						<apex:commandButton value="SIGN IN" action="{!login}" styleClass="btn btn-success"/>
+					<apex:pageBlockButtons id="buttons" location="bottom">
+						<apex:commandButton value="SIGN IN" action="{!login}" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-success"/>
 						<apex:commandButton value="Sign Up" onclick="startRegistering(); return false;" styleClass="btn btn-warning"/>
-						<apex:commandButton value="Reset Password" action="{!resetPass}" styleClass="btn btn-link" title="Send new password to your email" reRender="messages"/>
+						<apex:commandButton value="Reset Password" action="{!resetPass}" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-link" title="Send new password to your email"/>
 					</apex:pageBlockButtons>
 
 					<apex:pageBlockSection id="inputSection" columns="1">
 
-						<apex:pageBlockSectionItem>
+						<apex:pageBlockSectionItem >
 							<apex:outputLabel for="inputUsername" value="Login: "/>
 							<apex:inputText id="inputUsername" value="{!username}" html-placeholder="Please, input your email login..." html-pattern="[\s\S]+@codeswat\.com" title="Please, use only Roman alphabet and pattern like 'mailname@codeswat.com'." required="true"/>
 						</apex:pageBlockSectionItem>
-						<apex:pageBlockSectionItem>
+						<apex:pageBlockSectionItem >
 							<apex:outputLabel for="inputPass" value="Password: "/>
-							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." html-pattern="[\s\S]{4,24}" title="Password must be from 8 to 24 symbols." required="false"/>
+							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." html-pattern="[\s\S]{8,24}" title="Password must be from 8 to 24 symbols." required="false"/>
 						</apex:pageBlockSectionItem>
 					</apex:pageBlockSection>
 
@@ -55,7 +58,7 @@
 		</div>
 	</apex:form>
 
-	<apex:form>
+	<apex:form >
 		<apex:actionFunction action="{!register}" name="startRegistering" status="loadingStatus"/>
 	</apex:form>
 

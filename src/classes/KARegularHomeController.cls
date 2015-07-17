@@ -10,8 +10,10 @@ public with sharing class KARegularHomeController {
 	public List<Pass_History__c> statistics { get; private set; }
 	public List<Employee_Task__c> upcomingTests { get; private set; }
 	public List<Pass_History__c> passedTests { get; private set; }
+	public KANotificationMapWrapper notificMap { get; private set; }
 
 	public KARegularHomeController() {
+		notificMap = new KANotificationMapWrapper();
 		upcomingTests = new List<Employee_Task__c>();
 		passedTests = new List<Pass_History__c>();
 
@@ -27,6 +29,11 @@ public with sharing class KARegularHomeController {
 			if ( ! tmpBrowsers.isEmpty()) {
 				userId = tmpBrowsers.get(0).Employee__r.Id;
 				isUserActive = tmpBrowsers.get(0).Employee__r.IsActive__c;
+
+				if ( ! isUserActive) {
+					notificMap.addInfo('You are registered now. Please, wait for activation.');
+				}
+
 
 				upcomingTests = [
 					SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id, Task__r.Status__c

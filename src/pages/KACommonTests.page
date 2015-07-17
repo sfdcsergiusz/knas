@@ -1,5 +1,6 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonTestsController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
 	<style>
@@ -96,25 +97,27 @@
 	</div>
 
 	<apex:form id="showForm">
-		<apex:pageBlock>
-			<apex:actionRegion>
+		<apex:pageBlock >
+			<apex:actionRegion >
 				<apex:outputPanel layout="none">
-					<apex:inputText value="{!tmpSubject}" html-placeholder="Please, input subject name..." style="float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
+					<apex:inputText id="subjectInput" value="{!tmpSubject}" html-placeholder="Please, input subject name..." style="width: 54% !important; float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
 						<apex:actionSupport event="onkeyup" action="{!typeSubject}" reRender="subjectSection" status="refreshStatus"/>
 					</apex:inputText>
+					<apex:commandButton id="resettingButton" value="Reset Search" action="{!resetSearch}" reRender="subjectSection, subjectInput" status="refreshWholeStatus" styleClass="btn btn-link" style="float: left; margin: 16px 12px 12px 12px !important;"/>
+					<apex:commandButton id="expandingButton" value="Expand All" onclick="expandAllInsets(); return false;" styleClass="btn btn-default" style="float: left; margin: 16px 12px 12px 12px !important; border: 1px solid #ccc !important;"/>
 				</apex:outputPanel>
 			</apex:actionRegion>
 			<apex:outputPanel id="subjectSection">
 				<apex:repeat value="{!subjects}" var="subject">
 					<div class="subjectRepeat">
-						<apex:pageBlock>
+						<apex:pageBlock >
 
-							<apex:actionRegion>
+							<apex:actionRegion >
 								<apex:outputPanel layout="none">
 									<div class="hoverDiv" style="height: 37px;">
 										<div style="position: relative; bottom: -7px; height: 37px; left: 50px; z-index: 4;">
 											<apex:commandButton value="List" action="{!goToSubjectList}" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" reRender="subjectSection" title="View all questions for this subject">
-												<apex:param name="listParam" value="{!subject.Name}"/>
+												<apex:param name="listParam" value="{!subject.Id}"/>
 											</apex:commandButton>
 											<apex:commandLink value="{!subject.Themes_Number__c} themes" styleClass="btn btn-link" style="padding: 2px 25px !important; margin: 0px 0px 6px !important; line-height: normal !important; color: #2F933C !important; pointer-events: none; cursor: default;"/>
 											<h3>
@@ -140,7 +143,7 @@
 															<apex:param name="statTheme" value="{!theme.Id}"/>
 														</apex:actionSupport>
 													</apex:outputPanel>
-													<apex:outputPanel>
+													<apex:outputPanel >
 														<apex:repeat value="{!themeStatistic}" var="testStat">
 															<apex:outputLabel value="{!testStat.Test__r.Name}"/>
 															<apex:outputLabel value="Time: {!testStat.Test__r.Duration__c}"/>
@@ -150,7 +153,7 @@
 
 																</apex:facet>
 																<apex:facet name="stop">
-																	<apex:commandButton value="Delete" styleClass="btn btn-link" action="{!deleteTest}" reRender="showForm, createForm" status="refreshStatus">
+																	<apex:commandButton value="Delete" styleClass="btn btn-link" action="{!deleteTest}" reRender="subjectSection" status="refreshWholeStatus">
 																		<apex:param name="testToDelete" value="{!testStat.Test__r.Id}"/>
 																	</apex:commandButton>
 																</apex:facet>
@@ -175,7 +178,7 @@
 				</apex:repeat>
 			</apex:outputPanel>
 
-			<apex:outputpanel>
+			<apex:outputpanel >
 				<apex:actionstatus id="refreshStatus">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%; top: 135px;">
@@ -193,52 +196,71 @@
 		<apex:actionFunction name="preCreateTest" action="{!preCreateTest}" reRender="testSubjectName, testThemeName, capturedQuests, testDuration, capturedQuestsLabel, testName" status="refreshStatusTest">
 			<apex:param name="themeId" value=""/>
 		</apex:actionFunction>
-		<apex:pageBlock>
+		<apex:pageBlock >
 			<apex:outputpanel id="createTest" style="display: none;">
-				<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
-					<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+				<apex:outputpanel id="innerCreateTask">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
+						<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
 
-						<h1>
-	    					Creating New Test
-	    				</h1>
-	    				<apex:commandButton value="Cancel" onclick="closeCreatingTest(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
-		    			<apex:commandButton value="Create" action="{!createTest}" styleClass="btn btn-primary" style="float: right;"/>
-		    			<br/>
+							<h1>
+		    					Creating New Test
+		    				</h1>
+		    				<apex:commandButton value="Cancel" onclick="closeCreatingTest(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+			    			<apex:commandButton value="Create" action="{!createTest}" reRender="subjectSection, innerCreateTask" status="refreshWholeStatus" styleClass="btn btn-primary" style="float: right;"/>
+			    			<br/>
 
-	    				<apex:pageBlockSection columns="1">
+		    				<apex:pageBlockSection columns="1">
 
-		    				<!-- Subject -->
+			    				<!-- Subject -->
 
-							<apex:outputLabel for="testSubjectName" value="Subject" style="float: left"/>
-							<apex:outputText id="testSubjectName" value="{!testSubjectName}"/>
+								<apex:outputLabel for="testSubjectName" value="Subject" style="float: left"/>
+								<apex:outputText id="testSubjectName" value="{!testSubjectName}"/>
 
-		    				<!-- Theme -->
+			    				<!-- Theme -->
 
-		    				<apex:outputLabel for="testThemeName" value="Theme" style="float: left"/>
-							<apex:outputText id="testThemeName" value="{!testThemeName}"/>
+			    				<apex:outputLabel for="testThemeName" value="Theme" style="float: left"/>
+								<apex:outputText id="testThemeName" value="{!testThemeName}"/>
 
-		    				<!-- Test And Junction Filling -->
+			    				<!-- Test And Junction Filling -->
 
-		    				<apex:outputLabel for="testName" value="Test Name" style="float: left"/>
-							<apex:inputField id="testName" value="{!preCreatedTest.Name}" required="false" html-placeholder="Please, input test name..." label=""/>
+			    				<apex:outputLabel for="testName" value="Test Name" style="float: left"/>
+								<apex:inputField id="testName" value="{!preCreatedTest.Name}" required="false" html-placeholder="Please, input test name..." label=""/>
 
-		    				<apex:outputLabel id="capturedQuestsLabel" for="capturedQuests" value="Questions to catch (max. {!themeAvailableQuestions})" style="float: left"/>
-							<apex:inputField id="capturedQuests" value="{!preCreatedTestTheme.Questions_Captured__c}" required="false" html-placeholder="Please, input number of questions..." label=""/>
+			    				<apex:outputLabel id="capturedQuestsLabel" for="capturedQuests" value="Questions to catch (max. {!themeAvailableQuestions})" style="float: left"/>
+								<apex:inputField id="capturedQuests" value="{!preCreatedTestTheme.Questions_Captured__c}" required="false" html-placeholder="Please, input number of questions..." label=""/>
 
-							<apex:outputLabel for="testDuration" value="Passing Time" style="float: left"/>
-							<apex:inputField id="testDuration" value="{!preCreatedTest.Duration__c}" required="false" html-placeholder="Please, input time in minutes..." label=""/>
+								<apex:outputLabel for="testDuration" value="Passing Time" style="float: left"/>
+								<apex:inputField id="testDuration" value="{!preCreatedTest.Duration__c}" required="false" html-placeholder="Please, input time in minutes..." label=""/>
 
-	    				</apex:pageBlockSection>
+		    				</apex:pageBlockSection>
 
+						</div>
 					</div>
-				</div>
+				</apex:outputpanel>
 			</apex:outputpanel>
 
-			<apex:outputpanel>
+			<apex:outputpanel >
 				<apex:actionstatus id="refreshStatusTest">
 					<apex:facet name="start">
     					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
         					<div class="waitingHolder">
+            					<img class="waitingImage" src="{!$Resource.spinner}"/>
+        					</div>
+    					</div>
+					</apex:facet>
+				</apex:actionstatus>
+			</apex:outputpanel>
+
+			<apex:outputpanel>
+				<apex:actionstatus id="refreshWholeStatus">
+					<apex:facet name="start">
+    					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%;">
+        					<div class="waitingHolder" style="top: 25%;">
             					<img class="waitingImage" src="{!$Resource.spinner}"/>
         					</div>
     					</div>
@@ -257,6 +279,46 @@
 		function closeCreatingTest() {
 			var resultDiv = document.querySelector("span[id*='createTest']");
 			resultDiv.style.display = 'none';
+		}
+		function expandAllInsets() {
+			var expandingCss = '.subjectRepeat > .apexp > div > .pbBody > div > .pbSubsection {max-height: 600px !important;}';
+
+			if (document.querySelector("head > style") == null) {
+				style = document.createElement('style');
+				if ( ! style.styleSheet) {
+					style.appendChild(document.createTextNode(expandingCss));
+				}
+				else {
+					style.styleSheet.cssText = expandingCss;
+				}
+			    document.querySelector("head").appendChild(style);
+			}
+			else {
+				var deletingCss = document.querySelector("head > style");
+			    deletingCss.parentNode.removeChild(deletingCss);
+			}
+
+			var insetButton = document.querySelector("input[id*='expandingButton'");
+			insetButton.value = "Hide All";
+			insetButton.blur();
+			insetButton.onclick = function() {
+				hideAllInsets();
+				return false;
+			}
+		}
+		function hideAllInsets() {
+			if (document.querySelector("head > style") != null) {
+				var deletingCss = document.querySelector("head > style");
+			    deletingCss.parentNode.removeChild(deletingCss);
+			}
+
+			var insetButton = document.querySelector("input[id*='expandingButton'");
+			insetButton.value = "Expand All";
+			insetButton.blur();
+			insetButton.onclick = function() {
+				expandAllInsets();
+				return false;
+			}
 		}
 	</script>
 </apex:page>

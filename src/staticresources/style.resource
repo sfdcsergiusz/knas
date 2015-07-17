@@ -1801,6 +1801,84 @@
 				border-bottom: 1px solid #eee !important;
 			}
 
+			/*Alerts*/
+
+			.alert {
+				padding: 15px !important;
+				margin-bottom: 20px !important;
+				border: 1px solid transparent !important;
+				border-radius: 4px !important;
+			}
+			.alert h4 {
+				margin-top: 0 !important;
+				color: inherit !important;
+			}
+			.alert .alert-link {
+				font-weight: bold !important;
+			}
+			.alert > p,
+			.alert > ul {
+				margin-bottom: 0 !important;
+			}
+			.alert > p + p {
+				margin-top: 5px !important;
+			}
+			.alert-dismissable,
+			.alert-dismissible {
+				padding-right: 35px !important;
+			}
+			.alert-dismissable .close,
+			.alert-dismissible .close {
+				position: relative !important;
+				top: -2px !important;
+				right: -21px !important;
+				color: inherit !important;
+			}
+			.alert-success {
+				color: #3c763d !important;
+				background-color: #dff0d8 !important;
+				border-color: #d6e9c6 !important;
+			}
+			.alert-success hr {
+				border-top-color: #c9e2b3 !important;
+			}
+			.alert-success .alert-link {
+				color: #2b542c !important;
+			}
+			.alert-info {
+				color: #31708f !important;
+				background-color: #d9edf7 !important;
+				border-color: #bce8f1 !important;
+			}
+			.alert-info hr {
+				border-top-color: #a6e1ec !important;
+			}
+			.alert-info .alert-link {
+				color: #245269 !important;
+			}
+			.alert-warning {
+				color: #8a6d3b !important;
+				background-color: #fcf8e3 !important;
+				border-color: #faebcc !important;
+			}
+			.alert-warning hr {
+				border-top-color: #f7e1b5 !important;
+			}
+			.alert-warning .alert-link {
+				color: #66512c !important;
+			}
+			.alert-danger {
+				color: #a94442 !important;
+				background-color: #f2dede !important;
+				border-color: #ebccd1 !important;
+			}
+			.alert-danger hr {
+				border-top-color: #e4b9c0 !important;
+			}
+			.alert-danger .alert-link {
+				color: #843534 !important;
+			}
+
 			/*SF's*/
 
 			.apexp {
@@ -2045,4 +2123,14 @@
 			}
 			a[href]:after {
 				content: initial !important;
+
+			.messageDiv {
+				position: fixed;
+				top: 77px;
+				right: 150%;
+				opacity: 0.9;
+				-webkit-transition-duration: 0.25s;
+				-moz-transition-duration: 0.25s;
+				-o-transition-duration: 0.25s;
+				transition-duration: 0.25s;
 			}

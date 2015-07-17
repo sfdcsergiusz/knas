@@ -2,14 +2,15 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
 	<types>
 		<members>KAAdminHomeController</members>
-		<members>KACreateNewPasswordController</members>
 		<members>KACommonSubjectsController</members>
 		<members>KACommonTestsController</members>
 		<members>KACommonUsersController</members>
+		<members>KACreateNewPasswordController</members>
 		<members>KAEmailHandler</members>
 		<members>KAImportQuestionsCSVController</members>
 		<members>KALoginController</members>
 		<members>KANavigationBarController</members>
+		<members>KANotificationMapWrapper</members>
 		<members>KAPageConstants</members>
 		<members>KARegisterController</members>
 		<members>KARegularHomeController</members>
