@@ -38,7 +38,15 @@
 					<apex:pageBlockButtons id="buttons" location="bottom">
 						<apex:commandButton value="SIGN IN" action="{!login}" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-success"/>
 						<apex:commandButton value="Sign Up" onclick="startRegistering(); return false;" styleClass="btn btn-warning"/>
-						<apex:commandButton value="Reset Password" action="{!resetPass}" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-link" title="Send new password to your email"/>
+						<apex:commandButton value="Reset Password" onclick="resetPasswordActionJS(); return false;" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-link" title="Send link for creating new password to your email"/>
+						<apex:actionFunction name="resetPasswordAction" action="{!resetPass}"/>					
+						<script>
+							function resetPasswordActionJS() {
+								var inputPass = document.querySelector('input[id*="inputPass"]');
+								inputPass.value = '';
+								resetPasswordAction();
+							}							
+						</script>
 					</apex:pageBlockButtons>
 
 					<apex:pageBlockSection id="inputSection" columns="1">
@@ -58,7 +66,7 @@
 		</div>
 	</apex:form>
 
-	<apex:form >
+	<apex:form>		
 		<apex:actionFunction action="{!register}" name="startRegistering" status="loadingStatus"/>
 	</apex:form>
 
