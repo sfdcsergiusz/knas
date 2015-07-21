@@ -16,6 +16,7 @@ public with sharing class KARegularHomeController {
 		notificMap = new KANotificationMapWrapper();
 		upcomingTests = new List<Employee_Task__c>();
 		passedTests = new List<Pass_History__c>();
+		statistics = new List<Pass_History__c>();
 
 		Cookie tmpCookie = ApexPages.currentPage().getCookies().get('Identifier');
 		if (tmpCookie != null) {
