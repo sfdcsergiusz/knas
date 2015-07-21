@@ -202,7 +202,7 @@
 			}
 
 			var insetButton = document.querySelector("input[id*='expandingButton'");
-			insetButton.value = "Hide All";
+			insetButton.value = "Collapse All";
 			insetButton.blur();
 			insetButton.onclick = function() {
 				hideAllInsets();
