@@ -35,7 +35,7 @@
 					<apex:column headerValue="Actions">
 						<apex:outputPanel layout="none">
 							<apex:commandButton value="Update" onclick="startUpdateQuestion('{!question.Id}'); return false;" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Edit question"/>
-							<apex:commandButton value="Delete" action="{!deleteQuestion}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete question">
+							<apex:commandButton value="Delete" action="{!deleteQuestion}" reRender="commonSection, innerCreateQuestion" status="refreshStatus" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete question">
 								<apex:param name="chosenQuestion" value="{!question.Id}"/>
 							</apex:commandButton>
 							<apex:commandButton value="Freeze" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Lock question"/>

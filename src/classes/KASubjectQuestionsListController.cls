@@ -223,6 +223,7 @@ public with sharing class KASubjectQuestionsListController {
 			FROM Question__c
 			WHERE Id = :ApexPages.currentPage().getParameters().get('chosenQuestion')
 		];
+		notificMap.addInfo('Question was successfully deleted.');
 		delete deletingQuestion;
 
 		refreshQuestions();

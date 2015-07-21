@@ -39,10 +39,10 @@ public with sharing class KACommonSubjectsController {
 			];
 			if (checkSubjectsList.size() == 0) {
 				Subject__c preCreatedSubject = new Subject__c(Name = tmpSubject);
+				notificMap.addSuccess('Subject "' + preCreatedSubject.Name + '" was created.');
 				insert preCreatedSubject;
 
 				typeSubject();
-				tmpSubject = '';
 			}
 			else {
 				notificMap.addDanger('Subject already exists.');
@@ -68,10 +68,10 @@ public with sharing class KACommonSubjectsController {
 			];
 			if (tmpSubjectObject.Themes__r.size() == 0) {
 				Theme__c preCreatedTheme = new Theme__c(Name = tmpTheme, Subject__c = tmpSubjectObject.Id);
+				notificMap.addSuccess('Theme "' + preCreatedTheme.Name + '" was created.');
 				insert preCreatedTheme;
 
 				tmpTheme = '';
-
 				if (tmpSubject != '') {
 					typeSubject();
 				}
@@ -90,11 +90,12 @@ public with sharing class KACommonSubjectsController {
 
 	public void deleteSubject() {
 		Subject__c tmpSubjectObject = [
-			SELECT Id
+			SELECT Id, Name
 			FROM Subject__c
 			WHERE Name = :ApexPages.currentPage().getParameters().get('deleteParam')
 			LIMIT 1
 		];
+		notificMap.addInfo('Subject "' + tmpSubjectObject.Name + '" was deleted.');
 		delete tmpSubjectObject;
 
 		if (tmpSubject != '') {
@@ -107,11 +108,12 @@ public with sharing class KACommonSubjectsController {
 
 	public void deleteTheme() {
 		Theme__c tmpThemeObject = [
-			SELECT Id
+			SELECT Id, Name
 			FROM Theme__c
 			WHERE Name = :ApexPages.currentPage().getParameters().get('deleteParam')
 			LIMIT 1
 		];
+		notificMap.addSuccess('Theme "' + tmpThemeObject.Name + '" was deleted.');
 		delete tmpThemeObject;
 
 		if (tmpSubject != '') {
@@ -125,6 +127,7 @@ public with sharing class KACommonSubjectsController {
 	public void resetSearch() {
 		tmpSubject = '';
 		selectAllSubjects();
+		notificMap.addInfo('All subjects are selected.');
 	}
 
 	public PageReference goToThemeList() {

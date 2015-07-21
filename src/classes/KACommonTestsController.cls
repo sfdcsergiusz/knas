@@ -24,7 +24,7 @@ public with sharing class KACommonTestsController {
 
 		selectAllSubjects();
 	}
-	
+
 	public void typeSubject() {
 		String searchSubject = '%' + tmpSubject + '%';
 		subjects = [
@@ -80,7 +80,7 @@ public with sharing class KACommonTestsController {
 				notificMap.addDanger('Test with name "' + preCreatedTest.Name + '" already exist.');
 			}
 			else if (preCreatedTest.Duration__c <= 0) {
-				notificMap.addDanger('Duration of the test should me more than 0 minutes.');
+				notificMap.addDanger('Duration of the test should be more than 0 minutes.');
 			}
 			else if (subjectForTest.isEmpty()) {
 				notificMap.addDanger('Test cannot be created. Please, refresh page.');
@@ -109,6 +109,7 @@ public with sharing class KACommonTestsController {
 			clearThemeStatistic();
 			selectAllSubjects();
 			preCreatedTest = new Test__c();
+			preCreatedTest.Name = 'Test #' + String.valueOf(Math.round(Math.random()*1000));
 			preCreatedTestTheme = new TestTheme__c();
 		}
 		return null;
@@ -128,14 +129,15 @@ public with sharing class KACommonTestsController {
 
 	public void deleteTest() {
 		Test__c deletingTest = [
-			SELECT Id
+			SELECT Id, Name, Subject__r.Name
 			FROM Test__c
 			WHERE Id = :ApexPages.currentPage().getParameters().get('testToDelete')
 		];
+		notificMap.addInfo(deletingTest.Name + ' was deleted from ' + deletingTest.Subject__r.Name + '.');
 		delete deletingTest;
 
 		clearThemeStatistic();
-		selectAllSubjects();
+		typeSubject();
 	}
 
 	public void resetSearch() {

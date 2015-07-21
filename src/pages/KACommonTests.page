@@ -26,19 +26,19 @@
 			border-top-width: 1px !important;
 		}
 		.hiddenRow {
-			padding: 10px;
 			z-index: 5;
+			padding: 2px;
 			visibility: hidden;
 			background-color: #f9f9f9;
 			opacity: 0;
 			position: absolute;
 			right: 15%;
-			-webkit-transition-duration: 0.3s; /* анимационное выдвижение для всех браузеров*/
+			-webkit-transition-duration: 0.3s;
 			-moz-transition-duration: 0.3s;
 			-o-transition-duration: 0.3s;
 			transition-duration: 0.3s;
 
-			-webkit-border-radius: 0px 0px 5px 5px; /* закругление границ для всех браузеров*/
+			-webkit-border-radius: 0px 0px 5px 5px;
 			-moz-border-radius: 0px 0px 5px 5px;
 
 			-webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2) inset;
@@ -137,8 +137,8 @@
 										<div class="dropRow">
 											<div class="hiddenRow">
 												<apex:outputPanel id="themeStats">
-													<apex:outputPanel rendered="{!IF(AND(theme.Tests_Number__c != 0, OR(themeStatistic.size == 0, AND(themeStatistic.size > 0, themeStatistic[0].Theme__r.Id != theme.Id))), true, false)}">
-														<apex:outputLabel value="Please, wait. We are searching..."/>
+													<apex:outputPanel rendered="{!IF(AND(theme.Tests_Number__c != 0, OR(themeStatistic.size == 0, AND(themeStatistic.size > 0, themeStatistic[0].Theme__r.Id != theme.Id))), true, false)}" style="padding: 10px;">
+														<apex:outputLabel styleClass="waitingLabel" value="Show tests"/>
 														<apex:actionSupport id="actionStat" event="onmouseover" action="{!createThemeStatistic}" reRender="themeStats" status="testStatStatus">
 															<apex:param name="statTheme" value="{!theme.Id}"/>
 														</apex:actionSupport>
@@ -153,7 +153,7 @@
 
 																</apex:facet>
 																<apex:facet name="stop">
-																	<apex:commandButton value="Delete" styleClass="btn btn-link" action="{!deleteTest}" reRender="subjectSection" status="refreshWholeStatus">
+																	<apex:commandButton value="Delete" styleClass="btn btn-link" action="{!deleteTest}" reRender="subjectSection, innerCreateTask" status="refreshWholeStatus">
 																		<apex:param name="testToDelete" value="{!testStat.Test__r.Id}"/>
 																	</apex:commandButton>
 																</apex:facet>
