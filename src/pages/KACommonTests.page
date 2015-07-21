@@ -193,7 +193,7 @@
 	</apex:form>
 
 	<apex:form id="createForm">
-		<apex:actionFunction name="preCreateTest" action="{!preCreateTest}" reRender="testSubjectName, testThemeName, capturedQuests, testDuration, capturedQuestsLabel, testName" status="refreshStatusTest">
+		<apex:actionFunction name="preCreateTest" action="{!preCreateTest}" reRender="testSubjectName, testThemeName, capturedQuests, testDuration, capturedQuestsLabel, testName, patternScriptsPanel" status="refreshStatusTest">
 			<apex:param name="themeId" value=""/>
 		</apex:actionFunction>
 		<apex:pageBlock >
@@ -229,13 +229,47 @@
 			    				<!-- Test And Junction Filling -->
 
 			    				<apex:outputLabel for="testName" value="Test Name" style="float: left"/>
-								<apex:inputField id="testName" value="{!preCreatedTest.Name}" required="false" html-placeholder="Please, input test name..." label=""/>
+								<apex:inputField id="testName" value="{!preCreatedTest.Name}" required="true" html-placeholder="Please, input test name..." label=""/>
 
 			    				<apex:outputLabel id="capturedQuestsLabel" for="capturedQuests" value="Questions to catch (max. {!themeAvailableQuestions})" style="float: left"/>
-								<apex:inputField id="capturedQuests" value="{!preCreatedTestTheme.Questions_Captured__c}" required="false" html-placeholder="Please, input number of questions..." label=""/>
+								<apex:inputField id="capturedQuests" value="{!preCreatedTestTheme.Questions_Captured__c}" required="true" html-placeholder="Please, input number of questions..." label=""/>
 
 								<apex:outputLabel for="testDuration" value="Passing Time" style="float: left"/>
-								<apex:inputField id="testDuration" value="{!preCreatedTest.Duration__c}" required="false" html-placeholder="Please, input time in minutes..." label=""/>
+								<apex:inputField id="testDuration" value="{!preCreatedTest.Duration__c}" required="true" html-placeholder="Please, input time in minutes..." label=""/>
+
+								<apex:outputPanel id="patternScriptsPanel">
+									<script>
+										var inputDuration = document.querySelector("input[id*='testDuration']");
+										inputDuration.title = 'Please, input number from 1 to 999';
+										inputDuration.pattern = '([1-9])|([1-9][0-9])|([1-9][0-9][0-9])'
+									</script>
+
+									<script>
+										var inputQuests = document.querySelector("input[id*='capturedQuests']");
+										inputQuests.title = 'Please, input number from 1 to {!themeAvailableQuestions}';
+										if ('{!themeAvailableQuestions}'.length == 3) {
+											var hundChar = '{!themeAvailableQuestions}'.charAt(0);
+											var decimChar = '{!themeAvailableQuestions}'.charAt(1);
+											var numbChar = '{!themeAvailableQuestions}'.charAt(2);
+											inputQuests.pattern = '([0-' + hundChar + '][0-' + decimChar + '][0-' + numbChar + '])|'+
+											(decimChar == 0 ? '' : '([0-' + hundChar + '][0-' + (decimChar - 1) + '][0-9])|') +
+											'([0-' + (hundChar - 1) + '][0-9][0-9])|'+
+											'([0-9][0-9])|'+
+											'([0-9])';
+										}
+										else if ('{!themeAvailableQuestions}'.length == 2) {
+											var decimChar = '{!themeAvailableQuestions}'.charAt(0);
+											var numbChar = '{!themeAvailableQuestions}'.charAt(1);
+											inputQuests.pattern = '([0-' + decimChar + '][0-' + numbChar + '])|' + 
+												'([0-' + (decimChar - 1) + '][0-9])|' +
+												'([0-9])';
+										}
+										else if ('{!themeAvailableQuestions}'.length == 1) {
+											var numbChar = '{!themeAvailableQuestions}'.charAt(0);
+											inputQuests.pattern = '[0-' + numbChar + ']';
+										}										
+									</script>
+								</apex:outputPanel>
 
 		    				</apex:pageBlockSection>
 

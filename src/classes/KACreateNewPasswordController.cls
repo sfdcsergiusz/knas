@@ -1,5 +1,4 @@
 public with sharing class KACreateNewPasswordController {
-	
 	public String newPassword {get; set;}
 	public String confirmPassword {get; set;}
 	public Employee__c user {get; set;}
@@ -15,11 +14,11 @@ public with sharing class KACreateNewPasswordController {
 				)
 			);				
 		}
-		else if(ApexPages.currentPage().getParameters().get('hashLink') != '') {
+		else if (ApexPages.currentPage().getParameters().get('hashLink') != '') {
 			List<Employee__c> users = [
 				SELECT Name, Password__c, Action_Hash__c, Waiting_Reset__c
 				FROM Employee__c
-				WHERE Action_Hash__c = :hash AND Waiting_Reset__c = true
+				WHERE Action_Hash__c = :ApexPages.currentPage().getParameters().get('hashLink') AND Waiting_Reset__c = true
 				LIMIT 1
 			];
 			if ( ! users.isEmpty()) {

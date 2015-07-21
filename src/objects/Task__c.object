@@ -110,11 +110,4 @@
     <pluralLabel>Tasks</pluralLabel>
     <searchLayouts/>
     <sharingModel>ControlledByParent</sharingModel>
-    <validationRules>
-        <fullName>Current_Date</fullName>
-        <active>true</active>
-        <errorConditionFormula>AssignTime__c  &lt;=   NOW()</errorConditionFormula>
-        <errorDisplayField>AssignTime__c</errorDisplayField>
-        <errorMessage>Please, assign task to the future, not past.</errorMessage>
-    </validationRules>
 </CustomObject>

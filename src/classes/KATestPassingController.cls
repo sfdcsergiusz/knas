@@ -90,6 +90,8 @@ public with sharing class KATestPassingController {
 				subAppliedAnswer = new String[1];
 				variants = getVariants(currentQuestion);
 				updateCurrentRightAnswers();
+
+
 			}
 		}
 

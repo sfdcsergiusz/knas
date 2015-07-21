@@ -15,7 +15,7 @@ public with sharing class KANavigationBarController {
 
 		if ( ! isStartPage) {
 			for (String page : KAPageConstants.userPages) {
-				if (currentPage.getUrl().toUpperCase().contains(page.toUpperCase())) {
+				if (currentPage.getUrl().contains(page)) {
 					isAdminPage = false;
 					break;
 				}
@@ -95,6 +95,14 @@ public with sharing class KANavigationBarController {
 		}
 
 		return new PageReference('/apex/KALogin');
+	}
+
+	private void setLoginCookie(String id) {
+		ApexPages.currentPage().setCookies(
+		    new Cookie[] {
+		        new Cookie('Identifier', id, null, 1000, false)
+		    }
+		);
 	}
 
 	private Cookie getLoginCookie() {
