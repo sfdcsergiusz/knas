@@ -178,7 +178,7 @@ public with sharing class KASubjectQuestionsListController {
 		if (checkThemeExistenceList.size() == 0 || preCreatedQuestion.Statement__c == '' || hasAnswersEmpties || ( ! hasAnswersRights) ||
 			preCreatedQuestion.Level__c == null) {
 			if (checkThemeExistenceList.size() == 0) {
-				notificMap.addDanger('Please, check question\'s subject and theme');
+				notificMap.addDanger('Please, check question\'s subject and topic');
 			}
 			else if (preCreatedQuestion.Statement__c == '' || preCreatedQuestion.Statement__c == null) {
 				notificMap.addDanger('Please, enter the statement.');

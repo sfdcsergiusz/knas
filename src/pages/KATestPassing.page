@@ -68,7 +68,7 @@
 				<apex:pageBlockSectionItem >
 					<apex:panelGroup >
 						<h4>
-							<apex:outputLabel value="Theme:"/>
+							<apex:outputLabel value="Topic:"/>
 						</h4>
 					</apex:panelGroup>
 					<apex:outputPanel id="themeLabel">

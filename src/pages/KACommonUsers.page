@@ -220,7 +220,7 @@
 										</apex:pageBlockSection>
 										<apex:panelGroup >
 											<div class="themeResDiv">
-												Theme Total: {!IF(OR(testCounter = 0, AND(testCounter > 0, testResult = -1 * testCounter)), 'there is no any ', FLOOR(testResult / testCounter))}%
+												Topic Total: {!IF(OR(testCounter = 0, AND(testCounter > 0, testResult = -1 * testCounter)), 'there is no any ', FLOOR(testResult / testCounter))}%
 											</div>
 											<apex:variable value="{!themeResult + testResult}" var="themeResult"/>
 											<apex:variable value="{!themeCounter + testCounter}" var="themeCounter"/>

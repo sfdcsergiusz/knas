@@ -68,7 +68,7 @@ public with sharing class KACommonSubjectsController {
 			];
 			if (tmpSubjectObject.Themes__r.size() == 0) {
 				Theme__c preCreatedTheme = new Theme__c(Name = tmpTheme, Subject__c = tmpSubjectObject.Id);
-				notificMap.addSuccess('Theme "' + preCreatedTheme.Name + '" was created.');
+				notificMap.addSuccess('Topic "' + preCreatedTheme.Name + '" was created.');
 				insert preCreatedTheme;
 
 				tmpTheme = '';
@@ -80,11 +80,11 @@ public with sharing class KACommonSubjectsController {
 				}
 			}
 			else {
-				notificMap.addDanger('Theme already exists.');
+				notificMap.addDanger('Topic already exists.');
 			}
 		}
 		else {
-			notificMap.addDanger('Theme name is empty.');
+			notificMap.addDanger('Topic name is empty.');
 		}
 	}
 
@@ -113,7 +113,7 @@ public with sharing class KACommonSubjectsController {
 			WHERE Name = :ApexPages.currentPage().getParameters().get('deleteParam')
 			LIMIT 1
 		];
-		notificMap.addSuccess('Theme "' + tmpThemeObject.Name + '" was deleted.');
+		notificMap.addSuccess('Topic "' + tmpThemeObject.Name + '" was deleted.');
 		delete tmpThemeObject;
 
 		if (tmpSubject != '') {

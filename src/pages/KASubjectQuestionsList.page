@@ -25,7 +25,7 @@
 				</apex:outputPanel>
 
 				<apex:pageBlockTable value="{!questions}" var="question">
-					<apex:column value="{!question.Theme__r.Name}" headerValue="Theme" rendered="{!IF(themeName == null, true, false)}"/>
+					<apex:column value="{!question.Theme__r.Name}" headerValue="Topic" rendered="{!IF(themeName == null, true, false)}"/>
 					<apex:column value="{!question.Name}" headerValue="Name"/>
 					<apex:column value="{!question.Level__c}" headerValue="Level"/>
 					<apex:column value="{!question.CreatedDate}" headerValue="Created On"/>
@@ -108,8 +108,8 @@
 	        				<!-- Theme Choosing -->
 
 	        				<apex:actionRegion >
-	        					<apex:outputLabel for="inputTheme" value="Theme" style="float: left"/>
-	    						<apex:inputText id="inputTheme" value="{!tmpTheme}" html-placeholder="Please, input theme title...">
+	        					<apex:outputLabel for="inputTheme" value="Topic" style="float: left"/>
+	    						<apex:inputText id="inputTheme" value="{!tmpTheme}" html-placeholder="Please, input topic title...">
 	    							<apex:actionSupport event="onkeyup" action="{!typeTheme}" reRender="themesTable"/>
 	    						</apex:inputText>
 	    					</apex:actionRegion>
