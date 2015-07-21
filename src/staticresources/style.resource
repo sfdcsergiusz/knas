@@ -2017,7 +2017,7 @@
 			.data2Col > span {
 				display: block !important;
 				width: 97.6% !important;
-				/*height: 34px !important;*/
+				margin: 2px auto !important;
 				padding: 6px 12px !important;
 				font-size: 14px !important;
 				line-height: 1.42857143 !important;
@@ -2070,6 +2070,31 @@
 			}
 			.waitingSearchDiv .waitingHolder {
 				width: 60% !important;
+			}
+			.errorMsg {
+				font-size: 14px !important;
+				text-align: left !important;
+				padding: 15px !important;
+				margin-top: 15px !important;
+				margin-bottom: 15px !important;
+				border: 1px solid transparent !important;
+				border-radius: 20px !important;
+				color: #a94442 !important;
+				background-color: #f2dede !important;
+				border-color: #ebccd1 !important;
+				opacity: 0.9 !important;
+			}
+			.errorMsg:after {
+				content: '';
+				position: relative;
+				width: 0;
+				height: 0;
+				border: 15px solid;
+				margin-left: -15px;
+				border-bottom-color: #EDD1D5;
+				bottom: 46px;
+				margin-left: -15px;
+				color: transparent;
 			}
 
 			/*Custom features*/

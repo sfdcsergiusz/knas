@@ -2,7 +2,7 @@ public with sharing class KAAdminHomeController {
 
 	public List<Employee_Task__c> recentTasks { get; set; }
 	public List<Pass_History__c> recentResults { get; set; }
-	public List<Question__c> questionRequests { get; set; }
+	//public List<Question__c> questionRequests { get; set; } Future feature
 
 	public List<Employee__c> employees { get; set; }
 	public List<Test__c> tests { get; set ;}
@@ -32,19 +32,6 @@ public with sharing class KAAdminHomeController {
 			SELECT Id
 			FROM CronTrigger
 		];
-	}
-
-	public PageReference goHome() {
-		return null;
-	}
-
-	public PageReference makeLogout() {
-		ApexPages.currentPage().setCookies(
-			new Cookie[] {
-				new Cookie('KALogin', '', null, 0, false)
-			}
-		);
-		return new PageReference('/apex/KALogin');
 	}
 
 	public void refreshRecentTasks() {
@@ -110,7 +97,12 @@ public with sharing class KAAdminHomeController {
 				delete deletingTasks;
 			}
 
-			insert preCreatedTask;
+			try {
+				insert preCreatedTask;
+			}
+			catch (DmlException exc) {
+				ApexPages.addMessages(exc);
+			}
 
 			List<Task__c> suitableTasks = [
 				SELECT Id

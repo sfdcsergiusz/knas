@@ -66,10 +66,6 @@ public with sharing class KASubjectQuestionsListController {
 		return null;
 	}
 
-	public PageReference goHome() {
-		return new PageReference('/apex/KAAdminUserHome');
-	}
-
 	public void refreshQuestions() {
 		if (themeId != null) {
 			questions = [

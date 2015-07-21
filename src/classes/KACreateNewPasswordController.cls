@@ -1,4 +1,5 @@
 public with sharing class KACreateNewPasswordController {
+	
 	public String newPassword {get; set;}
 	public String confirmPassword {get; set;}
 	public Employee__c user {get; set;}

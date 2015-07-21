@@ -24,11 +24,7 @@ public with sharing class KACommonTestsController {
 
 		selectAllSubjects();
 	}
-
-	public PageReference goHome() {
-		return new PageReference('/apex/KAAdminUserHome');
-	}
-
+	
 	public void typeSubject() {
 		String searchSubject = '%' + tmpSubject + '%';
 		subjects = [

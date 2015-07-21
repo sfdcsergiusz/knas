@@ -1,4 +1,4 @@
-global class KAEmailHandler implements Schedulable  {
+global class KAEmailHandler implements Schedulable {
 
 	//System.schedule('Daily emails', '0 0 9,10,11,12,13,14,15,16,17,18 * * ?', new KAEmailHandler());
 
@@ -27,7 +27,7 @@ global class KAEmailHandler implements Schedulable  {
 			);
 			mail.setSenderDisplayName('CS Knowledge Assessment');
 			mail.setSubject('Test Examination');
-			mail.setHtmlBody('Hello, ' + sendNotification.Employee__r.First_Name__c + '! There is a test for you on ' + 
+			mail.setHtmlBody('Hello, ' + sendNotification.Employee__r.First_Name__c + '! There is a test for you on ' +
 				sendNotification.Task__r.AssignTime__c + '. Good luck :)');
 			mails.add(mail);
 		}

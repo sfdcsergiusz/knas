@@ -34,7 +34,6 @@ public with sharing class KARegularHomeController {
 					notificMap.addInfo('You are registered now. Please, wait for activation.');
 				}
 
-
 				upcomingTests = [
 					SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id, Task__r.Status__c
 					FROM Employee_Task__c
