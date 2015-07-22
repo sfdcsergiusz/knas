@@ -59,10 +59,12 @@
 				<apex:pageBlockSection title="Passed Tests" columns="1">
 					<apex:outputLabel rendered="{!IF(passedTests.size = 0, true, false)}" value="You didn't pass any tests."/>
 					<apex:pageBlockTable id="passedTestTable" value="{!passedTests}" var="passedTest" rows="12">
-						<apex:column value="{!passedTest.CreatedDate}" headerValue="The End Time"/>
+						<apex:column value="{!passedTest.CreatedDate}" headerValue="Finish Time"/>
 						<apex:column value="{!passedTest.Test__r.Subject__r.Name}" headerValue="Subject"/>
 						<apex:column value="{!passedTest.Test__r.Name}" headerValue="Test Title"/>
+						<apex:column value="{!passedTest.Test__r.Difficulty__c}" headerValue="Difficulty"/>
 						<apex:column value="{!passedTest.Result__c}" headerValue="Pass Result"/>
+						<apex:column value="{!passedTest.Test__r.Passing_Threshold__c}" headerValue="Threshold"/>
 					</apex:pageBlockTable>
 				</apex:pageBlockSection>
 			</apex:pageBlock>

@@ -193,7 +193,7 @@
 	</apex:form>
 
 	<apex:form id="createForm">
-		<apex:actionFunction name="preCreateTest" action="{!preCreateTest}" reRender="testSubjectName, testThemeName, capturedQuests, testDuration, capturedQuestsLabel, testName" status="refreshStatusTest">
+		<apex:actionFunction name="preCreateTest" action="{!preCreateTest}" reRender="innerCreateTask" status="refreshStatusTest">
 			<apex:param name="themeId" value=""/>
 		</apex:actionFunction>
 		<apex:pageBlock >
@@ -230,6 +230,12 @@
 
 			    				<apex:outputLabel for="testName" value="Test Name" style="float: left"/>
 								<apex:inputField id="testName" value="{!preCreatedTest.Name}" required="false" html-placeholder="Please, input test name..." label=""/>
+
+								<apex:outputLabel for="testDifficulty" value="Difficulty" style="float: left"/>
+								<apex:inputField id="testDifficulty" value="{!preCreatedTest.Difficulty__c}" onchange="preCreateTest();" required="false" label=""/>
+
+								<apex:outputLabel for="testThreshold" value="Threshold" style="float: left"/>
+								<apex:inputField id="testThreshold" value="{!preCreatedTest.Passing_Threshold__c}" required="false" html-placeholder="Please, input passing threshold..." label=""/>
 
 			    				<apex:outputLabel id="capturedQuestsLabel" for="capturedQuests" value="Questions to catch (max. {!themeAvailableQuestions})" style="float: left"/>
 								<apex:inputField id="capturedQuests" value="{!preCreatedTestTheme.Questions_Captured__c}" required="false" html-placeholder="Please, input number of questions..." label=""/>

@@ -43,7 +43,7 @@ public with sharing class KARegularHomeController {
 					LIMIT 50000
 				];
 				passedTests = [
-					SELECT Name, Employee__c, CreatedDate, Result__c, Test__r.Name, Test__r.Subject__r.Name
+					SELECT Name, Employee__c, CreatedDate, Result__c, Test__r.Name, Test__r.Subject__r.Name, Test__r.Passing_Threshold__c, Test__r.Difficulty__c
 					FROM Pass_History__c
 					WHERE Employee__r.Id = :userId
 					ORDER BY CreatedDate DESC
