@@ -69,7 +69,7 @@ public with sharing class KALoginController {
 			FROM Employee__c
 			WHERE Name = :username
 		];
-		if ( ! existingEmployees.isEmpty()) {
+		if ( ! existingEmployees.isEmpty() && username != null && username != '') {
 			Employee__c resettingUser = existingEmployees.get(0);
 			if ( ! resettingUser.Waiting_Reset__c) {
 				resettingUser.Action_Hash__c = EncodingUtil.convertToHex(

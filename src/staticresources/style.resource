@@ -2187,3 +2187,14 @@
 				oTransform: rotate(360deg);
 				transform: rotate(360deg);
 			}
+			.refreshButton:disabled {
+				-webkit-transition: all 0.5s ease-in-out;
+				-moz-transition: all 0.5s ease-in-out;
+				-o-transition: all 0.5s ease-in-out;
+				transition: all 0.5s ease-in-out;
+				webkitTransform: rotate(360deg);
+				mozTransform: rotate(360deg);
+				msTransform: rotate(360deg);
+				oTransform: rotate(360deg);
+				transform: rotate(360deg);
+			}

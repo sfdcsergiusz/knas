@@ -43,15 +43,37 @@ public with sharing class KACommonTestsController {
 	}
 
 	public void preCreateTest() {
-		tmpTheme = [
-			SELECT Id, Name, Subject__r.Name, Questions_Number__c
-			FROM Theme__c
-			WHERE Id = :ApexPages.currentPage().getParameters().get('themeId')
-		];
-		themeAvailableQuestions = (Integer) tmpTheme.Questions_Number__c;
+		if (ApexPages.currentPage().getParameters().get('themeId') != null && ApexPages.currentPage().getParameters().get('themeId') != '') {
+			tmpTheme = [
+				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
+					(
+						SELECT Id
+						FROM Questions__r
+						WHERE Level__c = :preCreatedTest.Difficulty__c
+					)
+				FROM Theme__c
+				WHERE Id = :ApexPages.currentPage().getParameters().get('themeId')
+			];
+		}
+		else {
+			tmpTheme = [
+				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
+					(
+						SELECT Id
+						FROM Questions__r
+						WHERE Level__c = :preCreatedTest.Difficulty__c
+					)
+				FROM Theme__c
+				WHERE Id = :tmpTheme.Id
+			];
+		}
+		themeAvailableQuestions = tmpTheme.Questions__r.size();
 		testThemeName = tmpTheme.Name;
 		testSubjectName = tmpTheme.Subject__r.Name;
-		preCreatedTest.Name = 'Test #' + String.valueOf(Math.round(Math.random()*1000));
+
+		if (preCreatedTest.Name == null || preCreatedTest.Name == '') {
+			preCreatedTest.Name = 'Test #' + String.valueOf(Math.round(Math.random()*1000));
+		}
 	}
 
 	public PageReference createTest() {
@@ -68,7 +90,7 @@ public with sharing class KACommonTestsController {
 		];
 
 		if ((preCreatedTestTheme.Questions_Captured__c <= 0 || preCreatedTestTheme.Questions_Captured__c > themeAvailableQuestions) ||
-			checkEqualTestList.size() > 0 || preCreatedTest.Duration__c <= 0 || subjectForTest.isEmpty() ||
+			checkEqualTestList.size() > 0 || preCreatedTest.Duration__c <= 0 || preCreatedTest.Passing_Threshold__c == null || subjectForTest.isEmpty() ||
 			preCreatedTest.Duration__c == null || preCreatedTestTheme.Questions_Captured__c == null) {
 			if (preCreatedTestTheme.Questions_Captured__c <= 0) {
 				notificMap.addDanger('Number of questions should be more than 0.');
@@ -84,6 +106,9 @@ public with sharing class KACommonTestsController {
 			}
 			else if (subjectForTest.isEmpty()) {
 				notificMap.addDanger('Test cannot be created. Please, refresh page.');
+			}
+			else if (preCreatedTest.Passing_Threshold__c == null) {
+				notificMap.addDanger('Please, input passing threshold.');
 			}
 			else if (preCreatedTest.Duration__c == null) {
 				notificMap.addDanger('Please, enter duration.');

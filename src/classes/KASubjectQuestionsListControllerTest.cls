@@ -53,16 +53,16 @@ private class KASubjectQuestionsListControllerTest {
 		currPage.getParameters().put('chosenQuestion', testQuestion.Id);
 		Test.setCurrentPage(currPage);
 
-		questListController = new KASubjectQuestionsListController();		
+		questListController = new KASubjectQuestionsListController();
 	}
-	
+
 	@isTest static void testDeletingQuestion() {
 		init();
 
 		questListController.deleteQuestion();
 		System.assertEquals(questListController.questions.size() == 1, true);
 	}
-	
+
 	@isTest static void testTypingSubject_Success() {
 		init();
 
@@ -94,7 +94,7 @@ private class KASubjectQuestionsListControllerTest {
 	@isTest static void testRemoteQuestionUpdate_Success() {
 		init();
 
-		KASubjectQuestionsListController.tmpJSON = new JSON(); 
+		KASubjectQuestionsListController.tmpJSON = new JSON();
 		System.assertEquals(KASubjectQuestionsListController.startUpdateQuestion('id'), null);
 	}
 
@@ -109,7 +109,7 @@ private class KASubjectQuestionsListControllerTest {
 		init();
 
 		questListController.reduceAnswer();
-		System.assertEquals(questListController.preCreatedAnswers.size() == 1, true);
+		System.assertEquals(questListController.preCreatedAnswers.size() == 2, true);
 	}
 
 	@isTest static void testRefreshingWithoutQuestions_Success() {
@@ -128,7 +128,7 @@ private class KASubjectQuestionsListControllerTest {
 
 	@isTest static void testRefreshingWithoutTheme_Success() {
 		init();
-		
+
 		questListController.themeId = null;
 		questListController.refreshQuestions();
 		System.assertNotEquals(questListController.subjectId, null);
@@ -144,7 +144,7 @@ private class KASubjectQuestionsListControllerTest {
 		questListController.createQuestion();
 		System.assertEquals(questListController.notificMap.notificationMap.keyset().size() == 1, true);
 	}
-	
+
 	@isTest static void testCreatingQuestion_EmptyAnswerFailure() {
 		init();
 

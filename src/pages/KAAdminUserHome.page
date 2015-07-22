@@ -93,7 +93,9 @@
 						<apex:column value="{!result.Employee__r.First_Name__c} {!result.Employee__r.Last_Name__c}" headerValue="User"/>
 						<apex:column value="{!result.Test__r.Subject__r.Name}" headerValue="Subject"/>
 						<apex:column value="{!result.Test__r.Name}" headerValue="Test Title"/>
+						<apex:column value="{!result.Test__r.Difficulty__c}" headerValue="Difficulty"/>
 						<apex:column value="{!result.Result__c}" headerValue="Pass Result"/>
+						<apex:column value="{!result.Test__r.Passing_Threshold__c}" headerValue="Threshold"/>
 					</apex:pageBlockTable>
 				</apex:pageBlockSection>
 
@@ -218,6 +220,14 @@
 				<apex:actionFunction name="switchEmailing" action="{!switchEmailing}" reRender="emailingSettingForm"/>
 				<script>
 					function switchEmailingJS() {
+						var enableEmailingButton = document.querySelector('input[id*="enableEmailingButton"]');
+						var disableEmailingButton = document.querySelector('input[id*="disableEmailingButton"]');
+						if (enableEmailingButton) {
+							enableEmailingButton.disabled = true;
+						}
+						else if (disableEmailingButton) {
+							disableEmailingButton.disabled = true;
+						}
 						setTimeout(
 							function() {
 								switchEmailing();

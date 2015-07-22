@@ -37,8 +37,8 @@
 					</script>
 
 					<apex:pageBlockButtons id="buttons" location="bottom">
-						<apex:commandButton value="Sign In" onclick="startLogining(); return false;" styleClass="btn btn-warning"/>
-						<apex:commandButton value="SIGN UP" action="{!register}" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-success"/>
+						<apex:commandButton value="Sign In >" onclick="startLogining(); return false;" styleClass="btn btn-link" style="float: right;"/>
+						<apex:commandButton value="Sign Up" action="{!register}" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-success" style="width: 128px;"/>
 					</apex:pageBlockButtons>
 
 					<apex:pageBlockSection id="inputSection" columns="1">
