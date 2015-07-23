@@ -25,6 +25,11 @@
 		body .bPageBlock {
 			border-top-width: 1px !important;
 		}
+		.scrollDiv {
+			overflow: auto;
+			height: 90% !important;
+			width: 100%;
+		}
 		.hiddenRow {
 			z-index: 5;
 			padding: 2px;
@@ -205,45 +210,47 @@
 						</script>
 					</apex:outputPanel>
 					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
-						<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+						<div class="waitingHolder" style="top: 10%; height: 80%; overflow: auto; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+							<div style="margin-bottom: 10px;">
+								<h1>
+			    					Creating New Test
+			    				</h1>
+			    				<apex:commandButton value="Cancel" onclick="closeCreatingTest(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+				    			<apex:commandButton value="Create" action="{!createTest}" reRender="subjectSection, innerCreateTask" status="refreshWholeStatus" styleClass="btn btn-primary" style="float: right;"/>
+			    			</div>
 
-							<h1>
-		    					Creating New Test
-		    				</h1>
-		    				<apex:commandButton value="Cancel" onclick="closeCreatingTest(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
-			    			<apex:commandButton value="Create" action="{!createTest}" reRender="subjectSection, innerCreateTask" status="refreshWholeStatus" styleClass="btn btn-primary" style="float: right;"/>
-			    			<br/>
+			    			<div class="scrollDiv">
+			    				<apex:pageBlockSection columns="1">
 
-		    				<apex:pageBlockSection columns="1">
+				    				<!-- Subject -->
 
-			    				<!-- Subject -->
+									<apex:outputLabel for="testSubjectName" value="Subject" style="float: left"/>
+									<apex:outputText id="testSubjectName" value="{!testSubjectName}"/>
 
-								<apex:outputLabel for="testSubjectName" value="Subject" style="float: left"/>
-								<apex:outputText id="testSubjectName" value="{!testSubjectName}"/>
+				    				<!-- Theme -->
 
-			    				<!-- Theme -->
+				    				<apex:outputLabel for="testThemeName" value="Topic" style="float: left"/>
+									<apex:outputText id="testThemeName" value="{!testThemeName}"/>
 
-			    				<apex:outputLabel for="testThemeName" value="Topic" style="float: left"/>
-								<apex:outputText id="testThemeName" value="{!testThemeName}"/>
+				    				<!-- Test And Junction Filling -->
 
-			    				<!-- Test And Junction Filling -->
+				    				<apex:outputLabel for="testName" value="Test Name" style="float: left"/>
+									<apex:inputField id="testName" value="{!preCreatedTest.Name}" required="false" html-placeholder="Please, input test name..." label=""/>
 
-			    				<apex:outputLabel for="testName" value="Test Name" style="float: left"/>
-								<apex:inputField id="testName" value="{!preCreatedTest.Name}" required="false" html-placeholder="Please, input test name..." label=""/>
+									<apex:outputLabel for="testDifficulty" value="Difficulty" style="float: left"/>
+									<apex:inputField id="testDifficulty" value="{!preCreatedTest.Difficulty__c}" onchange="preCreateTest();" required="false" label=""/>
 
-								<apex:outputLabel for="testDifficulty" value="Difficulty" style="float: left"/>
-								<apex:inputField id="testDifficulty" value="{!preCreatedTest.Difficulty__c}" onchange="preCreateTest();" required="false" label=""/>
+									<apex:outputLabel for="testThreshold" value="Threshold" style="float: left"/>
+									<apex:inputField id="testThreshold" value="{!preCreatedTest.Passing_Threshold__c}" required="false" html-placeholder="Please, input passing threshold..." label=""/>
 
-								<apex:outputLabel for="testThreshold" value="Threshold" style="float: left"/>
-								<apex:inputField id="testThreshold" value="{!preCreatedTest.Passing_Threshold__c}" required="false" html-placeholder="Please, input passing threshold..." label=""/>
+				    				<apex:outputLabel id="capturedQuestsLabel" for="capturedQuests" value="Questions to catch (max. {!themeAvailableQuestions})" style="float: left"/>
+									<apex:inputField id="capturedQuests" value="{!preCreatedTestTheme.Questions_Captured__c}" required="false" html-placeholder="Please, input number of questions..." label=""/>
 
-			    				<apex:outputLabel id="capturedQuestsLabel" for="capturedQuests" value="Questions to catch (max. {!themeAvailableQuestions})" style="float: left"/>
-								<apex:inputField id="capturedQuests" value="{!preCreatedTestTheme.Questions_Captured__c}" required="false" html-placeholder="Please, input number of questions..." label=""/>
+									<apex:outputLabel for="testDuration" value="Passing Time" style="float: left"/>
+									<apex:inputField id="testDuration" value="{!preCreatedTest.Duration__c}" required="false" html-placeholder="Please, input time in minutes..." label=""/>
 
-								<apex:outputLabel for="testDuration" value="Passing Time" style="float: left"/>
-								<apex:inputField id="testDuration" value="{!preCreatedTest.Duration__c}" required="false" html-placeholder="Please, input time in minutes..." label=""/>
-
-		    				</apex:pageBlockSection>
+			    				</apex:pageBlockSection>
+			    			</div>
 
 						</div>
 					</div>
@@ -289,20 +296,20 @@
 		function expandAllInsets() {
 			var expandingCss = '.subjectRepeat > .apexp > div > .pbBody > div > .pbSubsection {max-height: 600px !important;}';
 
-			if (document.querySelector("head > style") == null) {
-				style = document.createElement('style');
-				if ( ! style.styleSheet) {
-					style.appendChild(document.createTextNode(expandingCss));
-				}
-				else {
-					style.styleSheet.cssText = expandingCss;
-				}
-			    document.querySelector("head").appendChild(style);
+			var deletingCss = document.querySelector("style[id*='expandSections']");
+			if (deletingCss) {
+				deletingCss.parentNode.removeChild(deletingCss);
+			}
+			
+			style = document.createElement('style');
+			style.id = 'expandSections';
+			if ( ! style.styleSheet) {
+				style.appendChild(document.createTextNode(expandingCss));
 			}
 			else {
-				var deletingCss = document.querySelector("head > style");
-			    deletingCss.parentNode.removeChild(deletingCss);
+				style.styleSheet.cssText = expandingCss;
 			}
+		    document.querySelector("head").appendChild(style);
 
 			var insetButton = document.querySelector("input[id*='expandingButton'");
 			insetButton.value = "Collapse All";
@@ -313,9 +320,9 @@
 			}
 		}
 		function hideAllInsets() {
-			if (document.querySelector("head > style") != null) {
-				var deletingCss = document.querySelector("head > style");
-			    deletingCss.parentNode.removeChild(deletingCss);
+			var deletingCss = document.querySelector("style[id*='expandSections']");
+			if (deletingCss) {
+				deletingCss.parentNode.removeChild(deletingCss);
 			}
 
 			var insetButton = document.querySelector("input[id*='expandingButton'");

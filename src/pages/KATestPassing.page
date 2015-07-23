@@ -219,7 +219,7 @@
 		</apex:outputPanel>
 	</apex:form>
 
-	<apex:outputPanel layout="none" rendered="{!isTestBlockEnabled}">
+	<apex:outputPanel layout="none" rendered="{!OR(isTestBlockEnabled, isFinishBlockEnabled)}">
 		<div style="position: absolute; top: 47px; left: 50%; width: 100%;">
 			<apex:outputPanel layout="none">
 				<apex:outputLabel id="testTimer" style="color: #8B3A3A !important;">
@@ -228,7 +228,7 @@
 			</apex:outputPanel>
 		</div>
 
-		<apex:form >
+		<apex:form id="finishAction">
 			<apex:actionFunction action="{!finishTest}" name="outOfTime"/>
 		</apex:form>
 
