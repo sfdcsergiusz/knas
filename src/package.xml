@@ -11,6 +11,7 @@
         <members>KACommonUsersControllerTest</members>
         <members>KACreateNewPasswordController</members>
         <members>KACreateNewPasswordControllerTest</members>
+        <members>KADropboxIntegration</members>
         <members>KAEmailHandler</members>
         <members>KAEmailHandlerTest</members>
         <members>KAImportQuestionsCSVController</members>
@@ -22,6 +23,7 @@
         <members>KANotificationMapWrapper</members>
         <members>KANotificationMapWrapperTest</members>
         <members>KAPageConstants</members>
+        <members>KAPageNotFoundController</members>
         <members>KARegisterController</members>
         <members>KARegisterControllerTest</members>
         <members>KARegularHomeController</members>
@@ -49,33 +51,6 @@
         <members>KASubjectQuestionsList</members>
         <members>KATestPassing</members>
         <name>ApexPage</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ApexTrigger</name>
-    </types>
-    <types>
-        <members>Answer__c</members>
-        <members>Browser__c</members>
-        <members>Employee_Task__c</members>
-        <members>Employee__c</members>
-        <members>Pass_History__c</members>
-        <members>Question__c</members>
-        <members>Subject__c</members>
-        <members>Task__c</members>
-        <members>TestQuestion__c</members>
-        <members>Test__c</members>
-        <members>Theme__c</members>
-        <name>CustomObject</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>CustomTab</name>
-    </types>
-    <types>
-        <members>Admin</members>
-        <members>Knowledge Assessment Profile</members>
-        <name>Profile</name>
     </types>
     <types>
         <members>*</members>
