@@ -91,7 +91,8 @@ public with sharing class KACommonTestsController {
 
 		if ((preCreatedTestTheme.Questions_Captured__c <= 0 || preCreatedTestTheme.Questions_Captured__c > themeAvailableQuestions) ||
 			checkEqualTestList.size() > 0 || preCreatedTest.Duration__c <= 0 || preCreatedTest.Passing_Threshold__c == null || subjectForTest.isEmpty() ||
-			preCreatedTest.Duration__c == null || preCreatedTestTheme.Questions_Captured__c == null) {
+			preCreatedTest.Duration__c == null || preCreatedTestTheme.Questions_Captured__c == null ||
+			preCreatedTest.Passing_Threshold__c < 0 || preCreatedTest.Passing_Threshold__c > 100) {
 			if (preCreatedTestTheme.Questions_Captured__c <= 0) {
 				notificMap.addDanger('Number of questions should be more than 0.');
 			}
@@ -109,6 +110,12 @@ public with sharing class KACommonTestsController {
 			}
 			else if (preCreatedTest.Passing_Threshold__c == null) {
 				notificMap.addDanger('Please, input passing threshold.');
+			}
+			else if (preCreatedTest.Passing_Threshold__c < 0) {
+				notificMap.addDanger('Threshold shold be equal or greater than 0.');
+			}
+			else if (preCreatedTest.Passing_Threshold__c > 100) {
+				notificMap.addDanger('Threshold shold be equal or less than 100.');
 			}
 			else if (preCreatedTest.Duration__c == null) {
 				notificMap.addDanger('Please, enter duration.');
