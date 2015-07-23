@@ -85,9 +85,9 @@
 		</a>
 	</div>
 
-	<apex:form>
-		<apex:pageBlock>
-			<apex:actionRegion>
+	<apex:form >
+		<apex:pageBlock >
+			<apex:actionRegion >
 				<apex:outputPanel layout="none">
 					<apex:commandButton value="Create Subject" action="{!createSubject}" reRender="subjectSection" status="refreshWholeStatus" styleClass="btn btn-primary" style="float: left; margin: 16px 12px 12px 12px !important;"/>
 					<apex:inputText id="subjectInput" value="{!tmpSubject}" html-placeholder="Please, input subject name..." style="width: 54% !important; float: left; margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
@@ -106,9 +106,9 @@
 
 				<apex:repeat value="{!subjects}" var="subject">
 					<div class="subjectRepeat">
-						<apex:pageBlock>
+						<apex:pageBlock >
 
-							<apex:actionRegion>
+							<apex:actionRegion >
 								<apex:outputPanel layout="none">
 									<div class="hoverDiv" style="height: 37px;">
 										<div style="position: relative; bottom: -7px; height: 0; left: 50px">
@@ -186,20 +186,20 @@
 		function expandAllInsets() {
 			var expandingCss = '.subjectRepeat > .apexp > div > .pbBody > div > .pbSubsection {max-height: 600px !important;}';
 
-			if (document.querySelector("head > style") == null) {
-				style = document.createElement('style');
-				if ( ! style.styleSheet) {
-					style.appendChild(document.createTextNode(expandingCss));
-				}
-				else {
-					style.styleSheet.cssText = expandingCss;
-				}
-			    document.querySelector("head").appendChild(style);
+			var deletingCss = document.querySelector("style[id*='expandSections']");
+			if (deletingCss) {
+				deletingCss.parentNode.removeChild(deletingCss);
+			}
+			
+			style = document.createElement('style');
+			style.id = 'expandSections';
+			if ( ! style.styleSheet) {
+				style.appendChild(document.createTextNode(expandingCss));
 			}
 			else {
-				var deletingCss = document.querySelector("head > style");
-			    deletingCss.parentNode.removeChild(deletingCss);
+				style.styleSheet.cssText = expandingCss;
 			}
+		    document.querySelector("head").appendChild(style);
 
 			var insetButton = document.querySelector("input[id*='expandingButton'");
 			insetButton.value = "Collapse All";
@@ -210,9 +210,9 @@
 			}
 		}
 		function hideAllInsets() {
-			if (document.querySelector("head > style") != null) {
-				var deletingCss = document.querySelector("head > style");
-			    deletingCss.parentNode.removeChild(deletingCss);
+			var deletingCss = document.querySelector("style[id*='expandSections']");
+			if (deletingCss) {
+				deletingCss.parentNode.removeChild(deletingCss);
 			}
 
 			var insetButton = document.querySelector("input[id*='expandingButton'");
