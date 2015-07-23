@@ -74,12 +74,12 @@
 						<apex:commandButton value="Create Task" onclick="openCreatingTask(); return false;" reRender="tasksSection" styleClass="btn btn-primary"/>
 					</apex:outputPanel>
 
-					<apex:pageBlockTable id="recentTasksTable" value="{!recentTasks}" var="task">
-						<apex:column value="{!task.Task__r.CreatedDate}" headerValue="Created On"/>
-						<apex:column value="{!task.Employee__r.First_Name__c} {!task.Employee__r.Last_Name__c}" headerValue="User"/>
-						<apex:column value="{!task.Task__r.Test__r.Name}" headerValue="Test Title"/>
-						<apex:column value="{!task.Task__r.Status__c}" headerValue="Status"/>
-						<apex:column value="{!task.Task__r.AssignTime__c}" headerValue="Time Of Assignment"/>
+					<apex:pageBlockTable id="recentTasksTable" value="{!recentTasks}" var="task" style="border-spacing: 0px 3px;">
+						<apex:column value="{!task.Task__r.CreatedDate}" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" headerValue="Created On"/>
+						<apex:column value="{!task.Employee__r.First_Name__c} {!task.Employee__r.Last_Name__c}" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" headerValue="User"/>
+						<apex:column value="{!task.Task__r.Test__r.Name}" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" headerValue="Test Title"/>
+						<apex:column value="{!task.Task__r.Status__c}" headerValue="Status" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" />
+						<apex:column value="{!task.Task__r.AssignTime__c}" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" headerValue="Time Of Assignment"/>
 					</apex:pageBlockTable>
 				</apex:pageBlockSection>
 
