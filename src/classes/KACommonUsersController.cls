@@ -82,7 +82,8 @@ public with sharing class KACommonUsersController {
 		];
 
 		testThemeStat = [
-			SELECT Questions_Captured__c, Theme__r.Name, Theme__r.Subject__r.Name, Test__r.Id, Test__r.Name, Test__r.Duration__c
+			SELECT Questions_Captured__c, Theme__r.Name, Theme__r.Subject__r.Name, 
+				Test__r.Id, Test__r.Name, Test__r.Duration__c, Test__r.Difficulty__c, Test__r.Passing_Threshold__c
 			FROM TestTheme__c
 		];
 
@@ -105,7 +106,9 @@ public with sharing class KACommonUsersController {
 								thirdLevelMap.put(
 									new Test__c(
 										Name = tmpTestTheme.Test__r.Name,
-										Duration__c = tmpTestTheme.Test__r.Duration__c
+										Duration__c = tmpTestTheme.Test__r.Duration__c,
+										Difficulty__c = tmpTestTheme.Test__r.Difficulty__c,
+										Passing_Threshold__c = tmpTestTheme.Test__r.Passing_Threshold__c
 									),
 									currentPassing
 								);
@@ -117,14 +120,14 @@ public with sharing class KACommonUsersController {
 							thirdLevelMap.put(
 								new Test__c(
 									Name = tmpTestTheme.Test__r.Name,
-									Duration__c = tmpTestTheme.Test__r.Duration__c
+									Duration__c = tmpTestTheme.Test__r.Duration__c,
+									Difficulty__c = tmpTestTheme.Test__r.Difficulty__c
 								),
 								new Pass_History__c(
 									Result__c = -1
 								)
 							);
 						}
-
 					}
 				}
 

@@ -36,7 +36,8 @@ public with sharing class KARegularHomeController {
 				}
 
 				upcomingTests = [
-					SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id, Task__r.Status__c
+					SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Difficulty__c,
+					Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id, Task__r.Status__c
 					FROM Employee_Task__c
 					WHERE Employee__r.Id = :userId
 					ORDER BY Task__r.AssignTime__c DESC
