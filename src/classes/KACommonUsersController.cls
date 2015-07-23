@@ -70,7 +70,7 @@ public with sharing class KACommonUsersController {
 		renderedUser = [
 			SELECT Name, First_Name__c, Last_Name__c, CreatedDate
 			FROM Employee__c
-			WHERE Id = :ApexPages.currentPage().getParameters().get('rendUserId')
+			WHERE Id = :ApexPages.currentPage().getParameters().get('userId')
 			LIMIT 1
 		];
 
@@ -78,7 +78,7 @@ public with sharing class KACommonUsersController {
 			SELECT Employee__r.Name, Employee__r.First_Name__c, Employee__r.Last_Name__c, Employee__r.CreatedDate,
 				CreatedDate, Result__c, Test__r.Id, Test__r.Name, Test__r.Duration__c
 			FROM Pass_History__c
-			WHERE Employee__r.Id = :ApexPages.currentPage().getParameters().get('rendUserId')
+			WHERE Employee__r.Id = :ApexPages.currentPage().getParameters().get('userId')
 		];
 
 		testThemeStat = [

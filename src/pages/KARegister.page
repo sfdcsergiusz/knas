@@ -51,6 +51,10 @@
 							<apex:inputSecret id="inputPass" value="{!password}" html-placeholder="Please, input your password..." html-pattern="[\s\S]{8,24}" title="Password must be from 8 to 24 symbols." />
 						</apex:pageBlockSectionItem>
 						<apex:pageBlockSectionItem >
+							<apex:outputLabel for="confirmPass" value="* Confirm Password: "/>
+							<apex:inputSecret id="confirmPass" value="{!passwordConfirmation}" html-placeholder="Please, confirm your password..." html-pattern="[\s\S]{8,24}" title="Password must be from 8 to 24 symbols."/>
+						</apex:pageBlockSectionItem>
+						<apex:pageBlockSectionItem >
 							<apex:outputLabel for="inputFirstName" value="* First Name: "/>
 							<apex:inputText id="inputFirstName" value="{!firstName}" html-placeholder="Please, input your first name..." html-pattern="[A-Za-z]+" title="Only Roman alphabet symbols are allowed." required="true"/>
 						</apex:pageBlockSectionItem>
