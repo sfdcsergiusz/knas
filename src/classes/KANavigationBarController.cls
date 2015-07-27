@@ -90,8 +90,15 @@ public with sharing class KANavigationBarController {
 			}
 		);
 		if (browserUser != null) {
-			delete browserUser;
-			browserUser = null;
+			List<Browser__c> currentBrowserList = [
+				SELECT Id
+				FROM Browser__c
+				WHERE Id = :browserUser.Id
+			];
+			if ( ! currentBrowserList.isEmpty()) {
+				delete currentBrowserList;
+				browserUser = null;
+			}
 		}
 
 		return new PageReference('/apex/KALogin');

@@ -11,6 +11,7 @@ private class KARegisterControllerTest {
 		registerController = new KARegisterController();
 		registerController.username = 'testUsername';
 		registerController.password = 'testPassword';
+		registerController.passwordConfirmation = 'testPassword';
 		registerController.firstName = 'testFirstName';
 		registerController.lastName = 'testLastName';
 	}

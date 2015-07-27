@@ -7,7 +7,7 @@ private class KATestPassingControllerTest {
 		Subject__c testSubject = new Subject__c(Name = 'testSubject');
 		insert testSubject;
 
-		Test__c testTest = new Test__c(Duration__c = 120, Subject__c = testSubject.Id);
+		Test__c testTest = new Test__c(Duration__c = 120, Subject__c = testSubject.Id, Difficulty__c = 'Lead');
 		insert testTest;
 
 		Employee__c testEmployee = new Employee__c(Name = 'testName', First_Name__c = 'testFirstName');
@@ -28,7 +28,7 @@ private class KATestPassingControllerTest {
 		TestTheme__c testTestTheme = new TestTheme__c(Theme__c = testTheme.Id, Test__c = testTest.Id, Questions_Captured__c = 2);
 		insert testTestTheme;
 
-		Question__c testQuestion = new Question__c(Theme__c = testTheme.Id, Statement__c = 'testStatement', Level__c = 'Junior');
+		Question__c testQuestion = new Question__c(Theme__c = testTheme.Id, Statement__c = 'testStatement', Level__c = 'Lead');
 		insert testQuestion;
 
 		Answer__c testFirstAnswer = new Answer__c(Question__c = testQuestion.Id, Variant__c = 'testVariant', Right__c = true);
@@ -36,7 +36,7 @@ private class KATestPassingControllerTest {
 		insert testFirstAnswer;
 		insert testSecondAnswer;
 
-		Question__c testQuestion2 = new Question__c(Theme__c = testTheme.Id, Statement__c = 'testStatement', Level__c = 'Junior');
+		Question__c testQuestion2 = new Question__c(Theme__c = testTheme.Id, Statement__c = 'testStatement', Level__c = 'Lead');
 		insert testQuestion2;
 
 		Answer__c testFirstAnswer2 = new Answer__c(Question__c = testQuestion2.Id, Variant__c = 'testVariant', Right__c = true);
