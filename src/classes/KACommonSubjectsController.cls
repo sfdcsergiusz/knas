@@ -6,6 +6,12 @@ public with sharing class KACommonSubjectsController {
 	public String tmpTheme { get; set; }
 
 	public KANotificationMapWrapper notificMap { get; private set; }
+	public String backLink {
+		get {
+			return 'apex/' + KAPageConstants.packagePrefix + 'KAAdminUserHome';
+		}
+		private set;
+	}
 
 	public KACommonSubjectsController() {
 		tmpSubject = '';

@@ -21,6 +21,12 @@ public with sharing class KASubjectQuestionsListController {
 	public List<Answer__c> preCreatedAnswers { get; set; }
 
 	public KANotificationMapWrapper notificMap { get; private set; }
+	public String backLink {
+		get {
+			return 'apex/' + KAPageConstants.packagePrefix + 'KACommonSubjects';
+		}
+		private set;
+	}
 
 	private PageReference currentPage;
 

@@ -3,7 +3,7 @@
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
 	<apex:include pageName="KANavigationBar"/>
 	<apex:form>
-		<div style="{!IF(true, 'position: fixed; width: 100%; height: 100%; background-image: url(' + URLFOR($Resource.PageNotFound) + '); background-repeat-y: no-repeat; background-repeat-x: no-repeat; background-size: cover;', 'width: 100%; height: 100%;')}">
+		<div style="{!IF(true, 'position: fixed; width: 100%; height: 100%; background-image: url(' + URLFOR($Resource.PageNotFound) + '); background-repeat-y: no-repeat; background-repeat-x: no-repeat; background-size: cover; margin-top: -20px;', 'width: 100%; height: 100%;')}">
 		</div>
 		<script>
 			createMessage('{!JSENCODE(notificMap.currentMessage)}');
