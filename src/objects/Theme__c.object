@@ -67,7 +67,6 @@
         <externalId>false</externalId>
         <label>Subject</label>
         <referenceTo>Subject__c</referenceTo>
-        <relationshipLabel>Themes</relationshipLabel>
         <relationshipName>Themes</relationshipName>
         <relationshipOrder>0</relationshipOrder>
         <reparentableMasterDetail>false</reparentableMasterDetail>
@@ -84,17 +83,17 @@
         <trackTrending>false</trackTrending>
         <type>Summary</type>
     </fields>
-    <label>Theme</label>
+    <label>Topic</label>
     <listViews>
         <fullName>All</fullName>
         <filterScope>Everything</filterScope>
         <label>All</label>
     </listViews>
     <nameField>
-        <label>Theme Name</label>
+        <label>Topic Title</label>
         <type>Text</type>
     </nameField>
-    <pluralLabel>Themes</pluralLabel>
+    <pluralLabel>Topics</pluralLabel>
     <searchLayouts/>
     <sharingModel>ControlledByParent</sharingModel>
 </CustomObject>

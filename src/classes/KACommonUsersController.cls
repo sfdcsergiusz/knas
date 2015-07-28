@@ -9,8 +9,14 @@ public with sharing class KACommonUsersController {
 	public Map<Subject__c, Map<Theme__c, Map<Test__c, Pass_History__c>>> renderedStatistic { get; set; }
 	public List<Subject__c> allSubjects { get; set; }
 
-
 	public String tmpUser { get; set; }
+
+	public String backLink {
+		get {
+			return 'apex/' + KAPageConstants.packagePrefix + 'KAAdminUserHome';
+		}
+		private set;
+	}
 
 	public KACommonUsersController() {
 		allSubjects = [
@@ -54,7 +60,7 @@ public with sharing class KACommonUsersController {
 			SELECT Name, First_Name__c, Last_Name__c, CreatedDate, IsActive__c
 			FROM Employee__c
 			WHERE Id = :ApexPages.currentPage().getParameters().get('activeUserId')
-			LIMIT 1	
+			LIMIT 1
 		];
 		activeFreezeUser.IsActive__c = activeFreezeUser.IsActive__c ? false : true;
 		update activeFreezeUser;
@@ -63,14 +69,14 @@ public with sharing class KACommonUsersController {
 			SELECT Name, First_Name__c, Last_Name__c, CreatedDate, IsActive__c
 			FROM Employee__c
 			WHERE IsAdmin__c = false
-		];		
+		];
 	}
 
 	public void renderUser() {
 		renderedUser = [
 			SELECT Name, First_Name__c, Last_Name__c, CreatedDate
 			FROM Employee__c
-			WHERE Id = :ApexPages.currentPage().getParameters().get('rendUserId')
+			WHERE Id = :ApexPages.currentPage().getParameters().get('userId')
 			LIMIT 1
 		];
 
@@ -78,11 +84,12 @@ public with sharing class KACommonUsersController {
 			SELECT Employee__r.Name, Employee__r.First_Name__c, Employee__r.Last_Name__c, Employee__r.CreatedDate,
 				CreatedDate, Result__c, Test__r.Id, Test__r.Name, Test__r.Duration__c
 			FROM Pass_History__c
-			WHERE Employee__r.Id = :ApexPages.currentPage().getParameters().get('rendUserId')
+			WHERE Employee__r.Id = :ApexPages.currentPage().getParameters().get('userId')
 		];
 
 		testThemeStat = [
-			SELECT Questions_Captured__c, Theme__r.Name, Theme__r.Subject__r.Name, Test__r.Id, Test__r.Name, Test__r.Duration__c
+			SELECT Questions_Captured__c, Theme__r.Name, Theme__r.Subject__r.Name,
+				Test__r.Id, Test__r.Name, Test__r.Duration__c, Test__r.Difficulty__c, Test__r.Passing_Threshold__c
 			FROM TestTheme__c
 		];
 
@@ -105,7 +112,9 @@ public with sharing class KACommonUsersController {
 								thirdLevelMap.put(
 									new Test__c(
 										Name = tmpTestTheme.Test__r.Name,
-										Duration__c = tmpTestTheme.Test__r.Duration__c
+										Duration__c = tmpTestTheme.Test__r.Duration__c,
+										Difficulty__c = tmpTestTheme.Test__r.Difficulty__c,
+										Passing_Threshold__c = tmpTestTheme.Test__r.Passing_Threshold__c
 									),
 									currentPassing
 								);
@@ -117,14 +126,14 @@ public with sharing class KACommonUsersController {
 							thirdLevelMap.put(
 								new Test__c(
 									Name = tmpTestTheme.Test__r.Name,
-									Duration__c = tmpTestTheme.Test__r.Duration__c
+									Duration__c = tmpTestTheme.Test__r.Duration__c,
+									Difficulty__c = tmpTestTheme.Test__r.Difficulty__c
 								),
 								new Pass_History__c(
 									Result__c = -1
 								)
 							);
 						}
-
 					}
 				}
 

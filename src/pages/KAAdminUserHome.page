@@ -74,12 +74,12 @@
 						<apex:commandButton value="Create Task" onclick="openCreatingTask(); return false;" reRender="tasksSection" styleClass="btn btn-primary"/>
 					</apex:outputPanel>
 
-					<apex:pageBlockTable id="recentTasksTable" value="{!recentTasks}" var="task">
-						<apex:column value="{!task.Task__r.CreatedDate}" headerValue="Created On"/>
-						<apex:column value="{!task.Employee__r.First_Name__c} {!task.Employee__r.Last_Name__c}" headerValue="User"/>
-						<apex:column value="{!task.Task__r.Test__r.Name}" headerValue="Test Title"/>
-						<apex:column value="{!task.Task__r.Status__c}" headerValue="Status"/>
-						<apex:column value="{!task.Task__r.AssignTime__c}" headerValue="Time Of Assignment"/>
+					<apex:pageBlockTable id="recentTasksTable" value="{!recentTasks}" var="task" style="border-spacing: 0px 3px;">
+						<apex:column value="{!task.Task__r.CreatedDate}" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" headerValue="Created On"/>
+						<apex:column value="{!task.Employee__r.First_Name__c} {!task.Employee__r.Last_Name__c}" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" headerValue="User"/>
+						<apex:column value="{!task.Task__r.Test__r.Name}" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" headerValue="Test Title"/>
+						<apex:column value="{!task.Task__r.Status__c}" headerValue="Status" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" />
+						<apex:column value="{!task.Task__r.AssignTime__c}" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" headerValue="Time Of Assignment"/>
 					</apex:pageBlockTable>
 				</apex:pageBlockSection>
 
@@ -88,12 +88,14 @@
 						<apex:commandButton value="Refresh" action="{!refreshRecentResults}" status="refreshStatus" reRender="resultsSection" styleClass="btn btn-success refreshButton" style="float: right;"/>
 					</apex:outputPanel>
 
-					<apex:pageBlockTable id="recentResultsTable" value="{!recentResults}" var="result">
+					<apex:pageBlockTable id="recentResultsTable" value="{!recentResults}" var="result" style="border-spacing: 0px 3px;">
 						<apex:column value="{!result.CreatedDate}" headerValue="Created On"/>
 						<apex:column value="{!result.Employee__r.First_Name__c} {!result.Employee__r.Last_Name__c}" headerValue="User"/>
 						<apex:column value="{!result.Test__r.Subject__r.Name}" headerValue="Subject"/>
 						<apex:column value="{!result.Test__r.Name}" headerValue="Test Title"/>
-						<apex:column value="{!result.Result__c}" headerValue="Pass Result"/>
+						<apex:column value="{!result.Test__r.Difficulty__c}" style="{!IF(result.Test__r.Passing_Threshold__c <= result.Result__c,'background: rgba(92, 184, 92, 0.3)', 'background: rgba(206, 74, 34, 0.3)')}" headerValue="Difficulty"/>
+						<apex:column value="{!result.Result__c}" style="{!IF(result.Test__r.Passing_Threshold__c <= result.Result__c,'background: rgba(92, 184, 92, 0.3)', 'background: rgba(206, 74, 34, 0.3)')}" headerValue="Pass Result"/>
+						<apex:column value="{!result.Test__r.Passing_Threshold__c}" headerValue="Threshold"/>
 					</apex:pageBlockTable>
 				</apex:pageBlockSection>
 
@@ -142,6 +144,7 @@
 								<apex:outputLabel value="Employee" style="float: left"/>
 								<apex:inputText id="inputEmployee" value="{!tmpEmployee}" html-placeholder="Please, input employee name or surname...">
 									<apex:actionSupport event="onkeyup" action="{!typeEmployee}" reRender="employeesTable"/>
+									<apex:actionSupport event="onfocus" action="{!typeEmployee}" reRender="employeesTable"/>
 								</apex:inputText>
 							</apex:actionRegion>
 
@@ -166,6 +169,7 @@
 								<apex:outputLabel value="Test Name" style="float: left"/>
 								<apex:inputText id="inputTest" value="{!tmpTest}" html-placeholder="Please, input test name or subject...">
 									<apex:actionSupport event="onkeyup" action="{!typeTest}" reRender="testsTable"/>
+									<apex:actionSupport event="onfocus" action="{!typeTest}" reRender="testsTable"/>
 								</apex:inputText>
 							</apex:actionRegion>
 
@@ -218,6 +222,14 @@
 				<apex:actionFunction name="switchEmailing" action="{!switchEmailing}" reRender="emailingSettingForm"/>
 				<script>
 					function switchEmailingJS() {
+						var enableEmailingButton = document.querySelector('input[id*="enableEmailingButton"]');
+						var disableEmailingButton = document.querySelector('input[id*="disableEmailingButton"]');
+						if (enableEmailingButton) {
+							enableEmailingButton.disabled = true;
+						}
+						else if (disableEmailingButton) {
+							disableEmailingButton.disabled = true;
+						}
 						setTimeout(
 							function() {
 								switchEmailing();

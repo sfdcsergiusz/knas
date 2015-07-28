@@ -80,7 +80,7 @@
 	</style>
 
 	<div class="upNavigationImgDiv">
-		<a href="apex/KAAdminUserHome">
+		<a href="{!backLink}">
 			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
 		</a>
 	</div>
@@ -115,17 +115,17 @@
 											<apex:commandButton value="List" action="{!goToSubjectList}" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" reRender="subjectSection" title="View all questions for this subject">
 												<apex:param name="listParam" value="{!subject.Id}"/>
 											</apex:commandButton>
-											<apex:commandButton value="Delete" action="{!deleteSubject}" reRender="subjectSection" status="refreshWholeStatus" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" title="Delete this subject">
+											<apex:commandButton value="Delete" action="{!deleteSubject}" reRender="subjectSection, subjectInput" status="refreshWholeStatus" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" title="Delete this subject">
 												<apex:param name="deleteParam" value="{!subject.Name}"/>
 											</apex:commandButton>
-											<apex:commandLink value="{!subject.Themes_Number__c} themes" styleClass="btn btn-link" style="padding: 2px 25px !important; margin: 0px 0px 6px !important; line-height: normal !important; color: #2F933C !important; pointer-events: none; cursor: default;"/>
+											<apex:commandLink value="{!subject.Themes_Number__c} topics" styleClass="btn btn-link" style="padding: 2px 25px !important; margin: 0px 0px 6px !important; line-height: normal !important; color: #2F933C !important; pointer-events: none; cursor: default;"/>
 											<apex:outputLabel value="{!subject.Name}" style="margin: 0px 0px 0px 10px !important; border-radius: .25em .25em 0 0 !important; border: 1px solid #BBB !important;; border-bottom-style: none !important;"/>
 										</div>
 										<div class="inputDiv">
-											<apex:commandButton value="Create Theme" action="{!createTheme}" reRender="subjectSection" status="refreshWholeStatus" styleClass="btn btn-success" style="float: right;">
+											<apex:commandButton value="Create Topic" action="{!createTheme}" reRender="subjectSection, subjectInput" status="refreshWholeStatus" styleClass="btn btn-success" style="float: right;">
 												<apex:param name="subjectName" value="{!subject.Name}"/>
 											</apex:commandButton>
-											<apex:inputText value="{!tmpTheme}" html-placeholder="Please, input new theme..." style="width: 34% !important; float: right;" html-autocomplete="off"/>
+											<apex:inputText value="{!tmpTheme}" html-placeholder="Please, input new topic..." style="width: 34% !important; float: right;" html-autocomplete="off"/>
 										</div>
 									</div>
 								</apex:outputPanel>
@@ -133,17 +133,17 @@
 
 							<apex:pageBlockSection columns="1">
 								<apex:pageBlockTable value="{!subject.Themes__r}" var="theme" columnsWidth="30%, 30%, 40%">
-									<apex:column headerValue="Subject Themes" value="{!theme.Name}"/>
-									<apex:column headerValue="Questions In Theme" value="{!theme.Questions_Number__c}"/>
+									<apex:column headerValue="Subject Topics" value="{!theme.Name}"/>
+									<apex:column headerValue="Questions In Topic" value="{!theme.Questions_Number__c}"/>
 									<apex:column headerValue="Actions">
 										<apex:outputPanel layout="none">
 											<apex:commandButton value="List" action="{!goToThemeList}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection" title="List of questions for chosen theme">
 												<apex:param name="listParam" value="{!theme.Id}"/>
 											</apex:commandButton>
-											<apex:commandButton value="Upload CSV" action="{!goToUploadCSV}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection" title="Import questions with CSV file for chosen theme">
+											<apex:commandButton value="Upload CSV" action="{!goToUploadCSV}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection" title="Import questions with CSV file for chosen topic">
 												<apex:param name="CSVParam" value="{!theme.Id}"/>
 											</apex:commandButton>
-											<apex:commandButton value="Delete" action="{!deleteTheme}" reRender="subjectSection" status="refreshWholeStatus" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete chosen theme">
+											<apex:commandButton value="Delete" action="{!deleteTheme}" reRender="subjectSection" status="refreshWholeStatus" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete chosen topic">
 												<apex:param name="deleteParam" value="{!theme.Name}"/>
 											</apex:commandButton>
 										</apex:outputPanel>
@@ -186,23 +186,23 @@
 		function expandAllInsets() {
 			var expandingCss = '.subjectRepeat > .apexp > div > .pbBody > div > .pbSubsection {max-height: 600px !important;}';
 
-			if (document.querySelector("head > style") == null) {
-				style = document.createElement('style');
-				if ( ! style.styleSheet) {
-					style.appendChild(document.createTextNode(expandingCss));
-				}
-				else {
-					style.styleSheet.cssText = expandingCss;
-				}
-			    document.querySelector("head").appendChild(style);
-			}
-			else {
-				var deletingCss = document.querySelector("head > style");
-			    deletingCss.parentNode.removeChild(deletingCss);
+			var deletingCss = document.querySelector("style[id*='expandSections']");
+			if (deletingCss) {
+				deletingCss.parentNode.removeChild(deletingCss);
 			}
 
+			style = document.createElement('style');
+			style.id = 'expandSections';
+			if ( ! style.styleSheet) {
+				style.appendChild(document.createTextNode(expandingCss));
+			}
+			else {
+				style.styleSheet.cssText = expandingCss;
+			}
+		    document.querySelector("head").appendChild(style);
+
 			var insetButton = document.querySelector("input[id*='expandingButton'");
-			insetButton.value = "Hide All";
+			insetButton.value = "Collapse All";
 			insetButton.blur();
 			insetButton.onclick = function() {
 				hideAllInsets();
@@ -210,9 +210,9 @@
 			}
 		}
 		function hideAllInsets() {
-			if (document.querySelector("head > style") != null) {
-				var deletingCss = document.querySelector("head > style");
-			    deletingCss.parentNode.removeChild(deletingCss);
+			var deletingCss = document.querySelector("style[id*='expandSections']");
+			if (deletingCss) {
+				deletingCss.parentNode.removeChild(deletingCss);
 			}
 
 			var insetButton = document.querySelector("input[id*='expandingButton'");

@@ -45,7 +45,7 @@ public with sharing class KAAdminHomeController {
 
 	public void refreshRecentResults() {
 		recentResults = [
-			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c, CreatedDate, Result__c, Test__r.Subject__r.Name, Test__r.Name
+			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c, CreatedDate, Result__c, Test__r.Subject__r.Name, Test__r.Name, Test__r.Difficulty__c, Test__r.Passing_Threshold__c
 			FROM Pass_History__c
 			ORDER BY CreatedDate DESC
 			LIMIT 50000
@@ -182,12 +182,12 @@ public with sharing class KAAdminHomeController {
 				System.abortJob(scheduledTrigger.Id);
 			}
 
-			notificMap.addInfo('Email distribution was switched on.');
+			notificMap.addInfo('Email distribution was switched off.');
 		}
 		else {
 			System.schedule('Daily emails', '0 0 9,10,11,12,13,14,15,16,17,18 * * ?', new KAEmailHandler());
 
-			notificMap.addInfo('Email distribution was switched off.');
+			notificMap.addInfo('Email distribution was switched on.');
 		}
 		scheduledTriggers = [
 			SELECT Id

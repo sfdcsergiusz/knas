@@ -54,7 +54,8 @@
 		}
 		.scrollDiv {
 			overflow: auto;
-			height: 560px !important;
+			height: 96% !important;
+			width: 100%;
 		}
 		.pbBody {
 			overflow: auto;
@@ -76,176 +77,225 @@
 		}
 		.resultH {
 			display: block;
-  			-webkit-margin-before: -10px !important;
+  			-webkit-margin-before: 0px !important;
   			-webkit-margin-after: 10px !important;
+  			text-align: -webkit-center;
+		}
+		.resultHRed {
+			display: block;
+  			-webkit-margin-before: 0px !important;
+  			-webkit-margin-after: 10px !important;
+  			text-align: -webkit-center;
+		}
+		.resultHGreen {
+			display: block;
+  			-webkit-margin-before: 0px !important;
+  			-webkit-margin-after: 10px !important;
+  			text-align: -webkit-center;
+		}
+		.resultHRed:after{
+			content: '';
+			position: relative;
+			width: 0px;
+			height: 0px;
+			border: 12px solid;
+			margin-left: 4px;
+			border-top-color: rgba(206, 74, 34, 0.7);
+			bottom: -17px;
+			color: transparent;
+		}
+		.resultHGreen:after{
+			content: '';
+			position: relative;
+			width: 0px;
+			height: 0px;
+			border: 12px solid;
+			margin-left: 4px;
+			border-bottom-color: rgba(92, 184, 92, 0.7);
+			bottom: 16px;
+			color: transparent;
 		}
 		.subjectDiv {
 			border-radius: .45em;
 			padding: 6px 2px 6px 5px;
-			background-color: rgba(255, 162, 0, 0.38);
+			border: 2px solid;
 		}
 		.themeDiv {
 			border-radius: .45em;
 			padding: 4px 2px 4px 5px;
-			background-color: rgba(255, 162, 0, 0.16);
+			border: 1px dotted;
 		}
 		.subjectResDiv {
 			border-radius: .45em;
 			padding: 5px 2px 5px 5px;
-			background-color: rgba(175, 187, 234, 0.38);
+			font-weight: bold;
 		}
 		.themeResDiv {
 			border-radius: .45em;
 			padding: 3px 2px 3px 5px;
-			background-color: rgba(175, 187, 234, 0.16);
+			font-weight: bold;
 		}
 	</style>
 
 	<div class="upNavigationImgDiv">
-		<a href="apex/KAAdminUserHome">
+		<a href="{!backLink}">
 			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
 		</a>
 	</div>
 
-	<div style="width: 65%; left: 0%; position: absolute; overflow: auto;">
-		<apex:form >
-			<apex:pageBlock >
-				<apex:actionRegion >
-					<apex:outputPanel layout="none">
-						<apex:inputText value="{!tmpUser}" html-placeholder="Please, input user name..." style="margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
-							<apex:actionSupport event="onkeyup" action="{!typeUser}" reRender="usersSection" status="refreshStatus"/>
-						</apex:inputText>
-					</apex:outputPanel>
-				</apex:actionRegion>
-
-				<apex:outputPanel id="usersSection">
-					<apex:pageBlockSection columns="1">
-						<apex:pageBlockTable value="{!users}" var="user" columnsWidth="20%, 15%, 15%, 15">
-								<apex:column value="{!user.First_Name__c} {!user.Last_Name__c}" headerValue="Full Name"/>
-								<apex:column value="{!user.Name}" headerValue="Username"/>
-								<apex:column value="{!user.CreatedDate}" headerValue="Registered"/>
-								<apex:column headerValue="Actions">
-									<apex:commandButton value="Freeze" action="{!changeActivity}" reRender="usersSection" status="refreshWholeStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, true, false)}">
-										<apex:param name="activeUserId" value="{!user.Id}"/>
-									</apex:commandButton>
-									<apex:commandButton value="Activate" action="{!changeActivity}" reRender="usersSection" status="refreshWholeStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, false, true)}">
-										<apex:param name="activeUserId" value="{!user.Id}"/>
-									</apex:commandButton>
-									<apex:commandButton value="Details" action="{!renderUser}" reRender="userSection, usersSection" status="refreshWholeStatus" styleClass="btn btn-link">
-										<apex:param name="rendUserId" value="{!user.Id}"/>
-									</apex:commandButton>
-								</apex:column>
-						</apex:pageBlockTable>
-					</apex:pageBlockSection>
+	<apex:form >
+		<apex:pageBlock >
+			<apex:actionRegion >
+				<apex:outputPanel layout="none">
+					<apex:inputText value="{!tmpUser}" html-placeholder="Please, input user name..." style="margin: 15px 12px 12px 12px !important;" html-autocomplete="off">
+						<apex:actionSupport event="onkeyup" action="{!typeUser}" reRender="usersSection" status="refreshStatus"/>
+					</apex:inputText>
 				</apex:outputPanel>
+			</apex:actionRegion>
 
-				<apex:outputpanel >
-					<apex:actionstatus id="refreshStatus">
-						<apex:facet name="start">
-							<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.6; width: 100%; top: 135px;">
-								<div class="waitingHolder" style="top: 25%;">
-									<img class="waitingImage" src="{!$Resource.spinner}"/>
-								</div>
+			<apex:outputPanel id="usersSection">
+				<apex:pageBlockSection columns="1">
+					<apex:pageBlockTable value="{!users}" var="user" >
+							<apex:column value="{!user.First_Name__c} {!user.Last_Name__c}" headerValue="Full Name"/>
+							<apex:column value="{!user.Name}" headerValue="Username"/>
+							<apex:column value="{!user.CreatedDate}" headerValue="Registered"/>
+							<apex:column headerValue="Actions">
+								<apex:commandButton value="Freeze" action="{!changeActivity}" reRender="usersSection" status="refreshStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, true, false)}">
+									<apex:param name="activeUserId" value="{!user.Id}"/>
+								</apex:commandButton>
+								<apex:commandButton value="Activate" action="{!changeActivity}" reRender="usersSection" status="refreshStatus" styleClass="btn btn-link" rendered="{!IF(user.IsActive__c, false, true)}">
+									<apex:param name="activeUserId" value="{!user.Id}"/>
+								</apex:commandButton>
+								<apex:commandButton value="Details" onclick="showDetailInfo('{!user.Id}'); return false;" reRender=" usersSection" status="refreshStatus" styleClass="btn btn-link"/>
+							</apex:column>
+					</apex:pageBlockTable>
+				</apex:pageBlockSection>
+			</apex:outputPanel>
+
+			<apex:outputpanel >
+				<apex:actionstatus id="refreshStatus">
+					<apex:facet name="start">
+						<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.6; width: 100%; top: 135px;">
+							<div class="waitingHolder" style="top: 25%;">
+								<img class="waitingImage" src="{!$Resource.spinner}"/>
 							</div>
-						</apex:facet>
-					</apex:actionstatus>
-				</apex:outputpanel>
+						</div>
+					</apex:facet>
+				</apex:actionstatus>
+			</apex:outputpanel>
+		</apex:pageBlock>
+	</apex:form>
 
-				<apex:outputpanel >
-					<apex:actionstatus id="refreshWholeStatus">
-						<apex:facet name="start">
-							<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.6; width: 100%;">
-								<div class="waitingHolder" style="top: 25%;">
-									<img class="waitingImage" src="{!$Resource.spinner}"/>
-								</div>
-							</div>
-						</apex:facet>
-					</apex:actionstatus>
-				</apex:outputpanel>
-			</apex:pageBlock>
-		</apex:form>
-	</div>
-
-	<div class="movingBlock" style="width: 40%; right: 0%; top: 72px; position: absolute; height: 80%;">
-		<apex:form styleClass="movedBlock">
-			<apex:pageBlock >
-				<div style="margin: 3% 3% auto; border-bottom: 15px solid transparent;">
-					<h3>
-						<apex:outputLabel value="User Detailed Information" styleClass="label label-warning"/>
-					</h3>
-				</div>
-				<div class="scrollDiv">
-					<apex:outputPanel id="userSection">
-						<apex:pageBlockSection rendered="{!IF(renderedUser.Name != null, true, false)}" columns="1">
-							<apex:outputField value="{!renderedUser.First_Name__c}"/>
-							<apex:outputField value="{!renderedUser.Last_Name__c}"/>
-							<apex:outputField value="{!renderedUser.Name}"/>
-							<apex:outputField value="{!renderedUser.CreatedDate}"/>
-						</apex:pageBlockSection>
-						<apex:pageBlockSection columns="1">
-							<apex:variable value="{!0}" var="testCounter"/>
-							<apex:variable value="{!0}" var="testResult"/>
-							<apex:variable value="{!0}" var="themeCounter"/>
-							<apex:variable value="{!0}" var="themeResult"/>
-
-							<apex:repeat value="{!renderedStatistic}" var="subjectKey">
-
-								<div class="subjectDiv">
-									{!subjectKey.Name}
-								</div>
-
+	<apex:form >
+		<apex:actionFunction name="viewDetail" action="{!renderUser}" reRender="userSection" status="refreshDetailStatus">
+			<apex:param name="userId" value=""/>
+		</apex:actionFunction>
+		<apex:pageBlock >
+			<apex:outputpanel id="showUserDetailes" style="display: none;">
+				<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
+					<div class="waitingHolder" style="height: 80%; top: 10%; position: relative; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+						<div style="margin-bottom: 10px;">
+							<h3>
+								User Detailed Information
+							</h3>
+							<apex:commandButton value="Cancel" onclick="closeDetailInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+						</div>
+						<div class="scrollDiv">
+							<apex:outputPanel id="userSection">
+								<apex:pageBlockSection rendered="{!IF(renderedUser.Name != null, true, false)}" columns="1">
+									<apex:outputField value="{!renderedUser.First_Name__c}"/>
+									<apex:outputField value="{!renderedUser.Last_Name__c}"/>
+									<apex:outputField value="{!renderedUser.Name}"/>
+									<apex:outputField value="{!renderedUser.CreatedDate}"/>
+								</apex:pageBlockSection>
 								<apex:pageBlockSection columns="1">
+									<apex:variable value="{!0}" var="testCounter"/>
+									<apex:variable value="{!0}" var="testResult"/>
+									<apex:variable value="{!0}" var="themeCounter"/>
+									<apex:variable value="{!0}" var="themeResult"/>
 
-									<apex:repeat value="{!renderedStatistic[subjectKey]}" var="themeKey">
+									<apex:repeat value="{!renderedStatistic}" var="subjectKey">
 
-										<div class="themeDiv">
-											{!themeKey.Name}
+										<div class="subjectDiv">
+											{!subjectKey.Name}
 										</div>
-										<apex:pageBlockSection columns="2">
-											<apex:repeat value="{!renderedStatistic[subjectKey][themeKey]}" var="testKey">
-												{!testKey.Name}
+
+										<apex:pageBlockSection columns="1">
+
+											<apex:repeat value="{!renderedStatistic[subjectKey]}" var="themeKey">
+
+												<div class="themeDiv">
+													{!themeKey.Name}
+												</div>
+												<apex:pageBlockSection columns="2">
+													<apex:repeat value="{!renderedStatistic[subjectKey][themeKey]}" var="testKey">
+														{!testKey.Name} ({!testKey.Difficulty__c})
+														<apex:panelGroup >
+															<apex:variable value="{!testCounter + 1}" var="testCounter"/>
+															<apex:variable value="{!renderedStatistic[subjectKey][themeKey][testKey].Result__c}" var="tmpResult"/>
+															<h4 class="{!IF(tmpResult = -1, 'resultH', IF(testKey.Passing_Threshold__c <= tmpResult, 'resultHGreen', 'resultHRed'))}">
+																<apex:outputText value="Not passed" rendered="{!IF(tmpResult = -1, true, false)}"/>
+																<apex:outputText value="{!tmpResult}%" rendered="{!IF(tmpResult = -1, false, true)}"/>
+															</h4>
+															<apex:variable value="{!IF(tmpResult = -1, 0, tmpResult)}" var="tmpResult"/>
+															<apex:variable var="testResult" value="{!(testResult + tmpResult)}"/>
+														</apex:panelGroup>
+													</apex:repeat>
+												</apex:pageBlockSection>
 												<apex:panelGroup >
-													<apex:variable value="{!testCounter + 1}" var="testCounter"/>
-													<apex:variable value="{!renderedStatistic[subjectKey][themeKey][testKey].Result__c}" var="tmpResult"/>
-													<apex:variable var="testResult" value="{!(testResult + tmpResult)}"/>
-													<h4 class="resultH">
-														<apex:outputLabel value="NOT PASSED" styleClass="label label-default resultLabel" rendered="{!IF(tmpResult = -1, true, false)}"/>
-														<apex:outputLabel value="{!tmpResult}%" styleClass="label label-default resultLabel" rendered="{!IF(tmpResult = 0, true, false)}"/>
-														<apex:outputLabel value="{!tmpResult}%" styleClass="label label-danger resultLabel" rendered="{!IF(AND(tmpResult > 0, tmpResult < 33), true, false)}"/>
-														<apex:outputLabel value="{!tmpResult}%" styleClass="label label-warning resultLabel" rendered="{!IF(AND(tmpResult > 33, tmpResult < 67), true, false)}"/>
-														<apex:outputLabel value="{!tmpResult}%" styleClass="label label-success resultLabel" rendered="{!IF(tmpResult > 67, true, false)}"/>
-													</h4>
+													<div class="themeResDiv">
+														Theme Total: {!FLOOR(testResult / testCounter)}%
+													</div>
+													<apex:variable value="{!themeResult + testResult}" var="themeResult"/>
+													<apex:variable value="{!themeCounter + testCounter}" var="themeCounter"/>
+													<apex:variable value="{!0}" var="testCounter"/>
+													<apex:variable value="{!0}" var="testResult"/>
 												</apex:panelGroup>
+
 											</apex:repeat>
 										</apex:pageBlockSection>
 										<apex:panelGroup >
-											<div class="themeResDiv">
-												Theme Total: {!IF(OR(testCounter = 0, AND(testCounter > 0, testResult = -1 * testCounter)), 'there is no any ', FLOOR(testResult / testCounter))}%
+											<div class="subjectResDiv">
+												Subject Total: {!FLOOR(themeResult / themeCounter)}%
 											</div>
-											<apex:variable value="{!themeResult + testResult}" var="themeResult"/>
-											<apex:variable value="{!themeCounter + testCounter}" var="themeCounter"/>
-											<apex:variable value="{!0}" var="testCounter"/>
-											<apex:variable value="{!0}" var="testResult"/>
+											<apex:variable value="{!0}" var="themeCounter"/>
+											<apex:variable value="{!0}" var="themeResult"/>
 										</apex:panelGroup>
 
 									</apex:repeat>
 								</apex:pageBlockSection>
-								<apex:panelGroup >
-									<div class="subjectResDiv">
-										Subject Total: {!IF(OR(themeCounter = 0, AND(themeCounter > 0, themeResult = -1 * themeCounter)), 'there is no any ', FLOOR(themeResult / themeCounter))}%
-									</div>
-									<apex:variable value="{!0}" var="themeCounter"/>
-									<apex:variable value="{!0}" var="themeResult"/>
-								</apex:panelGroup>
-
-							</apex:repeat>
-						</apex:pageBlockSection>
-						<apex:pageBlockSection rendered="{!IF(renderedUser.Name != null, false, true)}" columns="1">
-							<apex:outputLabel value="There is no anything yet..."/>
-						</apex:pageBlockSection>
-					</apex:outputPanel>
+								<apex:pageBlockSection rendered="{!IF(renderedUser.Name != null, false, true)}" columns="1">
+									<apex:outputLabel value="There is no anything yet..."/>
+								</apex:pageBlockSection>
+							</apex:outputPanel>
+						</div>
+					</div>
 				</div>
-			</apex:pageBlock>
-		</apex:form>
-	</div>
+			</apex:outputPanel>
+		</apex:pageBlock>
+
+		<apex:outputpanel >
+			<apex:actionstatus id="refreshDetailStatus">
+				<apex:facet name="start">
+					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.6; width: 100%;">
+						<div class="waitingHolder" style="top: 35%;">
+							<img class="waitingImage" src="{!$Resource.spinner}"/>
+						</div>
+					</div>
+				</apex:facet>
+			</apex:actionstatus>
+		</apex:outputpanel>
+	</apex:form>
+
+	<script>
+		function showDetailInfo(userId) {
+			viewDetail(userId);
+			var resultDiv = document.querySelector("span[id*='showUserDetailes']");
+			resultDiv.style.display = 'block';
+		}
+		function closeDetailInfo() {
+			var resultDiv = document.querySelector("span[id*='showUserDetailes']");
+			resultDiv.style.display = 'none';
+		}
+	</script>
 </apex:page>

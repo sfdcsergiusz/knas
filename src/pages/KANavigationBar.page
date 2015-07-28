@@ -3,6 +3,7 @@
 
 	<script>
 		var userName = '{!browserUser.Employee__r.First_Name__c}';
+		var packagePrefix = '{!packagePrefix}';
 
 		var browserId = document.cookie.split('BrowserId=')[1].split(';')[0];
 		var isStartPage = ('{!isStartPage}' === "true");
@@ -14,16 +15,16 @@
 		function accordanceRedirect() {
 			window.stop();
 			if ( ! isUserAdmin) {
-				window.location.href = "KARegularUserHome";
+				window.location.href = packagePrefix + "KARegularUserHome";
 			}
 			else {
-				window.location.href = "KAAdminUserHome";
+				window.location.href = packagePrefix + "KAAdminUserHome";
 			}
 		}
 
 		if ( ! isStartPage && ! areIdsEqual) {
 			window.stop();
-			window.location.href = "KALogin";
+			window.location.href = packagePrefix + "KALogin";
 		}
 		else if ((isStartPage && areIdsEqual) || ( ! isStartPage && ! (isAdminPage == isUserAdmin)) || ( ! isStartPage && ! isUserActive && ! window.location.href.includes("Home"))) {
 			accordanceRedirect();

@@ -16,6 +16,7 @@ public with sharing class KARegularHomeController {
 		notificMap = new KANotificationMapWrapper();
 		upcomingTests = new List<Employee_Task__c>();
 		passedTests = new List<Pass_History__c>();
+		statistics = new List<Pass_History__c>();
 
 		Cookie tmpCookie = ApexPages.currentPage().getCookies().get('Identifier');
 		if (tmpCookie != null) {
@@ -35,14 +36,15 @@ public with sharing class KARegularHomeController {
 				}
 
 				upcomingTests = [
-					SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id, Task__r.Status__c
+					SELECT Name, Task__r.AssignTime__c, Task__r.Test__r.Name, Task__r.Test__r.Difficulty__c,
+					Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id, Task__r.Status__c
 					FROM Employee_Task__c
 					WHERE Employee__r.Id = :userId
 					ORDER BY Task__r.AssignTime__c DESC
 					LIMIT 50000
 				];
 				passedTests = [
-					SELECT Name, Employee__c, CreatedDate, Result__c, Test__r.Name, Test__r.Subject__r.Name
+					SELECT Name, Employee__c, CreatedDate, Result__c, Test__r.Name, Test__r.Subject__r.Name, Test__r.Passing_Threshold__c, Test__r.Difficulty__c
 					FROM Pass_History__c
 					WHERE Employee__r.Id = :userId
 					ORDER BY CreatedDate DESC

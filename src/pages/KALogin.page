@@ -3,6 +3,12 @@
 	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
+	<style>
+		.pbTitle {
+			width: 17% !important;
+		}
+	</style>
+
 	<apex:outputpanel >
 		<apex:actionstatus id="loadingStatus">
 			<apex:facet name="start">
@@ -36,16 +42,25 @@
 					</script>
 
 					<apex:pageBlockButtons id="buttons" location="bottom">
-						<apex:commandButton value="SIGN IN" action="{!login}" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-success"/>
-						<apex:commandButton value="Sign Up" onclick="startRegistering(); return false;" styleClass="btn btn-warning"/>
-						<apex:commandButton value="Reset Password" onclick="resetPasswordActionJS(); return false;" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-link" title="Send link for creating new password to your email"/>
-						<apex:actionFunction name="resetPasswordAction" action="{!resetPass}"/>					
+						<apex:commandButton id="signInButton" value="Sign In" action="{!login}" reRender="messages, buttons" status="loadingStatus" styleClass="btn btn-success" style="width: 128px;"/>
+						<apex:commandButton value="Sign Up >" onclick="startRegistering(); return false;" styleClass="btn btn-link" style="float: right;"/>
+						<apex:commandButton id="resetPassButton" value="Reset Password" onclick="resetPasswordActionJS(); return false;" styleClass="btn btn-default" style="border: 1px solid #ccc !important; margin-left: 10px !important;" title="Send link for creating new password to your email"/>
+						<apex:actionFunction name="resetPasswordAction" action="{!resetPass}" reRender="messages, buttons" status="loadingStatus"/>
 						<script>
 							function resetPasswordActionJS() {
-								var inputPass = document.querySelector('input[id*="inputPass"]');
-								inputPass.value = '';
-								resetPasswordAction();
-							}							
+								var inputUsername = document.querySelector('input[id*="inputUsername"]');
+								if (inputUsername.value == '') {
+									var signInButton = document.querySelector('input[id*="signInButton"]');
+									signInButton.click();
+								}
+								else {
+									var inputPass = document.querySelector('input[id*="inputPass"]');
+									inputPass.value = '';
+									var resetPass = document.querySelector('input[id*="resetPassButton"]');
+									resetPass.blur();
+									resetPasswordAction();
+								}
+							}
 						</script>
 					</apex:pageBlockButtons>
 
@@ -66,7 +81,7 @@
 		</div>
 	</apex:form>
 
-	<apex:form >		
+	<apex:form >
 		<apex:actionFunction action="{!register}" name="startRegistering" status="loadingStatus"/>
 	</apex:form>
 

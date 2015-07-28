@@ -7,9 +7,14 @@ public with sharing class KAImportQuestionsCSVController {
 	public List<List<Answer__c>> rightAnswers { get; set; }
 	public List<List<Answer__c>> wrongAnswers { get; set; }
 	public String themeId { get; set; }
-	public Boolean isFileChosen { get; set; }
 	public String errorMessage { get; private set; }
 	public String infoMessage { get; private set; }
+	public String backLink {
+		get {
+			return 'apex/' + KAPageConstants.packagePrefix + 'KACommonSubjects';
+		}
+		private set;
+	}
 
 	private PageReference currentPage;
 
@@ -59,40 +64,41 @@ public with sharing class KAImportQuestionsCSVController {
 								tmpWrongAnswerList.add(new Answer__c(Variant__c = answerName));
 							}
 							wrongAnswers.add(tmpWrongAnswerList);
-						}					
+						}
 
 						if (tmpList.size () > 0) {
 							question.Theme__c = tmpList.get(0).Id;
-							quelist.add(question);	
+							quelist.add(question);
 						}
-						
+
 					}
 				}
-		   	}
+
+				if ( ! quelist.isEmpty()) {
+				insert quelist;
+				}
+				for (Integer i = 0; i < quelist.size(); i++) {
+					for (Integer j = 0; j < rightAnswers[i].size(); j++) {
+						rightAnswers[i][j].Question__c = quelist[i].Id;
+					}
+					for (Integer j = 0; j < wrongAnswers[i].size(); j++) {
+						wrongAnswers[i][j].Question__c = quelist[i].Id;
+					}
+				}
+				List<Answer__c> insertAnswers = new List<Answer__c>();
+				for (List<Answer__c> answer : rightAnswers) {
+					insertAnswers.addAll(answer);
+				}
+				for (List<Answer__c> answer : wrongAnswers) {
+					insertAnswers.addAll(answer);
+				}
+				insert insertAnswers;
+
+			}
 		   	else {
 		   		errorMessage = 'File is Empty, please, choose file';
 		   	}
 
-
-		   	if ( ! quelist.isEmpty()) {
-				insert quelist;
-			}
-			for (Integer i = 0; i < quelist.size(); i++) {
-				for (Integer j = 0; j < rightAnswers[i].size(); j++) {
-					rightAnswers[i][j].Question__c = quelist[i].Id;
-				}
-				for (Integer j = 0; j < wrongAnswers[i].size(); j++) {
-					wrongAnswers[i][j].Question__c = quelist[i].Id;
-				}
-			}
-			List<Answer__c> insertAnswers = new List<Answer__c>();
-			for (List<Answer__c> answer : rightAnswers) {
-				insertAnswers.addAll(answer);
-			}
-			for (List<Answer__c> answer : wrongAnswers) {
-				insertAnswers.addAll(answer);
-			}
-			insert insertAnswers;
 	  	}
 	  	catch (Exception exc) {
 	  		errorMessage = 'Invalid file';
@@ -104,5 +110,5 @@ public with sharing class KAImportQuestionsCSVController {
 	  		}
 	  	}
 	}
-  	
+
 }

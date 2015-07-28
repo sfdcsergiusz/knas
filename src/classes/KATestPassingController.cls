@@ -70,7 +70,7 @@ public with sharing class KATestPassingController {
 						FROM Answers__r
 					)
 					FROM Question__c
-					WHERE Theme__r.Id = :correspThemes.get(0).Theme__r.Id
+					WHERE Theme__r.Id = :correspThemes.get(0).Theme__r.Id AND Level__c = :currentTest.Difficulty__c
 					LIMIT 50000
 				];
 				Map<Integer, Integer> questionsMix = returnRandoms(totalQuestionsNum, totalQuestionsNum);
@@ -110,7 +110,7 @@ public with sharing class KATestPassingController {
 		}
 		else {
 			List<Test__c> checkTestExistenceList = [
-				SELECT Id, Duration__c, Subject__r.Name
+				SELECT Id, Duration__c, Subject__r.Name, Difficulty__c, Passing_Threshold__c
 				FROM Test__c
 				WHERE Id = :currentPage.getParameters().get('test')
 				LIMIT 1
@@ -224,7 +224,14 @@ public with sharing class KATestPassingController {
 			WHERE Id = :currentEmpTask.Task__r.Id
 			LIMIT 1
 		];
-		currentTask.Status__c = 'Passed';
+		String resultStatus;
+		if (newestResult.Result__c >= currentTest.Passing_Threshold__c) {
+			resultStatus = 'Passed';
+		}
+		else {
+			resultStatus = 'Failed';
+		}
+		currentTask.Status__c = resultStatus;
 		update currentTask;
 
 		PageReference returningPage = new PageReference('/apex/KARegularUserHome');

@@ -2,6 +2,7 @@ public with sharing class KARegisterController {
 
 	public String username { get; set; }
 	public String password { get; set; }
+	public String passwordConfirmation { get; set; }
 	public String firstName { get; set; }
 	public String lastName { get; set; }
 
@@ -37,19 +38,26 @@ public with sharing class KARegisterController {
 	}
 
 	private Boolean registerNewEmployee() {
-		if (username == '' || password == '' || firstName == '' || lastName == '') {
+		if (username == '' || password == '' || firstName == '' || lastName == '' || 
+			passwordConfirmation == '' || passwordConfirmation != password) {
 			if (username == '') {
 				notificMap.addDanger('Please, enter username.');
 			}
 			else if (password == '') {
 				notificMap.addDanger('Please, enter password.');
 			}
+			else if (passwordConfirmation == '') {
+				notificMap.addDanger('Please, confirm password.');
+			}
+			else if (passwordConfirmation != password) {
+				notificMap.addDanger('Passwords are not equal.');
+			}
 			else if (firstName == '') {
 				notificMap.addDanger('Please, enter first name.');
 			}
 			else if (lastName == '') {
 				notificMap.addDanger('Please, enter last name.');
-			}
+			}			
 		}
 		else {
 			Employee__c newestEmployee = new Employee__c(

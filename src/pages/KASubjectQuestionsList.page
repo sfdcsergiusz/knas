@@ -10,7 +10,7 @@
 	</style>
 
 	<div class="upNavigationImgDiv">
-		<a href="apex/KACommonSubjects">
+		<a href="{!backLink}">
 			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
 		</a>
 	</div>
@@ -25,7 +25,7 @@
 				</apex:outputPanel>
 
 				<apex:pageBlockTable value="{!questions}" var="question">
-					<apex:column value="{!question.Theme__r.Name}" headerValue="Theme" rendered="{!IF(themeName == null, true, false)}"/>
+					<apex:column value="{!question.Theme__r.Name}" headerValue="Topic" rendered="{!IF(themeName == null, true, false)}"/>
 					<apex:column value="{!question.Name}" headerValue="Name"/>
 					<apex:column value="{!question.Level__c}" headerValue="Level"/>
 					<apex:column value="{!question.CreatedDate}" headerValue="Created On"/>
@@ -35,7 +35,7 @@
 					<apex:column headerValue="Actions">
 						<apex:outputPanel layout="none">
 							<apex:commandButton value="Update" onclick="startUpdateQuestion('{!question.Id}'); return false;" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Edit question"/>
-							<apex:commandButton value="Delete" action="{!deleteQuestion}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete question">
+							<apex:commandButton value="Delete" action="{!deleteQuestion}" reRender="commonSection, innerCreateQuestion" status="refreshStatus" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete question">
 								<apex:param name="chosenQuestion" value="{!question.Id}"/>
 							</apex:commandButton>
 							<apex:commandButton value="Freeze" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Lock question"/>
@@ -108,8 +108,8 @@
 	        				<!-- Theme Choosing -->
 
 	        				<apex:actionRegion >
-	        					<apex:outputLabel for="inputTheme" value="Theme" style="float: left"/>
-	    						<apex:inputText id="inputTheme" value="{!tmpTheme}" html-placeholder="Please, input theme title...">
+	        					<apex:outputLabel for="inputTheme" value="Topic" style="float: left"/>
+	    						<apex:inputText id="inputTheme" value="{!tmpTheme}" html-placeholder="Please, input topic title...">
 	    							<apex:actionSupport event="onkeyup" action="{!typeTheme}" reRender="themesTable"/>
 	    						</apex:inputText>
 	    					</apex:actionRegion>

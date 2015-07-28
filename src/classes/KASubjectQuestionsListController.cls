@@ -21,6 +21,12 @@ public with sharing class KASubjectQuestionsListController {
 	public List<Answer__c> preCreatedAnswers { get; set; }
 
 	public KANotificationMapWrapper notificMap { get; private set; }
+	public String backLink {
+		get {
+			return 'apex/' + KAPageConstants.packagePrefix + 'KACommonSubjects';
+		}
+		private set;
+	}
 
 	private PageReference currentPage;
 
@@ -178,7 +184,7 @@ public with sharing class KASubjectQuestionsListController {
 		if (checkThemeExistenceList.size() == 0 || preCreatedQuestion.Statement__c == '' || hasAnswersEmpties || ( ! hasAnswersRights) ||
 			preCreatedQuestion.Level__c == null) {
 			if (checkThemeExistenceList.size() == 0) {
-				notificMap.addDanger('Please, check question\'s subject and theme');
+				notificMap.addDanger('Please, check question\'s subject and topic');
 			}
 			else if (preCreatedQuestion.Statement__c == '' || preCreatedQuestion.Statement__c == null) {
 				notificMap.addDanger('Please, enter the statement.');
@@ -223,6 +229,7 @@ public with sharing class KASubjectQuestionsListController {
 			FROM Question__c
 			WHERE Id = :ApexPages.currentPage().getParameters().get('chosenQuestion')
 		];
+		notificMap.addInfo('Question was successfully deleted.');
 		delete deletingQuestion;
 
 		refreshQuestions();

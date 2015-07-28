@@ -6,6 +6,12 @@ public with sharing class KACommonSubjectsController {
 	public String tmpTheme { get; set; }
 
 	public KANotificationMapWrapper notificMap { get; private set; }
+	public String backLink {
+		get {
+			return 'apex/' + KAPageConstants.packagePrefix + 'KAAdminUserHome';
+		}
+		private set;
+	}
 
 	public KACommonSubjectsController() {
 		tmpSubject = '';
@@ -39,10 +45,10 @@ public with sharing class KACommonSubjectsController {
 			];
 			if (checkSubjectsList.size() == 0) {
 				Subject__c preCreatedSubject = new Subject__c(Name = tmpSubject);
+				notificMap.addSuccess('Subject "' + preCreatedSubject.Name + '" was created.');
 				insert preCreatedSubject;
 
 				typeSubject();
-				tmpSubject = '';
 			}
 			else {
 				notificMap.addDanger('Subject already exists.');
@@ -68,10 +74,10 @@ public with sharing class KACommonSubjectsController {
 			];
 			if (tmpSubjectObject.Themes__r.size() == 0) {
 				Theme__c preCreatedTheme = new Theme__c(Name = tmpTheme, Subject__c = tmpSubjectObject.Id);
+				notificMap.addSuccess('Topic "' + preCreatedTheme.Name + '" was created.');
 				insert preCreatedTheme;
 
 				tmpTheme = '';
-
 				if (tmpSubject != '') {
 					typeSubject();
 				}
@@ -80,21 +86,22 @@ public with sharing class KACommonSubjectsController {
 				}
 			}
 			else {
-				notificMap.addDanger('Theme already exists.');
+				notificMap.addDanger('Topic already exists.');
 			}
 		}
 		else {
-			notificMap.addDanger('Theme name is empty.');
+			notificMap.addDanger('Topic name is empty.');
 		}
 	}
 
 	public void deleteSubject() {
 		Subject__c tmpSubjectObject = [
-			SELECT Id
+			SELECT Id, Name
 			FROM Subject__c
 			WHERE Name = :ApexPages.currentPage().getParameters().get('deleteParam')
 			LIMIT 1
 		];
+		notificMap.addInfo('Subject "' + tmpSubjectObject.Name + '" was deleted.');
 		delete tmpSubjectObject;
 
 		if (tmpSubject != '') {
@@ -107,11 +114,12 @@ public with sharing class KACommonSubjectsController {
 
 	public void deleteTheme() {
 		Theme__c tmpThemeObject = [
-			SELECT Id
+			SELECT Id, Name
 			FROM Theme__c
 			WHERE Name = :ApexPages.currentPage().getParameters().get('deleteParam')
 			LIMIT 1
 		];
+		notificMap.addSuccess('Topic "' + tmpThemeObject.Name + '" was deleted.');
 		delete tmpThemeObject;
 
 		if (tmpSubject != '') {
@@ -125,6 +133,7 @@ public with sharing class KACommonSubjectsController {
 	public void resetSearch() {
 		tmpSubject = '';
 		selectAllSubjects();
+		notificMap.addInfo('All subjects are selected.');
 	}
 
 	public PageReference goToThemeList() {
