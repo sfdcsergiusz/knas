@@ -9,6 +9,12 @@ public with sharing class KAImportQuestionsCSVController {
 	public String themeId { get; set; }
 	public String errorMessage { get; private set; }
 	public String infoMessage { get; private set; }
+	public String backLink {
+		get {
+			return 'apex/' + KAPageConstants.packagePrefix + 'KACommonSubjects';
+		}
+		private set;
+	}
 
 	private PageReference currentPage;
 
@@ -58,13 +64,13 @@ public with sharing class KAImportQuestionsCSVController {
 								tmpWrongAnswerList.add(new Answer__c(Variant__c = answerName));
 							}
 							wrongAnswers.add(tmpWrongAnswerList);
-						}					
+						}
 
 						if (tmpList.size () > 0) {
 							question.Theme__c = tmpList.get(0).Id;
-							quelist.add(question);	
+							quelist.add(question);
 						}
-						
+
 					}
 				}
 
@@ -104,5 +110,5 @@ public with sharing class KAImportQuestionsCSVController {
 	  		}
 	  	}
 	}
-  	
+
 }

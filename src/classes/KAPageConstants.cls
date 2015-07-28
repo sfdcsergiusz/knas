@@ -5,6 +5,23 @@ public with sharing class KAPageConstants {
 		'KATestPassing'
 	};
 
+	public static String packagePrefix { get; private set; }
+
+	static {
+		List<ApexClass> classPrefixSample = [
+			SELECT NamespacePrefix
+			FROM ApexClass
+			WHERE Name LIKE 'KA%'
+			LIMIT 1
+		];
+		if (classPrefixSample.size() == 0 || String.isEmpty(classPrefixSample.get(0).NamespacePrefix)) {
+			packagePrefix = '';
+		}
+		else {
+			packagePrefix = classPrefixSample.get(0).NamespacePrefix + '__';
+		}
+	}
+
 	public static Map<String, String> pageNames = new MAP<String, String>();
 
 	static {

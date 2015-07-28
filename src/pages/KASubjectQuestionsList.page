@@ -10,7 +10,7 @@
 	</style>
 
 	<div class="upNavigationImgDiv">
-		<a href="apex/KACommonSubjects">
+		<a href="{!backLink}">
 			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
 		</a>
 	</div>

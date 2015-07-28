@@ -12,6 +12,12 @@ public with sharing class KACommonTestsController {
 	public List<TestTheme__c> themeStatistic { get; set; }
 
 	public KANotificationMapWrapper notificMap { get; private set; }
+	public String backLink {
+		get {
+			return 'apex/' + KAPageConstants.packagePrefix + 'KAAdminUserHome';
+		}
+		private set;
+	}
 
 	private Theme__c tmpTheme { private get; private set; }
 

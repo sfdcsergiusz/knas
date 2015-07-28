@@ -5,6 +5,7 @@ public with sharing class KANavigationBarController {
 	public Boolean isAdminPage { get; private set; }
 	public PageReference target { get; private set; }
 	public String showingPageName { get; private set; }
+	public String packagePrefix { get; private set; }
 
 	private PageReference currentPage { private get; private set; }
 
@@ -37,6 +38,7 @@ public with sharing class KANavigationBarController {
 
 	public PageReference onLoad() {
 		target = null;
+		packagePrefix = KAPageConstants.packagePrefix;
 
 		if (getLoginCookie() != null) {
 			List<Browser__c> browsers = [

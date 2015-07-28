@@ -96,7 +96,7 @@
 	</style>
 
 	<div class="upNavigationImgDiv">
-		<a href="apex/KAAdminUserHome">
+		<a href="{!backLink}">
 			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
 		</a>
 	</div>
@@ -300,7 +300,7 @@
 			if (deletingCss) {
 				deletingCss.parentNode.removeChild(deletingCss);
 			}
-			
+
 			style = document.createElement('style');
 			style.id = 'expandSections';
 			if ( ! style.styleSheet) {

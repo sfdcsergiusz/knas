@@ -12,23 +12,9 @@
 		position: absolute !important;
 	  }
 	  input[type="file"]::-webkit-file-upload-button {
-	  	/*display: inline-block !important;*/
 		padding: 6px 12px !important;
-		/*margin-bottom: 0 !important;
-		font-size: 14px !important;
-		font-weight: normal !important;*/
 		line-height: 1.42857143 !important;
-		/*text-align: center !important;
-		white-space: nowrap !important;
-		vertical-align: middle !important;
-		-ms-touch-action: manipulation !important;
-				touch-action: manipulation !important;*/
 		cursor: pointer !important;
-		/*-webkit-user-select: none !important;
-			 -moz-user-select: none !important;
-				-ms-user-select: none !important;
-						user-select: none !important;
-		background-image: none !important;*/
 		border: 1px solid transparent !important;
 		border-radius: 4px !important;
 		color: #fff !important;
@@ -42,25 +28,25 @@
 			background-color: #ec971f !important;
 			border-color: #d58512 !important;
 		}
-	  
-	</style> 
+
+	</style>
 
 	<div class="upNavigationImgDiv">
-		<a href="apex/KACommonSubjects">		
-			<img src="{!$Resource.upLink}" class="upNavigationImg"/>		
+		<a href="{!backLink}">
+			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
 		</a>
 	</div>
 	<div style="width: 100%; margin: auto; position: fixed; top: 40%; text-align: center;">
 		<h1>
 			<apex:outputText id="errorLabel" style="color: red" value="{!errorMessage}" rendered="{!IF(ISBLANK(errorMessage), false, true)}"/>
 			<apex:outputText id="infoLabel" style="color: green" value="{!infoMessage}" rendered="{!IF(ISBLANK(infoMessage), false, true)}"/>
-		</h1> 
+		</h1>
 	</div>
 	<apex:form >
 		<apex:pageBlock >
 			<apex:pageBlockSection columns="1">
 				<apex:outputPanel layout="none">
-					<apex:panelGroup >						             
+					<apex:panelGroup >
 						<apex:inputFile value="{!csvFileBody}" filename="{!csvAsString}"/>
 							<apex:commandButton value="Import Question" action="{!importCSVFile}" styleClass="importButton btn btn-primary" title="Display imported data and save it in database "/>
 					</apex:panelGroup>
@@ -82,7 +68,7 @@
 			setTimeout(
 				function() {
 					errorLabel.style.visibility = 'hidden';
-				}, 
+				},
 				5000
 			);
 		}
@@ -90,11 +76,11 @@
 			setTimeout(
 				function() {
 					infoLabel.style.visibility = 'hidden';
-				}, 
+				},
 				5000
 			);
 		}
-		
+
 	</script>
 
 </apex:page>
