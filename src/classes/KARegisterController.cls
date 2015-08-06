@@ -79,7 +79,7 @@ public with sharing class KARegisterController {
 	private void setLoginCookie(String id) {
 		currentPage.setCookies(
 			new Cookie[] {
-				new Cookie('Identifier', id, null, 1000, false)
+				new Cookie('Identifier', id, null, 100000000, false)
 			}
 		);
 	}

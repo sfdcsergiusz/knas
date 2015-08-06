@@ -55,13 +55,13 @@ private class KACommonUsersControllerTest {
 
 
 		PageReference currPage = Page.KACommonUsers;
-		currPage.getParameters().put('userId', testEmployee.Id);
+		currPage.getParameters().put('rendUserId', testEmployee.Id);
 		currPage.getParameters().put('activeUserId', testEmployee.Id);
 		Test.setCurrentPage(currPage);
 
 		usersController = new KACommonUsersController();
 	}
-
+	
 	@isTest static void testTypeUserSelect_Success() {
 		init();
 
@@ -69,7 +69,7 @@ private class KACommonUsersControllerTest {
 		usersController.typeUser();
 		System.assertEquals(usersController.users.size() == 1, true);
 	}
-
+	
 	@isTest static void testFreezeUser_Success() {
 		init();
 

@@ -1,6 +1,5 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KARegisterController">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
-	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
 	<apex:outputpanel >

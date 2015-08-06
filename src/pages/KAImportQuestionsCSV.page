@@ -28,8 +28,8 @@
 			background-color: #ec971f !important;
 			border-color: #d58512 !important;
 		}
-
-	</style>
+	  
+	</style> 
 
 	<div class="upNavigationImgDiv">
 		<a href="{!backLink}">
@@ -37,18 +37,21 @@
 		</a>
 	</div>
 	<div style="width: 100%; margin: auto; position: fixed; top: 40%; text-align: center;">
-		<h1>
-			<apex:outputText id="errorLabel" style="color: red" value="{!errorMessage}" rendered="{!IF(ISBLANK(errorMessage), false, true)}"/>
-			<apex:outputText id="infoLabel" style="color: green" value="{!infoMessage}" rendered="{!IF(ISBLANK(infoMessage), false, true)}"/>
-		</h1>
+		<apex:outputPanel id="renderedScript">
+			<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+				<script>
+					createMessage('{!JSENCODE(notificMap.currentMessage)}');
+				</script>
+			</apex:outputPanel>
+		</apex:outputPanel>
 	</div>
 	<apex:form >
 		<apex:pageBlock >
 			<apex:pageBlockSection columns="1">
 				<apex:outputPanel layout="none">
-					<apex:panelGroup >
+					<apex:panelGroup >						             
 						<apex:inputFile value="{!csvFileBody}" filename="{!csvAsString}"/>
-							<apex:commandButton value="Import Question" action="{!importCSVFile}" styleClass="importButton btn btn-primary" title="Display imported data and save it in database "/>
+								<apex:commandButton value="Import Questions" action="{!importCSVFile}" styleClass="importButton btn btn-primary" title="Display imported data and save it in database"/>	
 					</apex:panelGroup>
 				</apex:outputPanel>
 			</apex:pageBlockSection>
@@ -60,27 +63,5 @@
 			</apex:pageBlockTable>
 		</apex:pageBlock>
 	</apex:form>
-
-	<script>
-		var errorLabel = document.querySelector("span[id*='errorLabel']");
-		var infoLabel = document.querySelector("span[id*='infoLabel']");
-		if (errorLabel != null) {
-			setTimeout(
-				function() {
-					errorLabel.style.visibility = 'hidden';
-				},
-				5000
-			);
-		}
-		if (infoLabel != null) {
-			setTimeout(
-				function() {
-					infoLabel.style.visibility = 'hidden';
-				},
-				5000
-			);
-		}
-
-	</script>
 
 </apex:page>

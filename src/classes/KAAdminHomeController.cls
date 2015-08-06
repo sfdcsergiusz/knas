@@ -13,6 +13,8 @@ public with sharing class KAAdminHomeController {
 	public Id chosenEmployee { get; set; }
 	public Id chosenTest { get; set; }
 
+	public Task__c deletingTask { get; set; }
+
 	public Task__c preCreatedTask { get; set; }
 	public Employee_Task__c preCreatedEmployeeTask { get; set; }
 
@@ -193,6 +195,112 @@ public with sharing class KAAdminHomeController {
 			SELECT Id
 			FROM CronTrigger
 		];
+	}
+
+	public void prepareTaskToDelete() {
+		deletingTask = [
+			SELECT Id, Test__r.Name, AssignTime__c
+			FROM Task__c
+			WHERE Id = :ApexPages.currentPage().getParameters().get('deleteTaskId')
+		];
+	}
+
+	public void deleteTask() {
+		for (Integer i = 0; i < recentTasks.size(); i++) {
+			if (recentTasks[i].Task__r.Id == deletingTask.Id) {
+				recentTasks.remove(i);
+				break;
+			}
+		}
+
+		notificMap.addSuccess('Task was successfully deleted.');
+		delete deletingTask;		
+	}
+
+	public void prepareTaskToUpdate() {
+		preCreatedEmployeeTask = [
+			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c, Employee__r.Id, Task__r.Status__c,
+				Task__r.AssignTime__c, Task__r.CreatedDate, Task__r.Test__r.Name,
+				Task__r.Test__r.Subject__r.Name, Task__r.Test__r.Id
+			FROM Employee_Task__c
+			WHERE Id = :ApexPages.currentPage().getParameters().get('updateTaskId')
+			LIMIT 1
+		];
+		preCreatedTask = [
+			SELECT Id
+			FROM Task__c
+			WHERE Id = :preCreatedEmployeeTask.Task__r.Id
+			LIMIT 1
+		];
+		tmpTest = preCreatedEmployeeTask.Task__r.Test__r.Name + ' ' + preCreatedEmployeeTask.Task__r.Test__r.Subject__r.Name;
+		tmpEmployee = preCreatedEmployeeTask.Employee__r.First_Name__c + ' ' + preCreatedEmployeeTask.Employee__r.Last_Name__c;
+
+		chosenTest = preCreatedEmployeeTask.Task__r.Test__r.Id;
+		chosenEmployee = preCreatedEmployeeTask.Employee__r.Id;
+
+		preCreatedTask.AssignTime__c = preCreatedEmployeeTask.Task__r.AssignTime__c;
+	}
+
+	public void updateTask() {
+		List<Employee__c> suitableEmployees = [
+			SELECT Id
+			FROM Employee__c
+			WHERE Id = :chosenEmployee
+			LIMIT 1
+		];
+		List<Test__c> suitableTests = [
+			SELECT Id
+			FROM Test__c
+			WHERE Id = :chosenTest
+			LIMIT 1
+		];
+
+		if (suitableEmployees.size() == 0 || suitableTests.size() == 0 ||
+			preCreatedTask.AssignTime__c == null || preCreatedTask.AssignTime__c < Datetime.now()) {
+			if (suitableEmployees.size() == 0) {
+				notificMap.addDanger('User doesn\'t exist.');
+			}
+			else if (suitableTests.size() == 0) {
+				notificMap.addDanger('Test doesn\'t exist.');
+			}
+			else if (preCreatedTask.AssignTime__c == null) {
+				notificMap.addDanger('Date shouldn\'t be empty.');
+			}
+			else if (preCreatedTask.AssignTime__c < Datetime.now()) {
+				notificMap.addDanger('Date shouldn\'t be less than present time.');
+			}			
+		}
+		else {
+			preCreatedTask.Test__c = suitableTests.get(0).Id;
+
+			try {
+				update preCreatedTask;
+			}
+			catch (DmlException exc) {
+				ApexPages.addMessages(exc);
+			}
+
+			List<Task__c> suitableTasks = [
+				SELECT Id
+				FROM Task__c
+				WHERE Id = :preCreatedTask.Id
+				LIMIT 1
+			];
+
+			if (suitableTasks.size() > 0) {
+				preCreatedEmployeeTask.Task__c = suitableTasks.get(0).Id;
+				preCreatedEmployeeTask.Employee__c = suitableEmployees.get(0).Id;
+				preCreatedEmployeeTask.IsEmailQueue__c = true;
+				notificMap.addSuccess('Task was successfully updated.');	
+				update preCreatedEmployeeTask;
+
+				refreshRecentTasks();
+				preCreatedTask = new Task__c();
+				preCreatedEmployeeTask = new Employee_Task__c();
+				tmpTest = null;
+				tmpEmployee = null;
+			}			
+		}
 	}
 
 }
