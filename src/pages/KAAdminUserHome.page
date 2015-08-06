@@ -71,7 +71,7 @@
 				<apex:pageBlockSection id="tasksSection" title="Recent Tasks" columns="1">
 					<apex:outputPanel layout="none">
 						<apex:commandButton value="Refresh" action="{!refreshRecentTasks}" status="refreshStatus" reRender="tasksSection" styleClass="btn btn-success refreshButton" style="float: right;"/>
-						<apex:commandButton value="Create Task" onclick="openCreatingTask(); return false;" reRender="tasksSection" styleClass="btn btn-primary"/>
+						<apex:commandButton value="Create Task" onclick="openModalDialog('createTask', ''); return false;" reRender="tasksSection" styleClass="btn btn-primary"/>
 					</apex:outputPanel>
 
 					<apex:pageBlockTable id="recentTasksTable" value="{!recentTasks}" var="task" style="border-spacing: 0px 3px;">
@@ -80,6 +80,11 @@
 						<apex:column value="{!task.Task__r.Test__r.Name}" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" headerValue="Test Title"/>
 						<apex:column value="{!task.Task__r.Status__c}" headerValue="Status" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" />
 						<apex:column value="{!task.Task__r.AssignTime__c}" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}" headerValue="Time Of Assignment"/>
+						<apex:column headerValue="Actions" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}">
+							<apex:commandButton value="Update"  onclick="openModalDialog('updateTask','{!task.Id}'); return false;" styleClass="btn btn-link" title="Update task" style=" float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
+							<apex:commandButton value="Delete"  onclick="openModalDialog('deleteTask','{!task.Task__r.Id}'); return false;" styleClass="btn btn-link" title="Delete task" style=" float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
+							
+						</apex:column>	
 					</apex:pageBlockTable>
 				</apex:pageBlockSection>
 
@@ -117,6 +122,146 @@
 
 	<apex:form >
 		<apex:pageBlock >
+			<apex:outputpanel id="deleteTaskDialog" style="display: none;">
+				<apex:outputpanel id="innerDeleteTaskDialog">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
+
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
+						<div class="waitingHolder" style="top: 20%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+							<div style="margin-bottom: 20px; margin-left: 65px;">
+								<h3 style="margin: 0 auto;">
+		        					Are you sure?
+		        					<apex:commandButton value="Cancel" onclick="closeModalDialog('closeDeleteTask', ''); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+		        				</h3>
+		        			</div>	
+		        			<apex:outputPanel layout="none">
+		        				<div style="white-space: initial; margin-bottom: 20px;">
+		        					<h4>	
+		        						{!deletingTask.Test__r.Name} {!deletingTask.AssignTime__c}
+		        					</h4>
+		        				</div>	      						
+		        			</apex:outputPanel>	
+		        			<div>
+								<apex:commandButton value="Delete" onclick="deleteChosenTask(); return false;" styleClass="btn btn-primary" style="margin: 0 auto;" status="refreshStatus"/>
+							</div>							
+						</div>
+					</div>
+				</apex:outputpanel>
+			</apex:outputpanel>
+		</apex:pageBlock >
+	</apex:form>
+
+	<apex:form >
+		<apex:pageBlock >
+			<apex:outputpanel id="updateTaskDialog" style="display: none;">
+				<apex:outputpanel id="innerUpdateTaskDialog">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
+					<apex:outputPanel rendered="{!IF(preCreatedTask.Id == null, true, false)}">
+						<script>
+							closeModalDialog('closeUpdateTask');
+						</script>
+					</apex:outputPanel>
+
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
+						<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+
+							<h1>
+								Updating Task
+							</h1>
+
+							<apex:commandButton value="Cancel" onclick="closeModalDialog('closeUpdateTask', ''); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+							<apex:commandButton value="Update" onclick="updateChosenTask(); return false;" styleClass="btn btn-primary" style="float: right;"/>
+
+							<apex:actionFunction name="prepareTaskToUpdate" action="{!prepareTaskToUpdate}" reRender="innerUpdateTaskDialog" status="refreshStatusTask">
+								<apex:param name="updateTaskId" value=""/>
+							</apex:actionFunction>
+							<apex:actionFunction name="updateTask" action="{!updateTask}" reRender="innerUpdateTaskDialog, tasksSection" status="refreshStatusTask"/>
+							<br/>
+
+							<!-- Employee Choosing -->
+
+							<apex:actionRegion >
+								<apex:outputLabel value="Employee" style="float: left"/>
+								<apex:inputText id="inputEmployee" value="{!tmpEmployee}" html-placeholder="Please, input employee name or surname...">
+									<apex:actionSupport event="onkeyup" action="{!typeEmployee}" reRender="employeesTable"/>
+									<apex:actionSupport event="onfocus" action="{!typeEmployee}" reRender="employeesTable"/>
+								</apex:inputText>
+							</apex:actionRegion>
+
+							<div class="shadowEffect">
+								<apex:pageBlockTable id="employeesTable" value="{!employees}" var="employee" style="overflow:scroll; border: none;" align="left">
+									<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Name" onclick="chooseEmployeeAF('{!employee.Id}');">
+										<h5><apex:outputText value="{!employee.First_Name__c}"/></h5>
+									</apex:column>
+									<apex:column styleClass="chooseColumn" rendered="{!IF(employees.size> 0, true, false)}" headerValue="Surname" onclick="chooseEmployeeAF('{!employee.Id}');">
+										<h5><apex:outputText value="{!employee.Last_Name__c}"/></h5>
+									</apex:column>
+								</apex:pageBlockTable>
+							</div>
+
+							<apex:actionFunction action="{!chooseEmployee}" name="chooseEmployeeAF" reRender="employeesTable, inputEmployee" status="refreshStatusUpdatingTask">
+								<apex:param name="chosenEmployee" value=""/>
+							</apex:actionFunction>
+
+							<!-- Test Choosing -->
+
+							<apex:actionRegion >
+								<apex:outputLabel value="Test Name" style="float: left"/>
+								<apex:inputText id="inputTest" value="{!tmpTest}" html-placeholder="Please, input test name or subject...">
+									<apex:actionSupport event="onkeyup" action="{!typeTest}" reRender="testsTable"/>
+									<apex:actionSupport event="onfocus" action="{!typeTest}" reRender="testsTable"/>
+								</apex:inputText>
+							</apex:actionRegion>
+
+							<div class="shadowEffect">
+								<apex:pageBlockTable id="testsTable" value="{!tests}" var="test" style="overflow:scroll; border: none;" align="left">
+									<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Test Title" onclick="chooseTestAF('{!test.Id}');" style="">
+										<h5><apex:outputText value="{!test.Name}"/></h5>
+									</apex:column>
+									<apex:column styleClass="chooseColumn" rendered="{!IF(tests.size> 0, true, false)}" headerValue="Subject" onclick="chooseTestAF('{!test.Id}');">
+										<h5><apex:outputText value="{!test.Subject__r.Name}"/></h5>
+									</apex:column>
+								</apex:pageBlockTable>
+							</div>
+
+							<apex:actionFunction action="{!chooseTest}" name="chooseTestAF" reRender="testsTable, inputTest" status="refreshStatusUpdatingTask">
+								<apex:param name="chosenTest" value=""/>
+							</apex:actionFunction>
+
+							<!-- DateTime Choosing -->
+
+							<apex:outputLabel value="Date And Time" style="float: left"/>
+							<apex:inputField value="{!preCreatedTask.AssignTime__c}" required="false" html-placeholder="Please, input assignment date and time"/>
+
+						</div>
+					</div>
+				</apex:outputpanel>
+
+				<apex:outputpanel >
+					<apex:actionstatus id="refreshStatusUpdatingTask">
+						<apex:facet name="start">
+							<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
+								<div class="waitingHolder">
+									<img class="waitingImage" src="{!$Resource.spinner}"/>
+								</div>
+							</div>
+						</apex:facet>
+					</apex:actionstatus>
+				</apex:outputpanel>
+			</apex:outputpanel>			
+		</apex:pageBlock >
+	</apex:form>		
+
+	<apex:form >
+		<apex:pageBlock >
 			<apex:outputpanel id="createTask" style="display: none;">
 				<apex:outputpanel id="innerCreateTask">
 					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
@@ -133,9 +278,9 @@
 								Creating New Task
 							</h1>
 
-							<apex:commandButton value="Cancel" onclick="closeCreatingTask(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+							<apex:commandButton value="Cancel" onclick="closeModalDialog('closeCreateTask', ''); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 							<apex:commandButton value="Create" action="{!createNewTask}" reRender="innerCreateTask, tasksSection" status="refreshStatusTask" styleClass="btn btn-primary" style="float: right;"/>
-
+							
 							<br/>
 
 							<!-- Employee Choosing -->
@@ -247,14 +392,53 @@
 		</div>
 	</div>
 
+	<apex:form>
+		<apex:actionFunction name="prepareTaskToDelete" action="{!prepareTaskToDelete}" reRender="innerDeleteTaskDialog" status="refreshStatusTask">
+			<apex:param name="deleteTaskId" value=""/>
+		</apex:actionFunction>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="deleteTask" action="{!deleteTask}" reRender="innerDeleteTaskDialog, tasksSection" status="refreshStatusTask"/>
+	</apex:form>
+
 	<script>
-		function openCreatingTask() {
-			var resultDiv = document.querySelector("span[id*='createTask']");
-			resultDiv.style.display = 'block';
+		function openModalDialog(modalName, param) {
+			if (modalName == 'createTask') {
+				var resultDiv = document.querySelector("span[id*='createTask']");
+				resultDiv.style.display = 'block';
+			}
+			else if (modalName == 'deleteTask') {
+				prepareTaskToDelete(param);
+				var resultDiv = document.querySelector("span[id*='deleteTaskDialog']");
+				resultDiv.style.display = 'block';
+			}
+			else if (modalName == 'updateTask') {
+				prepareTaskToUpdate(param);
+				var resultDiv = document.querySelector("span[id*='updateTaskDialog']");
+				resultDiv.style.display = 'block';
+			}
 		}
-		function closeCreatingTask() {
-			var resultDiv = document.querySelector("span[id*='createTask']");
-			resultDiv.style.display = 'none';
+		function closeModalDialog(modalName) {
+			if (modalName == 'closeCreateTask') {
+				var resultDiv = document.querySelector("span[id*='createTask']");
+				resultDiv.style.display = 'none';
+			}
+			else if (modalName == 'closeDeleteTask') {
+				var resultDiv = document.querySelector("span[id*='deleteTaskDialog']");
+				resultDiv.style.display = 'none';
+			}
+			else if (modalName == 'closeUpdateTask') {
+				var resultDiv = document.querySelector("span[id*='updateTaskDialog']");
+				resultDiv.style.display = 'none';
+			}
+		}
+		function deleteChosenTask() {
+			deleteTask();
+			closeModalDialog('closeDeleteTask')	
+		}
+		function updateChosenTask() {
+			updateTask();			
 		}
 	</script>
 

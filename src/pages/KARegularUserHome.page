@@ -1,6 +1,5 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KARegularHomeController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
-	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
 	<apex:form >
 		<div style="{!IF(NOT(isUserActive), 'position: fixed; width: 100%; height: 100%; background-image: url(' + URLFOR($Resource.waitingBackground) + '); background-repeat-y: no-repeat; background-repeat-x: no-repeat; background-size: cover;', 'width: 100%; height: 100%;')}">

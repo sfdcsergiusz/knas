@@ -7,6 +7,7 @@ public with sharing class KASubjectQuestionsListController {
 
 	public String tmpSubject { get; set; }
 	public String tmpTheme { get; set; }
+	public String topicDropboxId { get; set; }
 
 	public Id chosenSubject { get; set; }
 	public Id chosenTheme { get; set; }
@@ -17,7 +18,11 @@ public with sharing class KASubjectQuestionsListController {
 	public String subjectName { get; set; }
 	public String themeName { get; set; }
 
+	public Question__c deletingQuestion { get; set; }
 	public Question__c preCreatedQuestion { get; set; }
+	public Question__c preCreatedQuestionDropbox { get; set; }
+	public Question__c preUpdatedQuestionDropbox { get; set; }
+	public Question__c preDeletedQuestionDropbox { get; set; }
 	public List<Answer__c> preCreatedAnswers { get; set; }
 
 	public KANotificationMapWrapper notificMap { get; private set; }
@@ -34,6 +39,7 @@ public with sharing class KASubjectQuestionsListController {
 		notificMap = new KANotificationMapWrapper();
 		subjects = new List<Subject__c>();
 		themes = new List<Theme__c>();
+		deletingQuestion = new Question__c(Statement__c = 'Loading...');
 		preCreatedQuestion = new Question__c();
 		preCreatedAnswers = new List<Answer__c>();
 		for (Integer i = 0; i < 3; i++) {
@@ -65,11 +71,6 @@ public with sharing class KASubjectQuestionsListController {
 		}
 
 		refreshQuestions();
-	}
-
-	@RemoteAction
-	public static JSON startUpdateQuestion(String questId) {
-		return null;
 	}
 
 	public void refreshQuestions() {
@@ -201,8 +202,10 @@ public with sharing class KASubjectQuestionsListController {
 		}
 		else {
 			preCreatedQuestion.Theme__c = checkThemeExistenceList.get(0).Id;
+			topicDropboxId = checkThemeExistenceList.get(0).Id;
 			insert preCreatedQuestion;
 
+			preCreatedQuestionDropbox = preCreatedQuestion;
 			List<Answer__c> preInsertedAnswers = new List<Answer__c>();
 			for (Integer i = 0; i < preCreatedAnswers.size(); i++) {
 					preCreatedAnswers[i].Question__c = preCreatedQuestion.Id;
@@ -223,16 +226,241 @@ public with sharing class KASubjectQuestionsListController {
 		return null;
 	}
 
-	public void deleteQuestion() {
-		Question__c deletingQuestion = [
-			SELECT Id
+	public void createQuestionOnDropbox() {
+		Question__c dropBoxQuestion = [
+			SELECT Statement__c, Level__c, 
+			(
+				SELECT Variant__c, Right__c 
+				FROM Answers__r
+			)
 			FROM Question__c
-			WHERE Id = :ApexPages.currentPage().getParameters().get('chosenQuestion')
+			WHERE Id = :preCreatedQuestionDropbox.Id
+			LIMIT 1
 		];
+		HttpRequest getReq = new HttpRequest();
+		getReq.setEndpoint('https://api-content.dropbox.com/1/files/auto/' + topicDropboxId);
+		getReq.setMethod('GET');
+		getReq.setHeader('Authorization', 'Bearer NAVL3W_WUewAAAAAAAAAHJ3pnbVRoHy1oak2WOoF4GoBZ0V3sJ9Mufq_d38DK4uk');
+		getReq.setHeader('Content-Type', 'application/json');
+		HTTPResponse getRes = new Http().send(getReq);
+		String getResBody = getRes.getBody();
+		List<Question__c> questionsDeserialized = new List<Question__c>();
+		try {
+			questionsDeserialized = (List<Question__c>) JSON.deserialize(getResBody, List<Question__c>.class);
+		}
+		catch (Exception exc) {
+    	  	
+    	}
+		questionsDeserialized.add(dropBoxQuestion);
+
+		String questionsJSON = JSON.serializePretty(questionsDeserialized);
+
+		HttpRequest postReq = new HttpRequest();
+		postReq.setEndpoint('https://api-content.dropbox.com/1/files_put/auto/' + topicDropboxId);
+		postReq.setMethod('POST');
+		postReq.setHeader('Authorization', 'Bearer NAVL3W_WUewAAAAAAAAAHJ3pnbVRoHy1oak2WOoF4GoBZ0V3sJ9Mufq_d38DK4uk');
+		postReq.setHeader('Content-Type', 'application/json');
+		postReq.setBody (questionsJSON);
+		HTTPResponse postRes = new Http().send(postReq);
+
+	}
+
+	public void prepareQuestionToDelete() {
+		deletingQuestion = [
+			SELECT Statement__c, Theme__c, Level__c,
+			(
+				SELECT Variant__c, Right__c 
+				FROM Answers__r
+			)
+			FROM Question__c
+			WHERE Id = :ApexPages.currentPage().getParameters().get('deleteQuestionId')
+		];
+	}
+
+	public void deleteQuestion() {
+		topicDropboxId = deletingQuestion.Theme__c;
+		for (Integer i = 0; i < questions.size(); i++) {
+			if (questions[i].Id == deletingQuestion.Id) {
+				questions.remove(i);
+				break;
+			}
+		}
+
 		notificMap.addInfo('Question was successfully deleted.');
+		preDeletedQuestionDropbox = deletingQuestion;
 		delete deletingQuestion;
 
-		refreshQuestions();
+		deletingQuestion = new Question__c(Statement__c = 'Loading...');	
+	}
+
+	public void deleteQuestionOnDropbox() {
+		HttpRequest getReq = new HttpRequest();
+		getReq.setEndpoint('https://api-content.dropbox.com/1/files/auto/' + topicDropboxId);
+		getReq.setMethod('GET');
+		getReq.setHeader('Authorization', 'Bearer NAVL3W_WUewAAAAAAAAAHJ3pnbVRoHy1oak2WOoF4GoBZ0V3sJ9Mufq_d38DK4uk');
+		getReq.setHeader('Content-Type', 'application/json');
+		HTTPResponse getRes = new Http().send(getReq);
+		String getResBody = getRes.getBody();
+		List<Question__c> questionsDeserialized = new List<Question__c>();
+		try {
+			questionsDeserialized = (List<Question__c>) JSON.deserialize(getResBody, List<Question__c>.class);
+		}
+		catch (Exception exc) {
+    	  	
+    	}
+
+    	for (Integer i = 0; i < questionsDeserialized.size(); i++) {
+    		if (questionsDeserialized[i].Id == preDeletedQuestionDropbox.Id) {
+    			questionsDeserialized.remove(i);
+    			break;
+    		}
+    	}
+
+		String questionsJSON = JSON.serializePretty(questionsDeserialized);
+
+		HttpRequest postReq = new HttpRequest();
+		postReq.setEndpoint('https://api-content.dropbox.com/1/files_put/auto/' + topicDropboxId);
+		postReq.setMethod('POST');
+		postReq.setHeader('Authorization', 'Bearer NAVL3W_WUewAAAAAAAAAHJ3pnbVRoHy1oak2WOoF4GoBZ0V3sJ9Mufq_d38DK4uk');
+		postReq.setHeader('Content-Type', 'application/json');
+		postReq.setBody (questionsJSON);
+		HTTPResponse postRes = new Http().send(postReq);
+
+	}
+
+	public void prepareQuestionToUpdate() {
+		preCreatedQuestion = [
+			SELECT Statement__c, Theme__r.Name, Theme__r.Subject__r.Name, Level__c,
+				(
+					SELECT Variant__c, Right__c 
+					FROM Answers__r
+				)
+			FROM Question__c
+			WHERE Id = :ApexPages.currentPage().getParameters().get('updateQuestionId')
+			LIMIT 1
+		];
+		preCreatedAnswers = preCreatedQuestion.Answers__r;
+		tmpSubject = preCreatedQuestion.Theme__r.Subject__r.Name;
+		tmpTheme = preCreatedQuestion.Theme__r.Name;
+		chosenSubject = preCreatedQuestion.Theme__r.Subject__r.Id;
+		chosenTheme = preCreatedQuestion.Theme__r.Id;
+	}
+
+	public void updateQuestion() {
+		List<Theme__c> checkThemeExistenceList = [
+			SELECT Name
+			FROM Theme__c
+			WHERE Name LIKE :tmpTheme AND Subject__r.Name LIKE :tmpSubject
+		];
+		Boolean hasAnswersEmpties = false;
+		Boolean hasAnswersRights = false;
+		for (Integer i = 0; i < preCreatedAnswers.size(); i++) {
+			if (preCreatedAnswers[i].Variant__c == null || preCreatedAnswers[i].Variant__c == '') {
+				hasAnswersEmpties = true;
+				break;
+			}
+			if (preCreatedAnswers[i].Right__c == true) {
+				hasAnswersRights = true;
+			}
+		}
+
+		if (checkThemeExistenceList.size() == 0 || preCreatedQuestion.Statement__c == '' || hasAnswersEmpties || ( ! hasAnswersRights) ||
+			preCreatedQuestion.Level__c == null) {
+			if (checkThemeExistenceList.size() == 0) {
+				notificMap.addDanger('Please, check question\'s subject and topic');
+			}
+			else if (preCreatedQuestion.Statement__c == '' || preCreatedQuestion.Statement__c == null) {
+				notificMap.addDanger('Please, enter the statement.');
+			}
+			else if (hasAnswersEmpties) {
+				notificMap.addDanger('Please, fill all the answers you requested.');
+			}
+			else if ( ! hasAnswersRights) {
+				notificMap.addDanger('Please, add at least one right variant');
+			}
+			else if (preCreatedQuestion.Level__c == null) {
+				notificMap.addDanger('Please, choose the difficulty level.');
+			}
+		}
+		else {
+			preCreatedQuestion.Theme__c = checkThemeExistenceList.get(0).Id;
+			topicDropboxId = checkThemeExistenceList.get(0).Id;
+			update preCreatedQuestion;
+
+			preUpdatedQuestionDropbox = preCreatedQuestion;
+			List<Answer__c> preInsertedAnswers = new List<Answer__c>();
+			for (Integer i = 0; i < preCreatedAnswers.size(); i++) {
+					preCreatedAnswers[i].Question__c = preCreatedQuestion.Id;
+					preInsertedAnswers.add(preCreatedAnswers[i]);
+			}
+			update preInsertedAnswers;
+
+			notificMap.addSuccess('Question was updated.');
+
+			preCreatedQuestion = new Question__c();
+			preCreatedAnswers.clear();
+			for (Integer i = 0; i < 3; i++) {
+				preCreatedAnswers.add(new Answer__c());
+			}
+
+			refreshQuestions();
+
+			preCreatedQuestion = new Question__c();
+			preCreatedAnswers = new List<Answer__c>();
+			tmpSubject = null;
+			tmpTheme = null;
+		}
+	}
+
+	public void updateQuestionOnDropbox() {
+		Question__c dropBoxQuestion = [
+			SELECT Statement__c, Level__c, 
+			(
+				SELECT Variant__c, Right__c 
+				FROM Answers__r
+			)
+			FROM Question__c
+			WHERE Id = :preUpdatedQuestionDropbox.Id
+			LIMIT 1
+		];
+		HttpRequest getReq = new HttpRequest();
+		getReq.setEndpoint('https://api-content.dropbox.com/1/files/auto/' + topicDropboxId);
+		getReq.setMethod('GET');
+		getReq.setHeader('Authorization', 'Bearer NAVL3W_WUewAAAAAAAAAHJ3pnbVRoHy1oak2WOoF4GoBZ0V3sJ9Mufq_d38DK4uk');
+		getReq.setHeader('Content-Type', 'application/json');
+		HTTPResponse getRes = new Http().send(getReq);
+		String getResBody = getRes.getBody();
+		List<Question__c> questionsDeserialized = new List<Question__c>();
+		try {
+			questionsDeserialized = (List<Question__c>) JSON.deserialize(getResBody, List<Question__c>.class);
+		}
+		catch (Exception exc) {
+    	  	
+    	}
+
+    	for (Integer i = 0; i < questionsDeserialized.size(); i++) {
+    		if (questionsDeserialized[i].Id == dropBoxQuestion.Id) {
+    			questionsDeserialized.set(i, dropBoxQuestion);
+    			break;
+    		}
+    	}
+
+		String questionsJSON = JSON.serializePretty(questionsDeserialized);
+
+		HttpRequest postReq = new HttpRequest();
+		postReq.setEndpoint('https://api-content.dropbox.com/1/files_put/auto/' + topicDropboxId);
+		postReq.setMethod('POST');
+		postReq.setHeader('Authorization', 'Bearer NAVL3W_WUewAAAAAAAAAHJ3pnbVRoHy1oak2WOoF4GoBZ0V3sJ9Mufq_d38DK4uk');
+		postReq.setHeader('Content-Type', 'application/json');
+		postReq.setBody (questionsJSON);
+		HTTPResponse postRes = new Http().send(postReq);
+
+	}
+
+	public void deleteQuestionFromDatabase() {
+		delete preCreatedQuestion;
+
+
 	}
 
 }

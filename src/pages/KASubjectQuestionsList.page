@@ -1,6 +1,5 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KASubjectQuestionsListController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
-	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
 	<style>
@@ -24,24 +23,23 @@
 					<apex:commandButton value="Refresh" action="{!refreshQuestions}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-success refreshButton" style="float: right;"/>
 				</apex:outputPanel>
 
-				<apex:pageBlockTable value="{!questions}" var="question">
-					<apex:column value="{!question.Theme__r.Name}" headerValue="Topic" rendered="{!IF(themeName == null, true, false)}"/>
-					<apex:column value="{!question.Name}" headerValue="Name"/>
-					<apex:column value="{!question.Level__c}" headerValue="Level"/>
-					<apex:column value="{!question.CreatedDate}" headerValue="Created On"/>
-					<apex:column headerValue="Statement">
-						<apex:outputText value="{!LEFT(question.Statement__c, 50)}..." />
-					</apex:column>
-					<apex:column headerValue="Actions">
-						<apex:outputPanel layout="none">
-							<apex:commandButton value="Update" onclick="startUpdateQuestion('{!question.Id}'); return false;" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Edit question"/>
-							<apex:commandButton value="Delete" action="{!deleteQuestion}" reRender="commonSection, innerCreateQuestion" status="refreshStatus" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete question">
-								<apex:param name="chosenQuestion" value="{!question.Id}"/>
-							</apex:commandButton>
-							<apex:commandButton value="Freeze" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Lock question"/>
-						</apex:outputPanel>
-					</apex:column>
-				</apex:pageBlockTable>
+				<apex:outputPanel id="questionsSection">
+					<apex:pageBlockTable value="{!questions}" var="question">
+						<apex:column value="{!question.Theme__r.Name}" headerValue="Topic" rendered="{!IF(themeName == null, true, false)}"/>
+						<apex:column value="{!question.Name}" headerValue="Name"/>
+						<apex:column value="{!question.Level__c}" headerValue="Level"/>
+						<apex:column value="{!question.CreatedDate}" headerValue="Created On"/>
+						<apex:column headerValue="Statement">
+							<apex:outputText value="{!LEFT(question.Statement__c, 50)}..." />
+						</apex:column>
+						<apex:column headerValue="Actions">
+							<apex:outputPanel layout="none">
+								<apex:commandButton value="Update" onclick="showUpdateInfo('{!question.Id}'); return false;" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Edit question"/>
+								<apex:commandButton value="Delete" onclick="showDeleteInfo('{!question.Id}'); return false;" styleClass="btn btn-link" style="float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete question"/>
+							</apex:outputPanel>
+						</apex:column>
+					</apex:pageBlockTable>
+				</apex:outputPanel>	
 			</apex:pageBlockSection>
 
 			<apex:outputpanel >
@@ -61,8 +59,8 @@
 
 	<apex:form >
 		<apex:pageBlock >
-			<apex:outputpanel id="createQuestion" style="display: none;">
-				<apex:outputpanel id="innerCreateQuestion">
+			<apex:outputpanel id="deleteQuestion" style="display: none;">
+				<apex:outputpanel id="innerdeleteQuestion">
 					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
 						<script>
 							createMessage('{!JSENCODE(notificMap.currentMessage)}');
@@ -70,14 +68,60 @@
 					</apex:outputPanel>
 
 					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
+						<div class="waitingHolder" style="top: 20%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+							<div style="margin-bottom: 20px; margin-left: 65px;">
+								<h3 style="margin: 0 auto;">
+		        					Are you sure?
+		        					<apex:commandButton value="Cancel" onclick="closeDeleteInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+		        				</h3>
+		        			</div>	
+		        			<apex:outputPanel layout="none">
+		        				<div style="white-space: initial; margin-bottom: 20px;">
+		        					<h4>	
+		        						{!deletingQuestion.Statement__c}
+		        					</h4>
+		        				</div>	      						
+		        			</apex:outputPanel>	
+		        			<div>
+								<apex:commandButton value="Delete" onclick="deleteChosenQuestion(); return false;" styleClass="btn btn-primary" style="margin: 0 auto;" status="refreshStatusQuest"/>
+							</div>							
+						</div>
+					</div>
+				</apex:outputpanel>
+			</apex:outputpanel>
+		</apex:pageBlock >
+	</apex:form>	
+
+	<apex:form >	
+		<apex:pageBlock >
+			<apex:outputpanel id="updateQuestion" style="display: none;">
+				<apex:outputpanel id="innerUpdateQuestion">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
+					<apex:outputPanel rendered="{!IF(preCreatedQuestion.Id == null, true, false)}">
+						<script>
+							closeUpdateInfo();
+						</script>
+					</apex:outputPanel>
+
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
 						<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
 
 							<h1>
-	        					Creating New Question
+	        					Updating Question
 	        				</h1>
 
-	        				<apex:commandButton value="Cancel" onclick="closeCreatingQuestion(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
-	        				<apex:commandButton value="Create" action="{!createQuestion}" reRender="commonSection, innerCreateQuestion" status="refreshStatusQuest" styleClass="btn btn-primary" style="float: right;"/>
+	        				<apex:commandButton value="Cancel" onclick="closeUpdateInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+	        				<apex:commandButton value="Update" onclick="updateChosenQuestion(); return false;" styleClass="btn btn-primary" style="float: right;"/>
+	        				
+							<apex:actionFunction name="prepareQuestionToUpdate" action="{!prepareQuestionToUpdate}" reRender="innerUpdateQuestion" status="refreshStatusQuest">
+								<apex:param name="updateQuestionId" value=""/>
+							</apex:actionFunction>
+							<apex:actionFunction name="updateQuestion" action="{!updateQuestion}" oncomplete="updateQuestionOnDropbox(); return false;" reRender="commonSection, innerUpdateQuestion" status="refreshStatusQuest"/>
+	
 	        				<br/>
 	        				<br/>
 
@@ -185,6 +229,158 @@
 		</apex:pageBlock>
 	</apex:form>
 
+	<apex:form >	
+		<apex:pageBlock >
+			<apex:outputpanel id="createQuestion" style="display: none;">
+				<apex:outputpanel id="innerCreateQuestion">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
+
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
+						<div class="waitingHolder" style="top: 10%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+
+							<h1>
+	        					Creating New Question
+	        				</h1>
+
+	        				<apex:commandButton value="Cancel" onclick="closeCreatingQuestion(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+	        				<apex:commandButton value="Create" action="{!createQuestion}" oncomplete="createQuestionOnDropbox(); return false;" reRender="commonSection, innerCreateQuestion" status="refreshStatusQuest" styleClass="btn btn-primary" style="float: right;"/>
+	        				<br/>
+	        				<br/>
+
+	        				<!-- Subject Choosing -->
+
+	    					<apex:actionRegion >
+	    						<apex:outputLabel for="inputSubject" value="Subject" style="float: left"/>
+	    						<apex:inputText id="inputSubject" value="{!tmpSubject}" html-placeholder="Please, input subject title...">
+	    							<apex:actionSupport event="onkeyup" action="{!typeSubject}" reRender="subjectsTable"/>
+	    						</apex:inputText>
+	    					</apex:actionRegion>
+
+	    					<br/>
+	    					<div style="position: absolute; width: 90%; margin: 0 auto;">
+	        					<apex:pageBlockTable id="subjectsTable" value="{!subjects}" var="subject" style="overflow:scroll; border: none;" align="left">
+	        						<apex:column styleClass="chooseColumn" rendered="{!IF(subjects.size > 0, true, false)}" headerValue="Name" onclick="chooseSubjectAF('{!subject.Id}');">
+	        							<h4>
+	        								<apex:outputText value="{!subject.Name}"/>
+	        							</h4>
+	        						</apex:column>
+	        					</apex:pageBlockTable>
+	        				</div>
+
+	        				<apex:actionFunction action="{!chooseSubject}" name="chooseSubjectAF" reRender="subjectsTable, inputSubject" status="refreshStatusQuest">
+	        					<apex:param name="chosenSubject" value=""/>
+	        				</apex:actionFunction>
+
+	        				<!-- Theme Choosing -->
+
+	        				<apex:actionRegion >
+	        					<apex:outputLabel for="inputTheme" value="Topic" style="float: left"/>
+	    						<apex:inputText id="inputTheme" value="{!tmpTheme}" html-placeholder="Please, input topic title...">
+	    							<apex:actionSupport event="onkeyup" action="{!typeTheme}" reRender="themesTable"/>
+	    						</apex:inputText>
+	    					</apex:actionRegion>
+
+	    					<br/>
+	    					<div style="position: absolute; width: 90%; margin: 0 auto;">
+	        					<apex:pageBlockTable id="themesTable" value="{!themes}" var="theme" style="overflow:scroll; border: none;" align="left">
+	        						<apex:column styleClass="chooseColumn" rendered="{!IF(themes.size > 0, true, false)}" headerValue="Name" onclick="chooseThemeAF('{!theme.Id}');">
+	        							<h4>
+	        								<apex:outputText value="{!theme.Name}"/>
+	        							</h4>
+	        						</apex:column>
+	        					</apex:pageBlockTable>
+	        				</div>
+
+	        				<apex:actionFunction action="{!chooseTheme}" name="chooseThemeAF" reRender="themesTable, inputSubject, inputTheme" status="refreshStatusQuest">
+	        					<apex:param name="chosenTheme" value=""/>
+	        				</apex:actionFunction>
+
+	        				<!--Statement and Level Inputing -->
+	        				<apex:outputLabel for="inputLevel" value="Difficulty" style="float: left"/>
+	        				<apex:inputField id="inputLevel" value="{!preCreatedQuestion.Level__c}"/>
+
+	        				<apex:outputLabel for="inputStatement" value="Statement" style="float: left"/>
+	        				<apex:inputField id="inputStatement" value="{!preCreatedQuestion.Statement__c}" html-placeholder="Please, input the statement of the question..."/>
+
+	        				<!-- Answer Creating -->
+
+	        				<apex:outputPanel layout="none" id="answersPanel">
+		        				<apex:variable value="{!-1}" var="rowNum"/>
+
+		        				<apex:pageBlockSection columns="1">
+		        					<apex:pageBlockTable value="{!preCreatedAnswers}" var="answer" columnsWidth="3%, 8%, 90%, 10%">
+		        						<apex:column headerValue="#">
+		        							<apex:variable var="rowNum" value="{!rowNum + 1}"/>
+		        							<h4>
+		        								<apex:outputLabel value="{!rowNum + 1}" styleClass="label label-primary"/>
+		        							</h4>
+		        						</apex:column>
+		        						<apex:column headerValue="Right">
+		        							<apex:inputField value="{!answer.Right__c}"/>
+		        						</apex:column>
+		        						<apex:column headerValue="Variant">
+		        							<apex:inputField value="{!answer.Variant__c}" html-placeholder="Please, input the answer..."/>
+		        						</apex:column>
+		        						<apex:column headerValue="Actions">
+		        							<apex:commandButton value="Delete" action="{!reduceAnswer}" styleClass="btn btn-link" reRender="answersPanel" status="refreshStatusQuest" title="Delete this answer">
+			        							<apex:param name="answerIndex" value="{!rowNum}"/>
+		        							</apex:commandButton>
+		        						</apex:column>
+			        				</apex:pageBlockTable>
+			        				<apex:commandButton value="Add answer..." action="{!addAnswer}" styleClass="btn btn-link" reRender="answersPanel" status="refreshStatusQuest" title="Add new answer"/>
+		        				</apex:pageBlockSection>
+		        			</apex:outputPanel>
+
+						</div>
+					</div>
+				</apex:outputpanel>
+			</apex:outputpanel>
+
+			<apex:outputpanel >
+				<apex:actionstatus id="refreshStatusQuest">
+					<apex:facet name="start">
+    					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
+        					<div class="waitingHolder">
+            					<img class="waitingImage" src="{!$Resource.spinner}"/>
+        					</div>
+    					</div>
+					</apex:facet>
+				</apex:actionstatus>
+			</apex:outputpanel>
+
+		</apex:pageBlock>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="prepareQuestionToDelete" action="{!prepareQuestionToDelete}" reRender="innerdeleteQuestion" status="refreshStatusQuest">
+			<apex:param name="deleteQuestionId" value=""/>
+		</apex:actionFunction>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="deleteQuestion" action="{!deleteQuestion}" oncomplete="deleteQuestionOnDropbox(); return false;"  reRender="commonSection, innerdeleteQuestion" status="refreshStatusQuest"/>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="createQuestionOnDropbox" action="{!createQuestionOnDropbox}" reRender="innerCreateQuestion" status="refreshStatusQuest"/>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="updateQuestionOnDropbox" action="{!updateQuestionOnDropbox}" reRender="innerCreateQuestion" status="refreshStatusQuest"/>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="deleteQuestionOnDropbox" action="{!deleteQuestionOnDropbox}" reRender="innerCreateQuestion" status="refreshStatusQuest"/>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="deleteQuestionFromDatabase" action="{!deleteQuestionFromDatabase}" reRender="innerCreateQuestion" status="refreshStatusQuest"/>
+	</apex:form>
+
 	<script>
 		function openCreatingQuestion() {
 			var resultDiv = document.querySelector("span[id*='createQuestion']");
@@ -194,17 +390,32 @@
 			var resultDiv = document.querySelector("span[id*='createQuestion']");
 			resultDiv.style.display = 'none';
 		}
-		function startUpdateQuestion(questId) {
-			Visualforce.remoting.Manager.invokeAction(
-				'{!$RemoteAction.KASubjectQuestionsListController.startUpdateQuestion}',
-				questId,
-				function(result, event) {
-					var resultDiv = document.querySelector("span[id*='refreshStatus.start']");
-					resultDiv.style.display = 'block';
-					alert(result);
-				},
-				{escape: true}
-			);
+		
+		function showDeleteInfo(chosenQuestion) {
+			prepareQuestionToDelete(chosenQuestion);
+			var resultDiv = document.querySelector("span[id*='deleteQuestion']");
+			resultDiv.style.display = 'block';
+		}
+		function closeDeleteInfo() {
+			var resultDiv = document.querySelector("span[id*='deleteQuestion']");
+			resultDiv.style.display = 'none';
+		}
+		function deleteChosenQuestion() {
+			deleteQuestion();
+			closeDeleteInfo();
+		}
+
+		function showUpdateInfo(chosenQuestion) {
+			prepareQuestionToUpdate(chosenQuestion);
+			var resultDiv = document.querySelector("span[id*='updateQuestion']");
+			resultDiv.style.display = 'block';
+		}
+		function closeUpdateInfo() {
+			var resultDiv = document.querySelector("span[id*='updateQuestion']");
+			resultDiv.style.display = 'none';
+		}
+		function updateChosenQuestion() {
+			updateQuestion();
 		}
 	</script>
 

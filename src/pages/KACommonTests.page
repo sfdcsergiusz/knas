@@ -1,6 +1,5 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonTestsController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
-	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
 	<style>
@@ -158,9 +157,10 @@
 
 																</apex:facet>
 																<apex:facet name="stop">
-																	<apex:commandButton value="Delete" styleClass="btn btn-link" action="{!deleteTest}" reRender="subjectSection, innerCreateTask" status="refreshWholeStatus">
-																		<apex:param name="testToDelete" value="{!testStat.Test__r.Id}"/>
-																	</apex:commandButton>
+																	<apex:panelGroup>
+																		<apex:commandButton value="Update" styleClass="btn btn-link" onclick="showUpdateTestInfo('{!testStat.Test__r.Id}'); return false;"/>
+																		<apex:commandButton value="Delete" styleClass="btn btn-link" onclick="showDeleteTestInfo('{!testStat.Test__r.Id}'); return false;"/>
+																	</apex:panelGroup>
 																</apex:facet>
 															</apex:actionStatus>
 															<br/>
@@ -195,6 +195,41 @@
 				</apex:actionstatus>
 			</apex:outputpanel>
 		</apex:pageBlock>
+	</apex:form>
+
+	<apex:form >
+		<apex:pageBlock >
+			<apex:outputpanel id="deleteTestDialog" style="display: none;">
+				<apex:outputpanel id="innerDeleteTestDialog">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
+
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
+						<div class="waitingHolder" style="top: 20%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+							<div style="margin-bottom: 20px; margin-left: 65px;">
+								<h3 style="margin: 0 auto;">
+									Are you sure?
+									<apex:commandButton value="Cancel" onclick="closeDeleteTestInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+								</h3>
+							</div>	
+							<apex:outputPanel layout="none">
+								<div style="white-space: initial; margin-bottom: 20px;">
+									<h4>	
+										Deleting "{!deletingTest.Name}"
+									</h4>
+								</div>		  						
+							</apex:outputPanel>	
+							<div>
+								<apex:commandButton value="Delete" onclick="deleteChosenTest(); return false;" styleClass="btn btn-primary" style="margin: 0 auto;"/>
+							</div>							
+						</div>
+					</div>
+				</apex:outputpanel>
+			</apex:outputpanel>
+		</apex:pageBlock>	
 	</apex:form>
 
 	<apex:form id="createForm">
@@ -283,6 +318,98 @@
 		</apex:pageBlock>
 	</apex:form>
 
+	<apex:form>
+		<apex:actionFunction name="prepareTestToUpdate" action="{!prepareTestToUpdate}" reRender="innerUpdateTestDialog" status="refreshStatusUpdateTest">
+			<apex:param name="updateTestId" value=""/>
+		</apex:actionFunction>
+		<apex:pageBlock >
+			<apex:outputpanel id="updateTestDialog" style="display: none;">
+				<apex:outputpanel id="innerUpdateTestDialog">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
+					<apex:outputPanel rendered="{!IF(preCreatedTest.Id == null, true, false)}">
+						<script>
+							closeUpdateTestInfo();
+						</script>
+					</apex:outputPanel>
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%;">
+						<div class="waitingHolder" style="top: 10%; height: 80%; overflow: auto; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+							<div style="margin-bottom: 10px;">
+								<h1>
+			    					 Updating Test
+			    				</h1>
+			    				<apex:commandButton value="Cancel" onclick="closeUpdateTestInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+				    			<apex:commandButton value="Update" onclick="updateChosenTest(); return false;" styleClass="btn btn-primary" style="float: right;"/>
+			    			</div>
+
+			    			<apex:actionFunction name="updateTest" action="{!updateTest}" reRender="innerUpdateTestDialog, subjectSection" status="refreshStatusUpdateTest"/>
+
+			    			<div class="scrollDiv">
+			    				<apex:pageBlockSection columns="1">
+
+				    				<!-- Subject -->
+
+									<apex:outputLabel for="testSubjectName" value="Subject" style="float: left"/>
+									<apex:outputText id="testSubjectName" value="{!testSubjectName}"/>
+
+				    				<!-- Theme -->
+
+				    				<apex:outputLabel for="testThemeName" value="Topic" style="float: left"/>
+									<apex:outputText id="testThemeName" value="{!testThemeName}"/>
+
+				    				<!-- Test And Junction Filling -->
+
+				    				<apex:outputLabel for="testName" value="Test Name" style="float: left"/>
+									<apex:inputField id="testName" value="{!preCreatedTest.Name}" required="false" html-placeholder="Please, input test name..." label=""/>
+
+									<apex:outputLabel for="testDifficulty" value="Difficulty" style="float: left"/>
+									<apex:inputField id="testDifficulty" value="{!preCreatedTest.Difficulty__c}" onchange="prepareTestToUpdate();" required="false" label=""/>
+
+									<apex:outputLabel for="testThreshold" value="Threshold" style="float: left"/>
+									<apex:inputField id="testThreshold" value="{!preCreatedTest.Passing_Threshold__c}" required="false" html-placeholder="Please, input passing threshold..." label=""/>
+
+				    				<apex:outputLabel id="capturedQuestsLabel" for="capturedQuests" value="Questions to catch (max. {!themeAvailableQuestions})" style="float: left"/>
+									<apex:inputField id="capturedQuests" value="{!preCreatedTestTheme.Questions_Captured__c}" required="false" html-placeholder="Please, input number of questions..." label=""/>
+
+									<apex:outputLabel for="testDuration" value="Passing Time" style="float: left"/>
+									<apex:inputField id="testDuration" value="{!preCreatedTest.Duration__c}" required="false" html-placeholder="Please, input time in minutes..." label=""/>
+
+			    				</apex:pageBlockSection>
+			    			</div>
+
+						</div>
+					</div>
+				</apex:outputpanel>
+			</apex:outputpanel>
+		</apex:pageBlock>
+
+		<apex:outputpanel >
+				<apex:actionstatus id="refreshStatusUpdateTest">
+					<apex:facet name="start">
+    					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.45; width: 100%;">
+        					<div class="waitingHolder">
+            					<img class="waitingImage" src="{!$Resource.spinner}"/>
+        					</div>
+    					</div>
+					</apex:facet>
+				</apex:actionstatus>
+			</apex:outputpanel>
+
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="prepareTestToDelete" action="{!prepareTestToDelete}" reRender="innerDeleteTestDialog" status="refreshStatusTest">
+			<apex:param name="deleteTestId" value=""/>
+		</apex:actionFunction>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="deleteTest" action="{!deleteTest}" reRender="subjectSection, innerDeleteTestDialog" status="refreshStatusTest"/>
+	</apex:form>
+
 	<script>
 		function openCreatingTest(themeId) {
 			preCreateTest(themeId);
@@ -300,7 +427,7 @@
 			if (deletingCss) {
 				deletingCss.parentNode.removeChild(deletingCss);
 			}
-
+			
 			style = document.createElement('style');
 			style.id = 'expandSections';
 			if ( ! style.styleSheet) {
@@ -332,6 +459,33 @@
 				expandAllInsets();
 				return false;
 			}
+		}
+
+		function showDeleteTestInfo(chosenTest) {
+			prepareTestToDelete(chosenTest);
+			var resultDiv = document.querySelector("span[id*='deleteTestDialog']");
+			resultDiv.style.display = 'block';
+		}
+		function closeDeleteTestInfo() {
+			var resultDiv = document.querySelector("span[id*='deleteTestDialog']");
+			resultDiv.style.display = 'none';
+		}
+		function deleteChosenTest() {
+			deleteTest();
+			closeDeleteTestInfo();
+		}
+
+		function showUpdateTestInfo(chosenTest) {
+			prepareTestToUpdate(chosenTest);
+			var resultDiv = document.querySelector("span[id*='updateTestDialog']");
+			resultDiv.style.display = 'block';
+		}
+		function closeUpdateTestInfo() {
+			var resultDiv = document.querySelector("span[id*='updateTestDialog']");
+			resultDiv.style.display = 'none';
+		}
+		function updateChosenTest() {
+			updateTest();
 		}
 	</script>
 </apex:page>
