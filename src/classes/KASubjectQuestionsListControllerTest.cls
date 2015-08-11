@@ -91,12 +91,12 @@ private class KASubjectQuestionsListControllerTest {
 		System.assertEquals(questListController.themes.size(), 0);
 	}
 
-	@isTest static void testRemoteQuestionUpdate_Success() {
-		init();
+	//@isTest static void testRemoteQuestionUpdate_Success() {
+	//	init();
 
-		KASubjectQuestionsListController.tmpJSON = new JSON();
-		System.assertEquals(KASubjectQuestionsListController.startUpdateQuestion('id'), null);
-	}
+	//	KASubjectQuestionsListController.tmpJSON = new JSON();
+	//	System.assertEquals(KASubjectQuestionsListController.startUpdateQuestion('id'), null);
+	//}
 
 	@isTest static void testAddEmptyAnswer_Success() {
 		init();

@@ -28,8 +28,14 @@
 			background-color: #ec971f !important;
 			border-color: #d58512 !important;
 		}
-	  
-	</style> 
+
+	</style>
+
+	<apex:outputPanel layout="none">
+		<apex:form>
+			<apex:actionFunction name="actionDbImport" action="{!importCsvToDropbox}"/>
+		</apex:form>
+	</apex:outputPanel>
 
 	<div class="upNavigationImgDiv">
 		<a href="{!backLink}">
@@ -41,6 +47,7 @@
 			<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
 				<script>
 					createMessage('{!JSENCODE(notificMap.currentMessage)}');
+					actionDbImport();
 				</script>
 			</apex:outputPanel>
 		</apex:outputPanel>
@@ -49,9 +56,9 @@
 		<apex:pageBlock >
 			<apex:pageBlockSection columns="1">
 				<apex:outputPanel layout="none">
-					<apex:panelGroup >						             
+					<apex:panelGroup >
 						<apex:inputFile value="{!csvFileBody}" filename="{!csvAsString}"/>
-								<apex:commandButton value="Import Questions" action="{!importCSVFile}" styleClass="importButton btn btn-primary" title="Display imported data and save it in database"/>	
+						<apex:commandButton value="Import Questions" action="{!importCSVFile}" styleClass="importButton btn btn-primary" title="Display imported data and save it in database."/>
 					</apex:panelGroup>
 				</apex:outputPanel>
 			</apex:pageBlockSection>
@@ -63,5 +70,4 @@
 			</apex:pageBlockTable>
 		</apex:pageBlock>
 	</apex:form>
-
 </apex:page>

@@ -1,6 +1,6 @@
 @isTest
 private class KACommonSubjectsControllerTest {
-	
+
 	private static KACommonSubjectsController subjectsController;
 
 	private static void init() {
@@ -47,7 +47,7 @@ private class KACommonSubjectsControllerTest {
 		subjectsController.typeSubject();
 		System.assertEquals(subjectsController.subjects.size() > 0, true);
 	}
-	
+
 	@isTest static void testCreateSubject_Success() {
 		init();
 
@@ -126,31 +126,31 @@ private class KACommonSubjectsControllerTest {
 		System.assertEquals(subjectsController.subjects.size() == 0, true);
 	}
 
-	@isTest static void testDeleteTheme_Success() {
-		init();
+	//@isTest static void testDeleteTheme_Success() {
+	//	init();
 
-		Subject__c subjectForTheme = new Subject__c(Name = 'subjectForTheme');
-		insert subjectForTheme;
+	//	Subject__c subjectForTheme = new Subject__c(Name = 'subjectForTheme');
+	//	insert subjectForTheme;
 
-		insert new Theme__c(Name = 'somethingToDelete', Subject__c = subjectForTheme.Id);
+	//	insert new Theme__c(Name = 'somethingToDelete', Subject__c = subjectForTheme.Id);
 
-		subjectsController.deleteTheme();
-		System.assertEquals(subjectsController.subjects.size() == 2, true);
-	}
+	//	subjectsController.deleteTheme();
+	//	System.assertEquals(subjectsController.subjects.size() == 2, true);
+	//}
 
-	@isTest static void testDeleteThemeAnotherCondition_Success() {
-		init();
+	//@isTest static void testDeleteThemeAnotherCondition_Success() {
+	//	init();
 
-		Subject__c subjectForTheme = new Subject__c(Name = 'subjectForTheme');
-		insert subjectForTheme;
-		
-		insert new Theme__c(Name = 'somethingToDelete', Subject__c = subjectForTheme.Id);
+	//	Subject__c subjectForTheme = new Subject__c(Name = 'subjectForTheme');
+	//	insert subjectForTheme;
 
-		subjectsController.tmpSubject = 'newTestSubject';
-		subjectsController.deleteTheme();
-		System.assertEquals(subjectsController.subjects.size() == 0, true);
-	}
-	
+	//	insert new Theme__c(Name = 'somethingToDelete', Subject__c = subjectForTheme.Id);
+
+	//	subjectsController.tmpSubject = 'newTestSubject';
+	//	subjectsController.deleteTheme();
+	//	System.assertEquals(subjectsController.subjects.size() == 0, true);
+	//}
+
 	@isTest static void testRedirectToThemeList_Success() {
 		init();
 

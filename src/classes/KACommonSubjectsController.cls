@@ -20,6 +20,19 @@ public with sharing class KACommonSubjectsController {
 		private set;
 	}
 
+	public void onLoad() {
+		List<Theme__c> updTopics = [
+			SELECT Id
+			FROM Theme__c
+		];
+		for (Integer i = 0; i < updTopics.size(); i++) {
+			updTopics[i].Questions_Number__c = KADropBoxUtil.getQuestionsByTopic(updTopics[i].Id).size();
+		}
+		update updTopics;
+
+		selectAllSubjects();
+	}
+
 	public KACommonSubjectsController() {
 		tmpSubject = '';
 		notificMap = new KANotificationMapWrapper();
@@ -27,8 +40,6 @@ public with sharing class KACommonSubjectsController {
 		deletingTopic = new Theme__c(Name = 'Loading...');
 		updatingSubject = new Subject__c();
 		updatingTopic = new Theme__c();
-
-		selectAllSubjects();
 	}
 
 	public void typeSubject() {
@@ -107,13 +118,7 @@ public with sharing class KACommonSubjectsController {
 	}
 
 	public void createFileOnDropbox() {
-		HttpRequest req = new HttpRequest();
-		req.setEndpoint('https://api-content.dropbox.com/1/files_put/auto/' + topicDropboxId);
-		req.setMethod('POST');
-		req.setHeader('Authorization', 'Bearer NAVL3W_WUewAAAAAAAAAHJ3pnbVRoHy1oak2WOoF4GoBZ0V3sJ9Mufq_d38DK4uk');
-		req.setHeader('Content-Type', 'application/json');
-		req.setBody (' ');
-		HTTPResponse res = new Http().send(req);
+		KADropBoxUtil.createTopic(topicDropboxId);
 	}
 
 	public void resetSearch() {
@@ -166,15 +171,28 @@ public with sharing class KACommonSubjectsController {
 		}
 
 		notificMap.addSuccess('Subject was successfully deleted.');
-		delete deletingSubject;	
+		delete deletingSubject;
 
 		if (tmpSubject != '') {
 			typeSubject();
 		}
 		else {
 			selectAllSubjects();
-		}	
+		}
 		deletingSubject = new Subject__c(Name = 'Loading...');
+
+		List<Test__c> checkingTests = [
+			SELECT Id, (
+				SELECT Id
+				FROM TestThemes__r
+			)
+			FROM Test__c
+		];
+		for (Test__c checkingTest : checkingTests) {
+			if (checkingTest.TestThemes__r.size() == 0) {
+				delete checkingTest;
+			}
+		}
 	}
 
 	public void prepareTopicToDelete() {
@@ -199,16 +217,31 @@ public with sharing class KACommonSubjectsController {
 			}
 		}
 
+		KADropBoxUtil.deleteTopic(deletingTopic.Id);
+
 		notificMap.addSuccess('Topic was successfully deleted.');
-		delete deletingTopic;	
+		delete deletingTopic;
 
 		if (tmpSubject != '') {
 			typeSubject();
 		}
 		else {
 			selectAllSubjects();
-		}	
+		}
 		deletingTopic = new Theme__c(Name = 'Loading...');
+
+		List<Test__c> checkingTests = [
+			SELECT Id, (
+				SELECT Id
+				FROM TestThemes__r
+			)
+			FROM Test__c
+		];
+		for (Test__c checkingTest : checkingTests) {
+			if (checkingTest.TestThemes__r.size() == 0) {
+				delete checkingTest;
+			}
+		}
 	}
 
 	public void prepareSubjectToUpdate() {
@@ -221,8 +254,8 @@ public with sharing class KACommonSubjectsController {
 		String filterValue = '';
 		if ( ! String.isEmpty(tmpSubject)) {
 			filterValue = tmpSubject;
-		}		
-		tmpSubject = updatingSubject.Name;	
+		}
+		tmpSubject = updatingSubject.Name;
 		updatingSubject.Name = filterValue + 'filtertrue';
 	}
 

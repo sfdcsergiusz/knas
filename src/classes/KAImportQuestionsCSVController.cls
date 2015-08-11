@@ -27,7 +27,7 @@ public with sharing class KAImportQuestionsCSVController {
 		notificMap = new KANotificationMapWrapper();
 	}
 
-	public void importCSVFile() {
+	public void importCsvFile() {
 		try {
 			quelist.clear();
 			if ( ! String.isEmpty(csvAsString)) {
@@ -62,23 +62,20 @@ public with sharing class KAImportQuestionsCSVController {
 								tmpWrongAnswerList.add(new Answer__c(Variant__c = answerName));
 							}
 							wrongAnswers.add(tmpWrongAnswerList);
-						}					
+						}
 
 						if (tmpList.size () > 0) {
 							question.Theme__c = tmpList.get(0).Id;
-							quelist.add(question);	
+							quelist.add(question);
 						}
-						
+
 					}
 				}
 
 				if ( ! quelist.isEmpty()) {
-				insert quelist;
-				//HttpRequest req = new HttpRequest();
-    //    		req.setEndpoint('https://api.dropbox.com/1/oauth2/token?code=' + dropboxCode + 
-    //        		'&grant_type=authorization_code&client_id=' + appKey + '&client_secret=' + appSecret);
-    //    		req.setMethod('PUT');
+					insert quelist;
 				}
+
 				for (Integer i = 0; i < quelist.size(); i++) {
 					for (Integer j = 0; j < rightAnswers[i].size(); j++) {
 						rightAnswers[i][j].Question__c = quelist[i].Id;
@@ -112,5 +109,20 @@ public with sharing class KAImportQuestionsCSVController {
 	  		csvAsString = null;
 	  	}
 	}
-  	
+
+	public void importCsvToDropbox() {
+		List<Question__c> dBQuestions = [
+			SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id, (
+				SELECT Variant__c, Right__c
+				FROM Answers__r
+			)
+			FROM Question__c
+		];
+		if (dBQuestions.size() > 0) {
+			KADropBoxUtil.putQuestionsByTopic(themeId, dBQuestions);
+		}
+
+		delete dBQuestions;
+	}
+
 }

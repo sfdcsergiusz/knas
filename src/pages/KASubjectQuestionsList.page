@@ -20,7 +20,7 @@
 				<apex:outputPanel layout="none">
 					<apex:commandButton value="Create Question" onclick="openCreatingQuestion(); return false;" styleClass="btn btn-primary" style="float: left;"/>
 					<apex:outputLabel value="for {!subjectName} {!themeName}" style="line-height: 2.1 !important;"/>
-					<apex:commandButton value="Refresh" action="{!refreshQuestions}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-success refreshButton" style="float: right;"/>
+					<apex:commandButton value="Refresh" action="{!refreshQuestionsManually}" reRender="commonSection" status="refreshStatus" styleClass="btn btn-success refreshButton" style="float: right;"/>
 				</apex:outputPanel>
 
 				<apex:outputPanel id="questionsSection">
@@ -39,7 +39,7 @@
 							</apex:outputPanel>
 						</apex:column>
 					</apex:pageBlockTable>
-				</apex:outputPanel>	
+				</apex:outputPanel>
 			</apex:pageBlockSection>
 
 			<apex:outputpanel >
@@ -74,25 +74,25 @@
 		        					Are you sure?
 		        					<apex:commandButton value="Cancel" onclick="closeDeleteInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 		        				</h3>
-		        			</div>	
+		        			</div>
 		        			<apex:outputPanel layout="none">
 		        				<div style="white-space: initial; margin-bottom: 20px;">
-		        					<h4>	
+		        					<h4>
 		        						{!deletingQuestion.Statement__c}
 		        					</h4>
-		        				</div>	      						
-		        			</apex:outputPanel>	
+		        				</div>
+		        			</apex:outputPanel>
 		        			<div>
 								<apex:commandButton value="Delete" onclick="deleteChosenQuestion(); return false;" styleClass="btn btn-primary" style="margin: 0 auto;" status="refreshStatusQuest"/>
-							</div>							
+							</div>
 						</div>
 					</div>
 				</apex:outputpanel>
 			</apex:outputpanel>
 		</apex:pageBlock >
-	</apex:form>	
+	</apex:form>
 
-	<apex:form >	
+	<apex:form >
 		<apex:pageBlock >
 			<apex:outputpanel id="updateQuestion" style="display: none;">
 				<apex:outputpanel id="innerUpdateQuestion">
@@ -116,12 +116,12 @@
 
 	        				<apex:commandButton value="Cancel" onclick="closeUpdateInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 	        				<apex:commandButton value="Update" onclick="updateChosenQuestion(); return false;" styleClass="btn btn-primary" style="float: right;"/>
-	        				
+
 							<apex:actionFunction name="prepareQuestionToUpdate" action="{!prepareQuestionToUpdate}" reRender="innerUpdateQuestion" status="refreshStatusQuest">
 								<apex:param name="updateQuestionId" value=""/>
 							</apex:actionFunction>
 							<apex:actionFunction name="updateQuestion" action="{!updateQuestion}" oncomplete="updateQuestionOnDropbox(); return false;" reRender="commonSection, innerUpdateQuestion" status="refreshStatusQuest"/>
-	
+
 	        				<br/>
 	        				<br/>
 
@@ -229,7 +229,7 @@
 		</apex:pageBlock>
 	</apex:form>
 
-	<apex:form >	
+	<apex:form >
 		<apex:pageBlock >
 			<apex:outputpanel id="createQuestion" style="display: none;">
 				<apex:outputpanel id="innerCreateQuestion">
@@ -366,7 +366,7 @@
 	</apex:form>
 
 	<apex:form>
-		<apex:actionFunction name="createQuestionOnDropbox" action="{!createQuestionOnDropbox}" reRender="innerCreateQuestion" status="refreshStatusQuest"/>
+		<apex:actionFunction name="createQuestionOnDropbox" action="{!createQuestionOnDropbox}" reRender="commonSection" status="refreshStatusQuest"/>
 	</apex:form>
 
 	<apex:form>
@@ -375,10 +375,6 @@
 
 	<apex:form>
 		<apex:actionFunction name="deleteQuestionOnDropbox" action="{!deleteQuestionOnDropbox}" reRender="innerCreateQuestion" status="refreshStatusQuest"/>
-	</apex:form>
-
-	<apex:form>
-		<apex:actionFunction name="deleteQuestionFromDatabase" action="{!deleteQuestionFromDatabase}" reRender="innerCreateQuestion" status="refreshStatusQuest"/>
 	</apex:form>
 
 	<script>
@@ -390,7 +386,7 @@
 			var resultDiv = document.querySelector("span[id*='createQuestion']");
 			resultDiv.style.display = 'none';
 		}
-		
+
 		function showDeleteInfo(chosenQuestion) {
 			prepareQuestionToDelete(chosenQuestion);
 			var resultDiv = document.querySelector("span[id*='deleteQuestion']");

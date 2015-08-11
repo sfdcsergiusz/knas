@@ -58,7 +58,89 @@
 			-o-transition-duration: 0.3s;
 			transition-duration: 0.3s;
 		}
+		.dropBoxImgDiv {
+			position: fixed;
+			top: 150px;
+			right: -40px;
+			width: 80px;
+		}
+		.dropBoxDiv {
+			position: fixed;
+			top: 150px;
+			right: -90%;
+			background-color: #FFA200;
+			border: 2px solid;
+			border-radius: 8px 0px 0px 8px;
+			padding: 4px 4px 4px 4px;
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+		}
+		.dropBoxImg {
+			width: 40px;
+			left: 0px;
+			position: relative;
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+		}
+		.dropBoxImgDiv:hover .dropBoxImg {
+			left: 40px;
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+		}
+		.dropBoxImgDiv:hover .dropBoxDiv {
+			right: 0;
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-duration: 0.3s;
+			-o-transition-duration: 0.3s;
+			transition-duration: 0.3s;
+		}
 	</style>
+
+	<script>
+		function openModalDialog(modalName, param) {
+			if (modalName == 'createTask') {
+				var resultDiv = document.querySelector("span[id*='createTask']");
+				resultDiv.style.display = 'block';
+			}
+			else if (modalName == 'deleteTask') {
+				prepareTaskToDelete(param);
+				var resultDiv = document.querySelector("span[id*='deleteTaskDialog']");
+				resultDiv.style.display = 'block';
+			}
+			else if (modalName == 'updateTask') {
+				prepareTaskToUpdate(param);
+				var resultDiv = document.querySelector("span[id*='updateTaskDialog']");
+				resultDiv.style.display = 'block';
+			}
+		}
+		function closeModalDialog(modalName) {
+			if (modalName == 'closeCreateTask') {
+				var resultDiv = document.querySelector("span[id*='createTask']");
+				resultDiv.style.display = 'none';
+			}
+			else if (modalName == 'closeDeleteTask') {
+				var resultDiv = document.querySelector("span[id*='deleteTaskDialog']");
+				resultDiv.style.display = 'none';
+			}
+			else if (modalName == 'closeUpdateTask') {
+				var resultDiv = document.querySelector("span[id*='updateTaskDialog']");
+				resultDiv.style.display = 'none';
+			}
+		}
+		function deleteChosenTask() {
+			deleteTask();
+			closeModalDialog('closeDeleteTask')
+		}
+		function updateChosenTask() {
+			updateTask();
+		}
+	</script>
 
 	<apex:form >
 		<div style="width: 100%; height: 100%;">
@@ -83,8 +165,8 @@
 						<apex:column headerValue="Actions" style="{!IF(task.Task__r.Status__c == 'Scheduled','background: rgba(51, 122, 183, 0.3)', IF(task.Task__r.Status__c == 'Passed','background: rgba(92, 184, 92, 0.3)', IF(task.Task__r.Status__c == 'Failed','background: rgba(206, 74, 34, 0.3)', '' )))}">
 							<apex:commandButton value="Update"  onclick="openModalDialog('updateTask','{!task.Id}'); return false;" styleClass="btn btn-link" title="Update task" style=" float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
 							<apex:commandButton value="Delete"  onclick="openModalDialog('deleteTask','{!task.Task__r.Id}'); return false;" styleClass="btn btn-link" title="Delete task" style=" float: left; padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;"/>
-							
-						</apex:column>	
+
+						</apex:column>
 					</apex:pageBlockTable>
 				</apex:pageBlockSection>
 
@@ -137,17 +219,17 @@
 		        					Are you sure?
 		        					<apex:commandButton value="Cancel" onclick="closeModalDialog('closeDeleteTask', ''); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 		        				</h3>
-		        			</div>	
+		        			</div>
 		        			<apex:outputPanel layout="none">
 		        				<div style="white-space: initial; margin-bottom: 20px;">
-		        					<h4>	
+		        					<h4>
 		        						{!deletingTask.Test__r.Name} {!deletingTask.AssignTime__c}
 		        					</h4>
-		        				</div>	      						
-		        			</apex:outputPanel>	
+		        				</div>
+		        			</apex:outputPanel>
 		        			<div>
 								<apex:commandButton value="Delete" onclick="deleteChosenTask(); return false;" styleClass="btn btn-primary" style="margin: 0 auto;" status="refreshStatus"/>
-							</div>							
+							</div>
 						</div>
 					</div>
 				</apex:outputpanel>
@@ -256,9 +338,9 @@
 						</apex:facet>
 					</apex:actionstatus>
 				</apex:outputpanel>
-			</apex:outputpanel>			
+			</apex:outputpanel>
 		</apex:pageBlock >
-	</apex:form>		
+	</apex:form>
 
 	<apex:form >
 		<apex:pageBlock >
@@ -280,7 +362,7 @@
 
 							<apex:commandButton value="Cancel" onclick="closeModalDialog('closeCreateTask', ''); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 							<apex:commandButton value="Create" action="{!createNewTask}" reRender="innerCreateTask, tasksSection" status="refreshStatusTask" styleClass="btn btn-primary" style="float: right;"/>
-							
+
 							<br/>
 
 							<!-- Employee Choosing -->
@@ -392,6 +474,37 @@
 		</div>
 	</div>
 
+	<div class="dropBoxImgDiv">
+		<img class="dropBoxImg" src="{!$Resource.dropBoxPanel}"/>
+		<div class="dropBoxDiv">
+			<apex:form id="dropboxSettingForm">
+				<apex:outputPanel layout="none">
+					<apex:commandButton id="applyTokenButton" value="Apply New Token" onclick="applyTokenJS(); return false;" styleClass="btn btn-info" style="float: left; top: -2px !important;"/>
+					<apex:inputText value="{!dropBoxToken}" html-placeholder="Input new token here..." style="width: 300px !important;"/>
+				</apex:outputPanel>
+				<apex:actionFunction name="applyDbToken" action="{!applyDbToken}" reRender="dropboxSettingForm"/>
+				<script>
+					function applyTokenJS() {
+						var applyTokenButton = document.querySelector('input[id*="applyTokenButton"]');
+						applyTokenButton.disabled = true;
+						applyDbToken();
+						setTimeout(
+							function() {
+								applyTokenButton.disabled = false;
+							},
+							500
+						);
+					}
+				</script>
+				<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+					<script>
+						createMessage('{!JSENCODE(notificMap.currentMessage)}');
+					</script>
+				</apex:outputPanel>
+			</apex:form>
+		</div>
+	</div>
+
 	<apex:form>
 		<apex:actionFunction name="prepareTaskToDelete" action="{!prepareTaskToDelete}" reRender="innerDeleteTaskDialog" status="refreshStatusTask">
 			<apex:param name="deleteTaskId" value=""/>
@@ -401,45 +514,5 @@
 	<apex:form>
 		<apex:actionFunction name="deleteTask" action="{!deleteTask}" reRender="innerDeleteTaskDialog, tasksSection" status="refreshStatusTask"/>
 	</apex:form>
-
-	<script>
-		function openModalDialog(modalName, param) {
-			if (modalName == 'createTask') {
-				var resultDiv = document.querySelector("span[id*='createTask']");
-				resultDiv.style.display = 'block';
-			}
-			else if (modalName == 'deleteTask') {
-				prepareTaskToDelete(param);
-				var resultDiv = document.querySelector("span[id*='deleteTaskDialog']");
-				resultDiv.style.display = 'block';
-			}
-			else if (modalName == 'updateTask') {
-				prepareTaskToUpdate(param);
-				var resultDiv = document.querySelector("span[id*='updateTaskDialog']");
-				resultDiv.style.display = 'block';
-			}
-		}
-		function closeModalDialog(modalName) {
-			if (modalName == 'closeCreateTask') {
-				var resultDiv = document.querySelector("span[id*='createTask']");
-				resultDiv.style.display = 'none';
-			}
-			else if (modalName == 'closeDeleteTask') {
-				var resultDiv = document.querySelector("span[id*='deleteTaskDialog']");
-				resultDiv.style.display = 'none';
-			}
-			else if (modalName == 'closeUpdateTask') {
-				var resultDiv = document.querySelector("span[id*='updateTaskDialog']");
-				resultDiv.style.display = 'none';
-			}
-		}
-		function deleteChosenTask() {
-			deleteTask();
-			closeModalDialog('closeDeleteTask')	
-		}
-		function updateChosenTask() {
-			updateTask();			
-		}
-	</script>
 
 </apex:page>

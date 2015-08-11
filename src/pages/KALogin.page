@@ -80,7 +80,7 @@
 		</div>
 	</apex:form>
 
-	<apex:form >
+	<apex:form>
 		<apex:actionFunction action="{!register}" name="startRegistering" status="loadingStatus"/>
 	</apex:form>
 

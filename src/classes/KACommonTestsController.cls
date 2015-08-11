@@ -24,6 +24,17 @@ public with sharing class KACommonTestsController {
 
 	private Theme__c tmpTheme { private get; private set; }
 
+	public void onLoad() {
+		List<Theme__c> updTopics = [
+			SELECT Id
+			FROM Theme__c
+		];
+		for (Integer i = 0; i < updTopics.size(); i++) {
+			updTopics[i].Questions_Number__c = KADropBoxUtil.getQuestionsByTopic(updTopics[i].Id).size();
+		}
+		update updTopics;
+	}
+
 	public KACommonTestsController() {
 		tmpSubject = '';
 		preCreatedTestTheme = new TestTheme__c();
@@ -53,7 +64,16 @@ public with sharing class KACommonTestsController {
 	}
 
 	public void preCreateTest() {
+		List<Question__c> checkingQuests = new List<Question__c>();
 		if (ApexPages.currentPage().getParameters().get('themeId') != null && ApexPages.currentPage().getParameters().get('themeId') != '') {
+			checkingQuests = KADropBoxUtil.getQuestionsByTopic(ApexPages.currentPage().getParameters().get('themeId'));
+			for (Integer i = 0; i < checkingQuests.size(); i++) {
+				if (checkingQuests.get(i).Level__c != preCreatedTest.Difficulty__c) {
+					checkingQuests.remove(i);
+					i--;
+				}
+			}
+
 			tmpTheme = [
 				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
 					(
@@ -66,6 +86,14 @@ public with sharing class KACommonTestsController {
 			];
 		}
 		else {
+			checkingQuests = KADropBoxUtil.getQuestionsByTopic(tmpTheme.Id);
+			for (Integer i = 0; i < checkingQuests.size(); i++) {
+				if (checkingQuests.get(i).Level__c != preCreatedTest.Difficulty__c) {
+					checkingQuests.remove(i);
+					i--;
+				}
+			}
+
 			tmpTheme = [
 				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
 					(
@@ -77,12 +105,20 @@ public with sharing class KACommonTestsController {
 				WHERE Id = :tmpTheme.Id
 			];
 		}
-		themeAvailableQuestions = tmpTheme.Questions__r.size();
+		themeAvailableQuestions = checkingQuests.size();
 		testThemeName = tmpTheme.Name;
 		testSubjectName = tmpTheme.Subject__r.Name;
 
 		if (preCreatedTest.Name == null || preCreatedTest.Name == '') {
 			preCreatedTest.Name = 'Test #' + String.valueOf(Math.round(Math.random()*1000));
+		}
+
+		List<Question__c> allQuestions = [
+			SELECT Id
+			FROM Question__c
+		];
+		if (allQuestions.size() > 0) {
+			delete allQuestions;
 		}
 	}
 
@@ -227,20 +263,29 @@ public with sharing class KACommonTestsController {
 	}
 
 	public void prepareTestToUpdate() {
-		if (ApexPages.currentPage().getParameters().get('updateTestId') != null && 
-			ApexPages.currentPage().getParameters().get('updateTestId') != '') {	
+		List<Question__c> checkingQuests = new List<Question__c>();
+		if (ApexPages.currentPage().getParameters().get('updateTestId') != null &&
+			ApexPages.currentPage().getParameters().get('updateTestId') != '') {
 
 			preCreatedTest = [
 				SELECT Subject__r.Name, Name, Difficulty__c, Passing_Threshold__c, Duration__c,
 				(
 					SELECT Theme__r.Questions_Number__c, Theme__r.Name, Questions_Captured__c
-					FROM TestTheme__r
+					FROM TestThemes__r
 				)
 				FROM Test__c
 				WHERE Id = :ApexPages.currentPage().getParameters().get('updateTestId')
 			];
-			
-			preCreatedTestTheme = preCreatedTest.TestTheme__r.get(0);
+
+			checkingQuests = KADropBoxUtil.getQuestionsByTopic(preCreatedTest.TestThemes__r.get(0).Theme__r.Id);
+			for (Integer i = 0; i < checkingQuests.size(); i++) {
+				if (checkingQuests.get(i).Level__c != preCreatedTest.Difficulty__c) {
+					checkingQuests.remove(i);
+					i--;
+				}
+			}
+
+			preCreatedTestTheme = preCreatedTest.TestThemes__r.get(0);
 
 			tmpTheme = [
 				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
@@ -250,10 +295,18 @@ public with sharing class KACommonTestsController {
 						WHERE Level__c = :preCreatedTest.Difficulty__c
 					)
 				FROM Theme__c
-				WHERE Id = :preCreatedTest.TestTheme__r.get(0).Theme__r.Id
+				WHERE Id = :preCreatedTest.TestThemes__r.get(0).Theme__r.Id
 			];
-		}		
+		}
 		else {
+			checkingQuests = KADropBoxUtil.getQuestionsByTopic(tmpTheme.Id);
+			for (Integer i = 0; i < checkingQuests.size(); i++) {
+				if (checkingQuests.get(i).Level__c != preCreatedTest.Difficulty__c) {
+					checkingQuests.remove(i);
+					i--;
+				}
+			}
+
 			tmpTheme = [
 				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
 					(
@@ -264,11 +317,11 @@ public with sharing class KACommonTestsController {
 				FROM Theme__c
 				WHERE Id = :tmpTheme.Id
 			];
-		}	
-		
+		}
+
 		testSubjectName = preCreatedTest.Subject__r.Name;
-		testThemeName = preCreatedTest.TestTheme__r.get(0).Theme__r.Name;
-		themeAvailableQuestions = tmpTheme.Questions__r.size();
+		testThemeName = preCreatedTest.TestThemes__r.get(0).Theme__r.Name;
+		themeAvailableQuestions = checkingQuests.size();
 		updatingTest = preCreatedTest.Name;
 
 	}
@@ -320,7 +373,7 @@ public with sharing class KACommonTestsController {
 		else {
 			preCreatedTest.Subject__c = subjectForTest.get(0).Id;
 			update preCreatedTest;
-			
+
 			update preCreatedTestTheme;
 
 			notificMap.addSuccess('Test was updated. ' + testSubjectName
