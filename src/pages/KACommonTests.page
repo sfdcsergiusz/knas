@@ -1,4 +1,4 @@
-<apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonTestsController" docType="HTML-5.0">
+<apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonTestsController" docType="HTML-5.0" action="{!onLoad}">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
@@ -214,22 +214,22 @@
 									Are you sure?
 									<apex:commandButton value="Cancel" onclick="closeDeleteTestInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 								</h3>
-							</div>	
+							</div>
 							<apex:outputPanel layout="none">
 								<div style="white-space: initial; margin-bottom: 20px;">
-									<h4>	
+									<h4>
 										Deleting "{!deletingTest.Name}"
 									</h4>
-								</div>		  						
-							</apex:outputPanel>	
+								</div>
+							</apex:outputPanel>
 							<div>
 								<apex:commandButton value="Delete" onclick="deleteChosenTest(); return false;" styleClass="btn btn-primary" style="margin: 0 auto;"/>
-							</div>							
+							</div>
 						</div>
 					</div>
 				</apex:outputpanel>
 			</apex:outputpanel>
-		</apex:pageBlock>	
+		</apex:pageBlock>
 	</apex:form>
 
 	<apex:form id="createForm">
@@ -427,7 +427,7 @@
 			if (deletingCss) {
 				deletingCss.parentNode.removeChild(deletingCss);
 			}
-			
+
 			style = document.createElement('style');
 			style.id = 'expandSections';
 			if ( ! style.styleSheet) {

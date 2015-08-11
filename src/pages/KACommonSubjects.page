@@ -1,4 +1,4 @@
-<apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonSubjectsController" docType="HTML-5.0">
+<apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonSubjectsController" docType="HTML-5.0" action="{!onLoad}">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
 	<apex:includeScript value="{!$Resource.messageScript}"/>
 	<apex:include pageName="KANavigationBar"/>
@@ -87,7 +87,7 @@
 			if (deletingCss) {
 				deletingCss.parentNode.removeChild(deletingCss);
 			}
-			
+
 			style = document.createElement('style');
 			style.id = 'expandSections';
 			if ( ! style.styleSheet) {
@@ -298,22 +298,22 @@
 									Are you sure?
 									<apex:commandButton value="Cancel" onclick="closeDeleteSubjectInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 								</h3>
-							</div>	
+							</div>
 							<apex:outputPanel layout="none">
 								<div style="white-space: initial; margin-bottom: 20px;">
-									<h4>	
+									<h4>
 										Delete subject "{!deletingSubject.Name}"
 									</h4>
-								</div>		  						
-							</apex:outputPanel>	
+								</div>
+							</apex:outputPanel>
 							<div>
 								<apex:commandButton value="Delete" onclick="deleteChosenSubject(); return false;" styleClass="btn btn-primary" style="margin: 0 auto;"/>
-							</div>							
+							</div>
 						</div>
 					</div>
 				</apex:outputpanel>
 			</apex:outputpanel>
-		</apex:pageBlock>	
+		</apex:pageBlock>
 	</apex:form>
 
 	<apex:form >
@@ -333,22 +333,22 @@
 									Are you sure?
 									<apex:commandButton value="Cancel" onclick="closeDeleteTopicInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 								</h3>
-							</div>	
+							</div>
 							<apex:outputPanel layout="none">
 								<div style="white-space: initial; margin-bottom: 20px;">
-									<h4>	
+									<h4>
 										Delete topic "{!deletingTopic.Name}"
 									</h4>
-								</div>		  						
-							</apex:outputPanel>	
+								</div>
+							</apex:outputPanel>
 							<div>
 								<apex:commandButton value="Delete" onclick="deleteChosenTopic(); return false;" styleClass="btn btn-primary" style="margin: 0 auto;"/>
-							</div>							
+							</div>
 						</div>
 					</div>
 				</apex:outputpanel>
 			</apex:outputpanel>
-		</apex:pageBlock>	
+		</apex:pageBlock>
 
 		<apex:outputpanel >
 			<apex:actionstatus id="refreshDeleteStatus">
@@ -361,7 +361,7 @@
 				</apex:facet>
 			</apex:actionstatus>
 		</apex:outputpanel>
-	</apex:form>		
+	</apex:form>
 
 	<apex:form>
 		<apex:actionFunction name="prepareSubjectToDelete" action="{!prepareSubjectToDelete}" reRender="innerDeleteSubjectDialog" status="refreshDeleteStatus">
@@ -380,7 +380,7 @@
 	</apex:form>
 
 	<apex:form>
-		<apex:actionFunction name="deleteTopic" action="{!deleteTopic}" reRender="subjectSection, innerDeleteTopicDialog" status="refreshDeleteStatus"/>
+		<apex:actionFunction name="deleteTopic" action="{!deleteTopic}" reRender="subjectSection, subjectInput" status="refreshDeleteStatus"/>
 	</apex:form>
 
 	<apex:form >
@@ -401,14 +401,14 @@
 									<apex:commandButton value="Cancel" onclick="closeUpdateSubjectInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 									<apex:commandButton value="Update" onclick="updateChosenSubject(); return false;" styleClass="btn btn-primary" style="float: right;"/>
 								</h3>
-							</div>	
+							</div>
 							<apex:outputPanel layout="none">
 								<div style="white-space: initial; margin-bottom: 20px;">
-									<h4>	
+									<h4>
 										<apex:inputText id="subjectUpdateInput" value="{!tmpSubject}" html-placeholder="Please, input subject name..." style="margin: 15px 12px 12px 12px !important;" html-autocomplete="off"/>
 									</h4>
-								</div>		  						
-							</apex:outputPanel>							
+								</div>
+							</apex:outputPanel>
 						</div>
 					</div>
 				</apex:outputpanel>
@@ -425,9 +425,9 @@
 					</div>
 				</apex:facet>
 			</apex:actionstatus>
-		</apex:outputpanel>	
-		
-		<apex:actionFunction name="updateSubject" action="{!updateSubject}" reRender="subjectSection, innerUpdateSubjectDialog" status="refreshUpdateSubjectStatus"/>	
+		</apex:outputpanel>
+
+		<apex:actionFunction name="updateSubject" action="{!updateSubject}" reRender="subjectSection, innerUpdateSubjectDialog" status="refreshUpdateSubjectStatus"/>
 	</apex:form>
 
 	<apex:form >
@@ -453,18 +453,18 @@
 									<apex:commandButton value="Cancel" onclick="closeUpdateTopicInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 									<apex:commandButton value="Update" onclick="updateChosenTopic(); return false;" styleClass="btn btn-primary" style="float: right;"/>
 								</h3>
-							</div>	
+							</div>
 							<apex:outputPanel layout="none">
 								<div style="white-space: initial; margin-bottom: 20px;">
 									<h4>
 										<apex:inputText id="topicUpdateInput" value="{!tmpTheme}" html-placeholder="Please, input topic name..." style="margin: 15px 12px 12px 12px !important;" html-autocomplete="off"/>
 									</h4>
-								</div>		  						
-							</apex:outputPanel>							
+								</div>
+							</apex:outputPanel>
 						</div>
 					</div>
 				</apex:outputpanel>
-			</apex:outputpanel>	
+			</apex:outputpanel>
 		</apex:pageBlock>
 
 		<apex:outputpanel >
@@ -477,7 +477,7 @@
 					</div>
 				</apex:facet>
 			</apex:actionstatus>
-		</apex:outputpanel>	
+		</apex:outputpanel>
 
 		<apex:actionFunction name="prepareTopicToUpdate" action="{!prepareTopicToUpdate}" reRender="innerUpdateTopicDialog" status="refreshUpdateTopicStatus">
 			<apex:param name="updateTopicId" value=""/>

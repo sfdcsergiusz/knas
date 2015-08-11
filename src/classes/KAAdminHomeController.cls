@@ -18,6 +18,8 @@ public with sharing class KAAdminHomeController {
 	public Task__c preCreatedTask { get; set; }
 	public Employee_Task__c preCreatedEmployeeTask { get; set; }
 
+	public String dropBoxToken { get; set; }
+
 	public List<CronTrigger> scheduledTriggers { get; private set; }
 	public KANotificationMapWrapper notificMap { get; private set; }
 
@@ -34,6 +36,7 @@ public with sharing class KAAdminHomeController {
 			SELECT Id
 			FROM CronTrigger
 		];
+		dropBoxToken = DropBox__c.getValues('Token').Token__c;
 	}
 
 	public void refreshRecentTasks() {
@@ -140,7 +143,7 @@ public with sharing class KAAdminHomeController {
 		employees = [
 			SELECT First_Name__c, Last_Name__c
 			FROM Employee__c
-			WHERE First_Name__c LIKE :searchEmployee OR Last_Name__c LIKE :searchEmployee
+			WHERE IsAdmin__c != true AND (First_Name__c LIKE :searchEmployee OR Last_Name__c LIKE :searchEmployee)
 		];
 	}
 
@@ -197,6 +200,20 @@ public with sharing class KAAdminHomeController {
 		];
 	}
 
+	public void applyDbToken() {
+		List<DropBox__c> dropToken = [
+			SELECT Token__c
+			FROM DropBox__c
+			LIMIT 1
+		];
+		if ( ! dropToken.isEmpty()) {
+			dropToken.get(0).Token__c = dropBoxToken;
+			update dropToken.get(0);
+
+			notificMap.addSuccess('DropBox Token was changed.');
+		}
+	}
+
 	public void prepareTaskToDelete() {
 		deletingTask = [
 			SELECT Id, Test__r.Name, AssignTime__c
@@ -214,7 +231,7 @@ public with sharing class KAAdminHomeController {
 		}
 
 		notificMap.addSuccess('Task was successfully deleted.');
-		delete deletingTask;		
+		delete deletingTask;
 	}
 
 	public void prepareTaskToUpdate() {
@@ -268,12 +285,13 @@ public with sharing class KAAdminHomeController {
 			}
 			else if (preCreatedTask.AssignTime__c < Datetime.now()) {
 				notificMap.addDanger('Date shouldn\'t be less than present time.');
-			}			
+			}
 		}
 		else {
 			preCreatedTask.Test__c = suitableTests.get(0).Id;
 
 			try {
+				preCreatedTask.Status__c = 'Scheduled';
 				update preCreatedTask;
 			}
 			catch (DmlException exc) {
@@ -291,7 +309,7 @@ public with sharing class KAAdminHomeController {
 				preCreatedEmployeeTask.Task__c = suitableTasks.get(0).Id;
 				preCreatedEmployeeTask.Employee__c = suitableEmployees.get(0).Id;
 				preCreatedEmployeeTask.IsEmailQueue__c = true;
-				notificMap.addSuccess('Task was successfully updated.');	
+				notificMap.addSuccess('Task was successfully updated.');
 				update preCreatedEmployeeTask;
 
 				refreshRecentTasks();
@@ -299,7 +317,7 @@ public with sharing class KAAdminHomeController {
 				preCreatedEmployeeTask = new Employee_Task__c();
 				tmpTest = null;
 				tmpEmployee = null;
-			}			
+			}
 		}
 	}
 
