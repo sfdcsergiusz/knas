@@ -1,14 +1,17 @@
 public with sharing class KACommonTestsController {
 
 	public List<Subject__c> subjects { get; set; }
+	public List<Test__c> tests { get; set; }
 
 	public String tmpSubject { get; set; }
+	public String updatingTest { get; set; }
 	public String testThemeName { get; set; }
 	public Integer themeAvailableQuestions { get; set; }
 	public String testSubjectName { get; set; }
 
 	public TestTheme__c preCreatedTestTheme { get; set; }
 	public Test__c preCreatedTest { get; set; }
+	public Test__c deletingTest { get; set; }
 	public List<TestTheme__c> themeStatistic { get; set; }
 
 	public KANotificationMapWrapper notificMap { get; private set; }
@@ -21,10 +24,22 @@ public with sharing class KACommonTestsController {
 
 	private Theme__c tmpTheme { private get; private set; }
 
+	public void onLoad() {
+		List<Theme__c> updTopics = [
+			SELECT Id
+			FROM Theme__c
+		];
+		for (Integer i = 0; i < updTopics.size(); i++) {
+			updTopics[i].Questions_Number__c = KADropBoxUtil.getQuestionsByTopic(updTopics[i].Id).size();
+		}
+		update updTopics;
+	}
+
 	public KACommonTestsController() {
 		tmpSubject = '';
 		preCreatedTestTheme = new TestTheme__c();
 		preCreatedTest = new Test__c();
+		deletingTest = new Test__c(Name = 'Loading...');
 		themeStatistic = new List<TestTheme__c>();
 		notificMap = new KANotificationMapWrapper();
 
@@ -49,7 +64,16 @@ public with sharing class KACommonTestsController {
 	}
 
 	public void preCreateTest() {
+		List<Question__c> checkingQuests = new List<Question__c>();
 		if (ApexPages.currentPage().getParameters().get('themeId') != null && ApexPages.currentPage().getParameters().get('themeId') != '') {
+			checkingQuests = KADropBoxUtil.getQuestionsByTopic(ApexPages.currentPage().getParameters().get('themeId'));
+			for (Integer i = 0; i < checkingQuests.size(); i++) {
+				if (checkingQuests.get(i).Level__c != preCreatedTest.Difficulty__c) {
+					checkingQuests.remove(i);
+					i--;
+				}
+			}
+
 			tmpTheme = [
 				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
 					(
@@ -62,6 +86,14 @@ public with sharing class KACommonTestsController {
 			];
 		}
 		else {
+			checkingQuests = KADropBoxUtil.getQuestionsByTopic(tmpTheme.Id);
+			for (Integer i = 0; i < checkingQuests.size(); i++) {
+				if (checkingQuests.get(i).Level__c != preCreatedTest.Difficulty__c) {
+					checkingQuests.remove(i);
+					i--;
+				}
+			}
+
 			tmpTheme = [
 				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
 					(
@@ -73,12 +105,20 @@ public with sharing class KACommonTestsController {
 				WHERE Id = :tmpTheme.Id
 			];
 		}
-		themeAvailableQuestions = tmpTheme.Questions__r.size();
+		themeAvailableQuestions = checkingQuests.size();
 		testThemeName = tmpTheme.Name;
 		testSubjectName = tmpTheme.Subject__r.Name;
 
 		if (preCreatedTest.Name == null || preCreatedTest.Name == '') {
 			preCreatedTest.Name = 'Test #' + String.valueOf(Math.round(Math.random()*1000));
+		}
+
+		List<Question__c> allQuestions = [
+			SELECT Id
+			FROM Question__c
+		];
+		if (allQuestions.size() > 0) {
+			delete allQuestions;
 		}
 	}
 
@@ -106,7 +146,7 @@ public with sharing class KACommonTestsController {
 				notificMap.addDanger('Number of questions should be less than available: ' + themeAvailableQuestions + '.');
 			}
 			else if (checkEqualTestList.size() > 0) {
-				notificMap.addDanger('Test with name "' + preCreatedTest.Name + '" already exist.');
+				notificMap.addDanger('Test with name "' + preCreatedTest.Name + '" already exists.');
 			}
 			else if (preCreatedTest.Duration__c <= 0) {
 				notificMap.addDanger('Duration of the test should be more than 0 minutes.');
@@ -141,7 +181,7 @@ public with sharing class KACommonTestsController {
 			notificMap.addSuccess('Test was created. ' + testSubjectName
 				+ ', ' + testThemeName
 				+ ', ' + preCreatedTestTheme.Questions_Captured__c + ' questions'
-				+ ', ' + preCreatedTest.Duration__c + ' minustes.'
+				+ ', ' + preCreatedTest.Duration__c + ' minutes.'
 			);
 
 			clearThemeStatistic();
@@ -165,18 +205,6 @@ public with sharing class KACommonTestsController {
 		themeStatistic = new List<TestTheme__c>();
 	}
 
-	public void deleteTest() {
-		Test__c deletingTest = [
-			SELECT Id, Name, Subject__r.Name
-			FROM Test__c
-			WHERE Id = :ApexPages.currentPage().getParameters().get('testToDelete')
-		];
-		notificMap.addInfo(deletingTest.Name + ' was deleted from ' + deletingTest.Subject__r.Name + '.');
-		delete deletingTest;
-
-		clearThemeStatistic();
-		typeSubject();
-	}
 
 	public void resetSearch() {
 		tmpSubject = '';
@@ -203,6 +231,161 @@ public with sharing class KACommonTestsController {
 			ORDER BY Name ASC
 			LIMIT 50000
 		];
+	}
+
+	public void prepareTestToDelete() {
+		deletingTest = [
+			SELECT Id, Name, Subject__r.Name
+			FROM Test__c
+			WHERE Id = :ApexPages.currentPage().getParameters().get('deleteTestId')
+		];
+	}
+
+	public void deleteTest() {
+		tests = [
+			SELECT Id
+			FROM Test__c
+			LIMIT 50000
+		];
+		for (Integer i = 0; i < tests.size(); i++) {
+			if (tests[i].Id == deletingTest.Id) {
+				tests.remove(i);
+				break;
+			}
+		}
+
+		notificMap.addInfo(deletingTest.Name + ' was deleted from ' + deletingTest.Subject__r.Name + '.');
+		delete deletingTest;
+
+		clearThemeStatistic();
+		typeSubject();
+		deletingTest = new Test__c(Name = 'Loading...');
+	}
+
+	public void prepareTestToUpdate() {
+		List<Question__c> checkingQuests = new List<Question__c>();
+		if (ApexPages.currentPage().getParameters().get('updateTestId') != null &&
+			ApexPages.currentPage().getParameters().get('updateTestId') != '') {
+
+			preCreatedTest = [
+				SELECT Subject__r.Name, Name, Difficulty__c, Passing_Threshold__c, Duration__c,
+				(
+					SELECT Theme__r.Questions_Number__c, Theme__r.Name, Questions_Captured__c
+					FROM TestThemes__r
+				)
+				FROM Test__c
+				WHERE Id = :ApexPages.currentPage().getParameters().get('updateTestId')
+			];
+
+			checkingQuests = KADropBoxUtil.getQuestionsByTopic(preCreatedTest.TestThemes__r.get(0).Theme__r.Id);
+			for (Integer i = 0; i < checkingQuests.size(); i++) {
+				if (checkingQuests.get(i).Level__c != preCreatedTest.Difficulty__c) {
+					checkingQuests.remove(i);
+					i--;
+				}
+			}
+
+			preCreatedTestTheme = preCreatedTest.TestThemes__r.get(0);
+
+			tmpTheme = [
+				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
+					(
+						SELECT Id
+						FROM Questions__r
+						WHERE Level__c = :preCreatedTest.Difficulty__c
+					)
+				FROM Theme__c
+				WHERE Id = :preCreatedTest.TestThemes__r.get(0).Theme__r.Id
+			];
+		}
+		else {
+			checkingQuests = KADropBoxUtil.getQuestionsByTopic(tmpTheme.Id);
+			for (Integer i = 0; i < checkingQuests.size(); i++) {
+				if (checkingQuests.get(i).Level__c != preCreatedTest.Difficulty__c) {
+					checkingQuests.remove(i);
+					i--;
+				}
+			}
+
+			tmpTheme = [
+				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
+					(
+						SELECT Id
+						FROM Questions__r
+						WHERE Level__c = :preCreatedTest.Difficulty__c
+					)
+				FROM Theme__c
+				WHERE Id = :tmpTheme.Id
+			];
+		}
+
+		testSubjectName = preCreatedTest.Subject__r.Name;
+		testThemeName = preCreatedTest.TestThemes__r.get(0).Theme__r.Name;
+		themeAvailableQuestions = checkingQuests.size();
+		updatingTest = preCreatedTest.Name;
+
+	}
+
+	public void updateTest() {
+		List<Subject__c> subjectForTest = [
+			SELECT Id
+			FROM Subject__c
+			WHERE Name = :testSubjectName
+			LIMIT 1
+		];
+		List<Test__c> checkEqualTestList = [
+			SELECT Name
+			FROM Test__c
+			WHERE Name = :preCreatedTest.Name
+		];
+		if ((preCreatedTestTheme.Questions_Captured__c <= 0 || preCreatedTestTheme.Questions_Captured__c > themeAvailableQuestions) ||
+			checkEqualTestList.size() > 0 && checkEqualTestList.get(0).Name != updatingTest || preCreatedTest.Duration__c <= 0 || preCreatedTest.Passing_Threshold__c == null ||
+			preCreatedTest.Duration__c == null || preCreatedTestTheme.Questions_Captured__c == null ||
+			preCreatedTest.Passing_Threshold__c < 0 || preCreatedTest.Passing_Threshold__c > 100) {
+			if (preCreatedTestTheme.Questions_Captured__c <= 0) {
+				notificMap.addDanger('Number of questions should be more than 0.');
+			}
+			else if (preCreatedTestTheme.Questions_Captured__c > themeAvailableQuestions) {
+				notificMap.addDanger('Number of questions should be less than available: ' + themeAvailableQuestions + '.');
+			}
+			else if (checkEqualTestList.size() > 0 && checkEqualTestList.get(0).Name != updatingTest) {
+				notificMap.addDanger('Test with name "' + preCreatedTest.Name + '" already exists.');
+			}
+			else if (preCreatedTest.Duration__c <= 0) {
+				notificMap.addDanger('Duration of the test should be more than 0 minutes.');
+			}
+			else if (preCreatedTest.Passing_Threshold__c == null) {
+				notificMap.addDanger('Please, input passing threshold.');
+			}
+			else if (preCreatedTest.Passing_Threshold__c < 0) {
+				notificMap.addDanger('Threshold shold be equal or greater than 0.');
+			}
+			else if (preCreatedTest.Passing_Threshold__c > 100) {
+				notificMap.addDanger('Threshold shold be equal or less than 100.');
+			}
+			else if (preCreatedTest.Duration__c == null) {
+				notificMap.addDanger('Please, enter duration.');
+			}
+			else if (preCreatedTestTheme.Questions_Captured__c == null) {
+				notificMap.addDanger('Please, enter number of questions.');
+			}
+		}
+		else {
+			preCreatedTest.Subject__c = subjectForTest.get(0).Id;
+			update preCreatedTest;
+
+			update preCreatedTestTheme;
+
+			notificMap.addSuccess('Test was updated. ' + testSubjectName
+				+ ', ' + testThemeName
+				+ ', ' + preCreatedTestTheme.Questions_Captured__c + ' questions'
+				+ ', ' + preCreatedTest.Duration__c + ' minutes.'
+			);
+
+			clearThemeStatistic();
+			preCreatedTest = new Test__c();
+			preCreatedTestTheme = new TestTheme__c();
+		}
 	}
 
 }

@@ -7,6 +7,7 @@ public with sharing class KASubjectQuestionsListController {
 
 	public String tmpSubject { get; set; }
 	public String tmpTheme { get; set; }
+	public String topicDropboxId { get; set; }
 
 	public Id chosenSubject { get; set; }
 	public Id chosenTheme { get; set; }
@@ -17,7 +18,11 @@ public with sharing class KASubjectQuestionsListController {
 	public String subjectName { get; set; }
 	public String themeName { get; set; }
 
+	public Question__c deletingQuestion { get; set; }
 	public Question__c preCreatedQuestion { get; set; }
+	public Question__c preCreatedQuestionDropbox { get; set; }
+	public Question__c preUpdatedQuestionDropbox { get; set; }
+	public Question__c preDeletedQuestionDropbox { get; set; }
 	public List<Answer__c> preCreatedAnswers { get; set; }
 
 	public KANotificationMapWrapper notificMap { get; private set; }
@@ -34,6 +39,8 @@ public with sharing class KASubjectQuestionsListController {
 		notificMap = new KANotificationMapWrapper();
 		subjects = new List<Subject__c>();
 		themes = new List<Theme__c>();
+		questions = new List<Question__c>();
+		deletingQuestion = new Question__c(Statement__c = 'Loading...');
 		preCreatedQuestion = new Question__c();
 		preCreatedAnswers = new List<Answer__c>();
 		for (Integer i = 0; i < 3; i++) {
@@ -64,23 +71,14 @@ public with sharing class KASubjectQuestionsListController {
 			].get(0).Name;
 		}
 
-		refreshQuestions();
+		refreshQuestions(false);
 	}
 
-	@RemoteAction
-	public static JSON startUpdateQuestion(String questId) {
-		return null;
-	}
-
-	public void refreshQuestions() {
+	public void refreshQuestions(Boolean ifDelete) {
+		questions.clear();
 		if (themeId != null) {
-			questions = [
-				SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id
-				FROM Question__c
-				WHERE Theme__r.Id = :themeId
-				ORDER BY CreatedDate DESC
-				LIMIT 50000
-			];
+			questions = KADropBoxUtil.getQuestionsByTopic(themeId);
+
 			if (questions.size() > 0) {
 				subjectId = questions[0].Theme__r.Subject__r.Id;
 			}
@@ -97,15 +95,36 @@ public with sharing class KASubjectQuestionsListController {
 			tmpTheme = themeName;
 		}
 		else if (subjectId != null) {
-			questions = [
-				SELECT Name, Level__c, Statement__c, CreatedDate,  Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id
-				FROM Question__c
-				WHERE Theme__r.Subject__r.Id = :subjectId
-				ORDER BY CreatedDate DESC
-				LIMIT 50000
+			List<Subject__c> currSubject = [
+				SELECT Name, (
+					SELECT Name
+					FROM Themes__r
+				)
+				FROM Subject__c
+				WHERE Id = :subjectId
 			];
-			tmpSubject = subjectName;
+			if (currSubject.size() > 0) {
+				for (Theme__c varTheme : currSubject.get(0).Themes__r) {
+					questions.addAll(KADropBoxUtil.getQuestionsByTopic(varTheme.Id));
+				}
+				tmpSubject = subjectName;
+			}
+			else {
+				notificMap.addDanger('Something goes wrong...');
+			}
 		}
+
+		if (ifDelete) {
+			List<Question__c> quests = [
+				SELECT Id
+				FROM Question__c
+			];
+			delete quests;
+		}
+	}
+
+	public void refreshQuestionsManually() {
+		refreshQuestions(true);
 	}
 
 	public void typeSubject() {
@@ -201,8 +220,10 @@ public with sharing class KASubjectQuestionsListController {
 		}
 		else {
 			preCreatedQuestion.Theme__c = checkThemeExistenceList.get(0).Id;
+			topicDropboxId = checkThemeExistenceList.get(0).Id;
 			insert preCreatedQuestion;
 
+			preCreatedQuestionDropbox = preCreatedQuestion;
 			List<Answer__c> preInsertedAnswers = new List<Answer__c>();
 			for (Integer i = 0; i < preCreatedAnswers.size(); i++) {
 					preCreatedAnswers[i].Question__c = preCreatedQuestion.Id;
@@ -217,22 +238,131 @@ public with sharing class KASubjectQuestionsListController {
 			for (Integer i = 0; i < 3; i++) {
 				preCreatedAnswers.add(new Answer__c());
 			}
-
-			refreshQuestions();
 		}
 		return null;
 	}
 
-	public void deleteQuestion() {
-		Question__c deletingQuestion = [
-			SELECT Id
+	public void createQuestionOnDropbox() {
+		List<Question__c> dropBoxQuestion = [
+			SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id,
+			(
+				SELECT Variant__c, Right__c
+				FROM Answers__r
+			)
 			FROM Question__c
-			WHERE Id = :ApexPages.currentPage().getParameters().get('chosenQuestion')
+			WHERE Id = :preCreatedQuestionDropbox.Id
+			LIMIT 1
 		];
-		notificMap.addInfo('Question was successfully deleted.');
-		delete deletingQuestion;
+		if (dropBoxQuestion.size() > 0) {
+			KADropBoxUtil.addQuestionToTopic(topicDropboxId, dropBoxQuestion.get(0));
+			refreshQuestions(true);
+		}
+	}
 
-		refreshQuestions();
+	public void prepareQuestionToDelete() {
+		for (Question__c varQuest : questions) {
+			if (String.valueOf(varQuest.Id) == ApexPages.currentPage().getParameters().get('deleteQuestionId')) {
+				deletingQuestion = varQuest;
+				break;
+			}
+		}
+	}
+
+	public void deleteQuestion() {
+		topicDropboxId = deletingQuestion.Theme__c;
+		for (Integer i = 0; i < questions.size(); i++) {
+			if (questions[i].Id == deletingQuestion.Id) {
+				questions.remove(i);
+				break;
+			}
+		}
+
+		notificMap.addInfo('Question was successfully deleted.');
+		preDeletedQuestionDropbox = deletingQuestion;
+		deletingQuestion = new Question__c(Statement__c = 'Loading...');
+	}
+
+	public void deleteQuestionOnDropbox() {
+		KADropBoxUtil.deleteQuestionFromTopic(topicDropboxId, preDeletedQuestionDropbox);
+	}
+
+	public void prepareQuestionToUpdate() {
+		for (Question__c varQuest : questions) {
+			if (String.valueOf(varQuest.Id) == ApexPages.currentPage().getParameters().get('updateQuestionId')) {
+				preCreatedQuestion = varQuest;
+				break;
+			}
+		}
+		preCreatedAnswers = preCreatedQuestion.Answers__r;
+		tmpSubject = preCreatedQuestion.Theme__r.Subject__r.Name;
+		tmpTheme = preCreatedQuestion.Theme__r.Name;
+		chosenSubject = preCreatedQuestion.Theme__r.Subject__r.Id;
+		chosenTheme = preCreatedQuestion.Theme__r.Id;
+	}
+
+	public void updateQuestion() {
+		List<Theme__c> checkThemeExistenceList = [
+			SELECT Name
+			FROM Theme__c
+			WHERE Name LIKE :tmpTheme AND Subject__r.Name LIKE :tmpSubject
+		];
+		Boolean hasAnswersEmpties = false;
+		Boolean hasAnswersRights = false;
+		for (Integer i = 0; i < preCreatedAnswers.size(); i++) {
+			if (preCreatedAnswers[i].Variant__c == null || preCreatedAnswers[i].Variant__c == '') {
+				hasAnswersEmpties = true;
+				break;
+			}
+			if (preCreatedAnswers[i].Right__c == true) {
+				hasAnswersRights = true;
+			}
+		}
+
+		if (checkThemeExistenceList.size() == 0 || preCreatedQuestion.Statement__c == '' || hasAnswersEmpties || ( ! hasAnswersRights) ||
+			preCreatedQuestion.Level__c == null) {
+			if (checkThemeExistenceList.size() == 0) {
+				notificMap.addDanger('Please, check question\'s subject and topic');
+			}
+			else if (preCreatedQuestion.Statement__c == '' || preCreatedQuestion.Statement__c == null) {
+				notificMap.addDanger('Please, enter the statement.');
+			}
+			else if (hasAnswersEmpties) {
+				notificMap.addDanger('Please, fill all the answers you requested.');
+			}
+			else if ( ! hasAnswersRights) {
+				notificMap.addDanger('Please, add at least one right variant');
+			}
+			else if (preCreatedQuestion.Level__c == null) {
+				notificMap.addDanger('Please, choose the difficulty level.');
+			}
+		}
+		else {
+			preCreatedQuestion.Theme__c = checkThemeExistenceList.get(0).Id;
+			topicDropboxId = checkThemeExistenceList.get(0).Id;
+
+			preUpdatedQuestionDropbox = preCreatedQuestion;
+			List<Answer__c> preInsertedAnswers = new List<Answer__c>();
+			for (Integer i = 0; i < preCreatedAnswers.size(); i++) {
+					preCreatedAnswers[i].Question__c = preCreatedQuestion.Id;
+					preInsertedAnswers.add(preCreatedAnswers[i]);
+			}
+
+			notificMap.addSuccess('Question was updated.');
+
+			preCreatedQuestion = new Question__c();
+			preCreatedAnswers.clear();
+			for (Integer i = 0; i < 3; i++) {
+				preCreatedAnswers.add(new Answer__c());
+			}
+
+			tmpSubject = null;
+			tmpTheme = null;
+		}
+	}
+
+	public void updateQuestionOnDropbox() {
+		KADropBoxUtil.updateQuestionOnTopic(topicDropboxId, preUpdatedQuestionDropbox);
+		refreshQuestions(true);
 	}
 
 }

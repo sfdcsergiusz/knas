@@ -11,6 +11,7 @@
 		<members>KACommonUsersControllerTest</members>
 		<members>KACreateNewPasswordController</members>
 		<members>KACreateNewPasswordControllerTest</members>
+		<members>KADropBoxUtil</members>
 		<members>KADropboxIntegration</members>
 		<members>KAEmailHandler</members>
 		<members>KAEmailHandlerTest</members>

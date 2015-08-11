@@ -1,11 +1,10 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KALoginController" docType="HTML-5.0">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
-	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 	<apex:include pageName="KANavigationBar"/>
 
 	<style>
 		.pbTitle {
-			width: 17% !important;
+			width: 11% !important;
 		}
 	</style>
 
@@ -81,7 +80,7 @@
 		</div>
 	</apex:form>
 
-	<apex:form >
+	<apex:form>
 		<apex:actionFunction action="{!register}" name="startRegistering" status="loadingStatus"/>
 	</apex:form>
 

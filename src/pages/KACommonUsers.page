@@ -134,7 +134,7 @@
 			border-radius: .45em;
 			padding: 3px 2px 3px 5px;
 			font-weight: bold;
-		}
+		}		
 	</style>
 
 	<div class="upNavigationImgDiv">
@@ -201,7 +201,7 @@
 							<apex:commandButton value="Cancel" onclick="closeDetailInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
 						</div>
 						<div class="scrollDiv">
-							<apex:outputPanel id="userSection">
+							<apex:outputPanel id="userSection">								
 								<apex:pageBlockSection rendered="{!IF(renderedUser.Name != null, true, false)}" columns="1">
 									<apex:outputField value="{!renderedUser.First_Name__c}"/>
 									<apex:outputField value="{!renderedUser.Last_Name__c}"/>
@@ -244,7 +244,7 @@
 												</apex:pageBlockSection>
 												<apex:panelGroup >
 													<div class="themeResDiv">
-														Theme Total: {!FLOOR(testResult / testCounter)}%
+														Theme Total: {!IF(testCounter != 0, '' + TEXT(FLOOR(testResult / testCounter)) + '%', 'There is no any tests')}
 													</div>
 													<apex:variable value="{!themeResult + testResult}" var="themeResult"/>
 													<apex:variable value="{!themeCounter + testCounter}" var="themeCounter"/>
@@ -256,7 +256,7 @@
 										</apex:pageBlockSection>
 										<apex:panelGroup >
 											<div class="subjectResDiv">
-												Subject Total: {!FLOOR(themeResult / themeCounter)}%
+												Subject Total: {!IF(themeCounter !=0, '' + TEXT(FLOOR(themeResult / themeCounter)) + '%', 'There is no any tests')}
 											</div>
 											<apex:variable value="{!0}" var="themeCounter"/>
 											<apex:variable value="{!0}" var="themeResult"/>
@@ -271,7 +271,7 @@
 						</div>
 					</div>
 				</div>
-			</apex:outputPanel>
+			</apex:outputPanel>	
 		</apex:pageBlock>
 
 		<apex:outputpanel >
@@ -297,5 +297,5 @@
 			var resultDiv = document.querySelector("span[id*='showUserDetailes']");
 			resultDiv.style.display = 'none';
 		}
-	</script>
+	</script>	
 </apex:page>

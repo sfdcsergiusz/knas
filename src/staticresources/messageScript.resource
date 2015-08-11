@@ -5,10 +5,12 @@ var showMessageTimer;
 function deleteMessage() {
 	var existingMessage = document.querySelector(".messageDiv");
 	if (existingMessage != null) {
-		existingMessage.style.right = '-50%';
+		existingMessage.style.right = '-100%';
 		deleteMessageTimer = setTimeout(
 			function() {
-				existingMessage.parentNode.removeChild(existingMessage);
+				if (existingMessage.parentNode != null) {
+					existingMessage.parentNode.removeChild(existingMessage);
+				}				
 			},
 			210
 		);
@@ -41,7 +43,7 @@ function createMessage(currentMessage) {
 
 		document.body.appendChild(message);
 		message.onclick = function() {
-			message.style.right = '-50%';
+			message.style.right = '-100%';
 		}
 
 		showMessageTimer = setTimeout(
@@ -52,7 +54,7 @@ function createMessage(currentMessage) {
 		);
 		hideMessageTimer = setTimeout(
 			function() {
-				message.style.right = '-50%';
+				message.style.right = '-100%';
 			},
 			7000
 		);

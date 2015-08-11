@@ -103,7 +103,7 @@ public with sharing class KALoginController {
 	private void setLoginCookie(String id) {
 		currentPage.setCookies(
 			new Cookie[] {
-				new Cookie('Identifier', id, null, 10000, false)
+				new Cookie('Identifier', id, null, 100000000, false)
 			}
 		);
 	}

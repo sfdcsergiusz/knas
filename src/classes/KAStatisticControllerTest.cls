@@ -1,6 +1,6 @@
 @isTest
 private class KAStatisticControllerTest {
-
+	
 	private static KAStatisticController testStatContr;
 
 	private static void init() {
@@ -48,7 +48,8 @@ private class KAStatisticControllerTest {
 		Datetime  testItem1 = testStatContr.recentResults.get(0).createdDate;
 		testStatContr.orderByCreatedOn();
 		Datetime  testItem2 = testStatContr.recentResults.get(0).createdDate;
-		System.assertEquals(testItem1 <= testItem2, true);
+		System.assertEquals(testItem1, testItem2);
+
 	}
 
 

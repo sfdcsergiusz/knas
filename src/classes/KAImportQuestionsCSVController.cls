@@ -7,14 +7,13 @@ public with sharing class KAImportQuestionsCSVController {
 	public List<List<Answer__c>> rightAnswers { get; set; }
 	public List<List<Answer__c>> wrongAnswers { get; set; }
 	public String themeId { get; set; }
-	public String errorMessage { get; private set; }
-	public String infoMessage { get; private set; }
 	public String backLink {
 		get {
 			return 'apex/' + KAPageConstants.packagePrefix + 'KACommonSubjects';
 		}
 		private set;
 	}
+	public KANotificationMapWrapper notificMap { get; private set; }
 
 	private PageReference currentPage;
 
@@ -25,12 +24,11 @@ public with sharing class KAImportQuestionsCSVController {
 		wrongAnswers = new List<List<Answer__c>>();
 		currentPage = ApexPages.currentPage();
 		themeId = currentPage.getParameters().get('themeId');
+		notificMap = new KANotificationMapWrapper();
 	}
 
-	public void importCSVFile() {
+	public void importCsvFile() {
 		try {
-			infoMessage = null;
-			errorMessage = null;
 			quelist.clear();
 			if ( ! String.isEmpty(csvAsString)) {
 				csvAsString = csvFileBody.toString();
@@ -75,8 +73,9 @@ public with sharing class KAImportQuestionsCSVController {
 				}
 
 				if ( ! quelist.isEmpty()) {
-				insert quelist;
+					insert quelist;
 				}
+
 				for (Integer i = 0; i < quelist.size(); i++) {
 					for (Integer j = 0; j < rightAnswers[i].size(); j++) {
 						rightAnswers[i][j].Question__c = quelist[i].Id;
@@ -96,19 +95,34 @@ public with sharing class KAImportQuestionsCSVController {
 
 			}
 		   	else {
-		   		errorMessage = 'File is Empty, please, choose file';
+		   		notificMap.addDanger('File is Empty, please, choose file');
 		   	}
 
 	  	}
 	  	catch (Exception exc) {
-	  		errorMessage = 'Invalid file';
-	  		csvAsString = null;
+	  		notificMap.addDanger('Invalid file');
 	  	}
 	  	finally {
-	  		if (errorMessage == null) {
-	  			infoMessage = 'Import successed';
+	  		if (notificMap.isEmpty) {
+	  			notificMap.addSuccess('Import successed');
 	  		}
+	  		csvAsString = null;
 	  	}
+	}
+
+	public void importCsvToDropbox() {
+		List<Question__c> dBQuestions = [
+			SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id, (
+				SELECT Variant__c, Right__c
+				FROM Answers__r
+			)
+			FROM Question__c
+		];
+		if (dBQuestions.size() > 0) {
+			KADropBoxUtil.putQuestionsByTopic(themeId, dBQuestions);
+		}
+
+		delete dBQuestions;
 	}
 
 }

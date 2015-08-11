@@ -1,5 +1,6 @@
 <apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KANavigationBarController" docType="HTML-5.0" action="{!onLoad}">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
+	<apex:includeScript value="{!URLFOR($Resource.messageScript)}"/>
 
 	<script>
 		var userName = '{!browserUser.Employee__r.First_Name__c}';

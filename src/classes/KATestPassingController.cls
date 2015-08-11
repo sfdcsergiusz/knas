@@ -47,7 +47,7 @@ public with sharing class KATestPassingController {
 	}
 
 	public void startTest() {
-		if (checkTestExistence() && checkUserAvailability() && checkTaskStatusSuitable()) {
+		if (checkTestExistence() && checkUserAvailability() && checkTaskStatusSuitable(false)) {
 			questions = new List<Question__c>();
 			currentQuestion = 0;
 
@@ -63,16 +63,17 @@ public with sharing class KATestPassingController {
 			if ( ! correspThemes.isEmpty()) {
 				totalQuestionsNum = Integer.valueOf(correspThemes.get(0).Questions_Captured__c);
 
-				List<Question__c> acceptableQuestions = [
-					SELECT Id, Statement__c, Theme__r.Subject__r.Name, Theme__r.Name,
-					(
-						SELECT Variant__c, Right__c
-						FROM Answers__r
-					)
-					FROM Question__c
-					WHERE Theme__r.Id = :correspThemes.get(0).Theme__r.Id AND Level__c = :currentTest.Difficulty__c
-					LIMIT 50000
-				];
+				List<Question__c> topicQuestions = KADropBoxUtil.getQuestionsByTopic(correspThemes.get(0).Theme__r.Id);
+				List<Question__c> acceptableQuestions = new List<Question__c>();
+				for (Integer i = 0; i < topicQuestions.size(); i++) {
+					if (topicQuestions.get(i).Level__c == currentTest.Difficulty__c) {
+						acceptableQuestions.add(topicQuestions.get(i));
+					}
+				}
+				if (totalQuestionsNum > acceptableQuestions.size()) {
+					totalQuestionsNum = acceptableQuestions.size();
+				}
+
 				Map<Integer, Integer> questionsMix = returnRandoms(totalQuestionsNum, totalQuestionsNum);
 				for (Integer randomQuestion : questionsMix.keySet()) {
 					questions.add(
@@ -90,6 +91,8 @@ public with sharing class KATestPassingController {
 				subAppliedAnswer = new String[1];
 				variants = getVariants(currentQuestion);
 				updateCurrentRightAnswers();
+
+				checkTaskStatusSuitable(true);
 			}
 		}
 
@@ -145,7 +148,7 @@ public with sharing class KATestPassingController {
 		return false;
 	}
 
-	private Boolean checkTaskStatusSuitable() {
+	private Boolean checkTaskStatusSuitable(Boolean updating) {
 		List<Employee_Task__c> checkTaskStatusList = [
 			SELECT Task__r.Status__c
 			FROM Employee_Task__c
@@ -154,15 +157,16 @@ public with sharing class KATestPassingController {
 		];
 		if ( ! checkTaskStatusList.isEmpty()) {
 			if (checkTaskStatusList.get(0).Task__r.Status__c == 'Scheduled') {
-				Task__c currentTask = [
-					SELECT Id
-					FROM Task__c
-					WHERE Id = :checkTaskStatusList.get(0).Task__r.Id
-					LIMIT 1
-				];
-				currentTask.Status__c = 'Failed';
-				update currentTask;
-
+				if (updating) {
+					Task__c currentTask = [
+						SELECT Id
+						FROM Task__c
+						WHERE Id = :checkTaskStatusList.get(0).Task__r.Id
+						LIMIT 1
+					];
+					currentTask.Status__c = 'Failed';
+					update currentTask;
+				}
 				return true;
 			}
 		}
@@ -267,11 +271,7 @@ public with sharing class KATestPassingController {
 	private Map<String, Boolean> getVariants(Integer questionPosition) {
 		List<Answer__c> tmpVariants = new List<Answer__c>();
 
-		List<Answer__c> tmpInitialVariants = [
-			SELECT Variant__c, Right__c
-			FROM Answer__c
-			WHERE Question__r.Id = :questions[questionPosition].Id
-		];
+		List<Answer__c> tmpInitialVariants = questions[questionPosition].Answers__r;
 
 		Map<Integer, Integer> variantsMix = returnRandoms(tmpInitialVariants.size(), tmpInitialVariants.size());
 		for (Integer randomVariant : variantsMix.keySet()) {

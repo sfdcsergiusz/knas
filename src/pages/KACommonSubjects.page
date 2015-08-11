@@ -1,4 +1,4 @@
-<apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonSubjectsController" docType="HTML-5.0">
+<apex:page title="Knowledge Assessment" showHeader="false" sidebar="false" controller="KACommonSubjectsController" docType="HTML-5.0" action="{!onLoad}">
 	<apex:stylesheet value="{!URLFOR($Resource.style)}"/>
 	<apex:includeScript value="{!$Resource.messageScript}"/>
 	<apex:include pageName="KANavigationBar"/>
@@ -79,6 +79,107 @@
 		}
 	</style>
 
+	<script>
+		function expandAllInsets() {
+			var expandingCss = '.subjectRepeat > .apexp > div > .pbBody > div > .pbSubsection {max-height: 600px !important;}';
+
+			var deletingCss = document.querySelector("style[id*='expandSections']");
+			if (deletingCss) {
+				deletingCss.parentNode.removeChild(deletingCss);
+			}
+
+			style = document.createElement('style');
+			style.id = 'expandSections';
+			if ( ! style.styleSheet) {
+				style.appendChild(document.createTextNode(expandingCss));
+			}
+			else {
+				style.styleSheet.cssText = expandingCss;
+			}
+			document.querySelector("head").appendChild(style);
+
+			var insetButton = document.querySelector("input[id*='expandingButton'");
+			insetButton.value = "Collapse All";
+			insetButton.blur();
+			insetButton.onclick = function() {
+				hideAllInsets();
+				return false;
+			}
+		}
+		function hideAllInsets() {
+			var deletingCss = document.querySelector("style[id*='expandSections']");
+			if (deletingCss) {
+				deletingCss.parentNode.removeChild(deletingCss);
+			}
+
+			var insetButton = document.querySelector("input[id*='expandingButton'");
+			insetButton.value = "Expand All";
+			insetButton.blur();
+			insetButton.onclick = function() {
+				expandAllInsets();
+				return false;
+			}
+		}
+
+		function showDeleteSubjectInfo(chosenSubject) {
+			prepareSubjectToDelete(chosenSubject);
+			var resultDiv = document.querySelector("span[id*='deleteSubjectDialog']");
+			resultDiv.style.display = 'block';
+		}
+		function closeDeleteSubjectInfo() {
+			var resultDiv = document.querySelector("span[id*='deleteSubjectDialog']");
+			resultDiv.style.display = 'none';
+		}
+		function deleteChosenSubject() {
+			deleteSubject();
+			closeDeleteSubjectInfo();
+		}
+
+		function showDeleteTopicInfo(chosenTopic) {
+			prepareTopicToDelete(chosenTopic);
+			var resultDiv = document.querySelector("span[id*='deleteTopicDialog']");
+			resultDiv.style.display = 'block';
+		}
+		function closeDeleteTopicInfo() {
+			var resultDiv = document.querySelector("span[id*='deleteTopicDialog']");
+			resultDiv.style.display = 'none';
+		}
+		function deleteChosenTopic() {
+			deleteTopic();
+			closeDeleteTopicInfo();
+		}
+
+		function showUpdateSubjectInfo(chosenSubject) {
+			prepareSubjectToUpdate(chosenSubject);
+			var resultDiv = document.querySelector("span[id*='updateSubjectDialog']");
+			resultDiv.style.display = 'block';
+		}
+		function closeUpdateSubjectInfo() {
+			var resultDiv = document.querySelector("span[id*='updateSubjectDialog']");
+			resultDiv.style.display = 'none';
+		}
+		function updateChosenSubject() {
+			updateSubject();
+		}
+
+		function showUpdateTopicInfo(chosenTopic) {
+			prepareTopicToUpdate(chosenTopic);
+			var resultDiv = document.querySelector("span[id*='updateTopicDialog']");
+			resultDiv.style.display = 'block';
+		}
+		function closeUpdateTopicInfo() {
+			var resultDiv = document.querySelector("span[id*='updateTopicDialog']");
+			resultDiv.style.display = 'none';
+		}
+		function updateChosenTopic() {
+			updateTopic();
+		}
+
+		function createFileOnDropbox() {
+			createFileOnDropbox();
+		}
+	</script>
+
 	<div class="upNavigationImgDiv">
 		<a href="{!backLink}">
 			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
@@ -115,14 +216,13 @@
 											<apex:commandButton value="List" action="{!goToSubjectList}" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" reRender="subjectSection" title="View all questions for this subject">
 												<apex:param name="listParam" value="{!subject.Id}"/>
 											</apex:commandButton>
-											<apex:commandButton value="Delete" action="{!deleteSubject}" reRender="subjectSection, subjectInput" status="refreshWholeStatus" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" title="Delete this subject">
-												<apex:param name="deleteParam" value="{!subject.Name}"/>
-											</apex:commandButton>
+											<apex:commandButton value="Update" onclick="showUpdateSubjectInfo('{!subject.Id}'); return false;" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" title="Delete this subject"/>
+											<apex:commandButton value="Delete" onclick="showDeleteSubjectInfo('{!subject.Id}'); return false;" styleClass="btn btn-link" style="padding: 2px 10px !important; margin: 0px 0px 6px !important; line-height: normal !important;" title="Delete this subject"/>
 											<apex:commandLink value="{!subject.Themes_Number__c} topics" styleClass="btn btn-link" style="padding: 2px 25px !important; margin: 0px 0px 6px !important; line-height: normal !important; color: #2F933C !important; pointer-events: none; cursor: default;"/>
 											<apex:outputLabel value="{!subject.Name}" style="margin: 0px 0px 0px 10px !important; border-radius: .25em .25em 0 0 !important; border: 1px solid #BBB !important;; border-bottom-style: none !important;"/>
 										</div>
 										<div class="inputDiv">
-											<apex:commandButton value="Create Topic" action="{!createTheme}" reRender="subjectSection, subjectInput" status="refreshWholeStatus" styleClass="btn btn-success" style="float: right;">
+											<apex:commandButton value="Create Topic" action="{!createTheme}" oncomplete="createFileOnDropbox(); return false;" reRender="subjectSection, subjectInput" status="refreshWholeStatus" styleClass="btn btn-success" style="float: right;">
 												<apex:param name="subjectName" value="{!subject.Name}"/>
 											</apex:commandButton>
 											<apex:inputText value="{!tmpTheme}" html-placeholder="Please, input new topic..." style="width: 34% !important; float: right;" html-autocomplete="off"/>
@@ -143,9 +243,8 @@
 											<apex:commandButton value="Upload CSV" action="{!goToUploadCSV}" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" reRender="subjectSection" title="Import questions with CSV file for chosen topic">
 												<apex:param name="CSVParam" value="{!theme.Id}"/>
 											</apex:commandButton>
-											<apex:commandButton value="Delete" action="{!deleteTheme}" reRender="subjectSection" status="refreshWholeStatus" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete chosen topic">
-												<apex:param name="deleteParam" value="{!theme.Name}"/>
-											</apex:commandButton>
+											<apex:commandButton value="Update" onclick="showUpdateTopicInfo('{!theme.Id}'); return false;" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Update chosen topic"/>
+											<apex:commandButton value="Delete" onclick="showDeleteTopicInfo('{!theme.Id}'); return false;" styleClass="btn btn-link" style="padding: 0px !important; margin: 0px 20px !important; line-height: normal !important;" title="Delete chosen topic"/>
 										</apex:outputPanel>
 									</apex:column>
 								</apex:pageBlockTable>
@@ -159,11 +258,11 @@
 			<apex:outputpanel >
 				<apex:actionstatus id="refreshStatus">
 					<apex:facet name="start">
-    					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%; top: 135px;">
-        					<div class="waitingHolder" style="top: 25%;">
-            					<img class="waitingImage" src="{!$Resource.spinner}"/>
-        					</div>
-    					</div>
+						<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%; top: 135px;">
+							<div class="waitingHolder" style="top: 25%;">
+								<img class="waitingImage" src="{!$Resource.spinner}"/>
+							</div>
+						</div>
 					</apex:facet>
 				</apex:actionstatus>
 			</apex:outputpanel>
@@ -171,58 +270,231 @@
 			<apex:outputpanel >
 				<apex:actionstatus id="refreshWholeStatus">
 					<apex:facet name="start">
-    					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%;">
-        					<div class="waitingHolder" style="top: 25%;">
-            					<img class="waitingImage" src="{!$Resource.spinner}"/>
-        					</div>
-    					</div>
+						<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%;">
+							<div class="waitingHolder" style="top: 25%;">
+								<img class="waitingImage" src="{!$Resource.spinner}"/>
+							</div>
+						</div>
 					</apex:facet>
 				</apex:actionstatus>
 			</apex:outputpanel>
 		</apex:pageBlock>
 	</apex:form>
 
-	<script>
-		function expandAllInsets() {
-			var expandingCss = '.subjectRepeat > .apexp > div > .pbBody > div > .pbSubsection {max-height: 600px !important;}';
+	<apex:form >
+		<apex:pageBlock >
+			<apex:outputpanel id="deleteSubjectDialog" style="display: none;">
+				<apex:outputpanel id="innerDeleteSubjectDialog">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
 
-			var deletingCss = document.querySelector("style[id*='expandSections']");
-			if (deletingCss) {
-				deletingCss.parentNode.removeChild(deletingCss);
-			}
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
+						<div class="waitingHolder" style="top: 20%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+							<div style="margin-bottom: 20px; margin-left: 65px;">
+								<h3 style="margin: 0 auto;">
+									Are you sure?
+									<apex:commandButton value="Cancel" onclick="closeDeleteSubjectInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+								</h3>
+							</div>
+							<apex:outputPanel layout="none">
+								<div style="white-space: initial; margin-bottom: 20px;">
+									<h4>
+										Delete subject "{!deletingSubject.Name}"
+									</h4>
+								</div>
+							</apex:outputPanel>
+							<div>
+								<apex:commandButton value="Delete" onclick="deleteChosenSubject(); return false;" styleClass="btn btn-primary" style="margin: 0 auto;"/>
+							</div>
+						</div>
+					</div>
+				</apex:outputpanel>
+			</apex:outputpanel>
+		</apex:pageBlock>
+	</apex:form>
 
-			style = document.createElement('style');
-			style.id = 'expandSections';
-			if ( ! style.styleSheet) {
-				style.appendChild(document.createTextNode(expandingCss));
-			}
-			else {
-				style.styleSheet.cssText = expandingCss;
-			}
-		    document.querySelector("head").appendChild(style);
+	<apex:form >
+		<apex:pageBlock >
+			<apex:outputpanel id="deleteTopicDialog" style="display: none;">
+				<apex:outputpanel id="innerDeleteTopicDialog">
+					<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+						<script>
+							createMessage('{!JSENCODE(notificMap.currentMessage)}');
+						</script>
+					</apex:outputPanel>
 
-			var insetButton = document.querySelector("input[id*='expandingButton'");
-			insetButton.value = "Collapse All";
-			insetButton.blur();
-			insetButton.onclick = function() {
-				hideAllInsets();
-				return false;
-			}
-		}
-		function hideAllInsets() {
-			var deletingCss = document.querySelector("style[id*='expandSections']");
-			if (deletingCss) {
-				deletingCss.parentNode.removeChild(deletingCss);
-			}
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
+						<div class="waitingHolder" style="top: 20%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+							<div style="margin-bottom: 20px; margin-left: 65px;">
+								<h3 style="margin: 0 auto;">
+									Are you sure?
+									<apex:commandButton value="Cancel" onclick="closeDeleteTopicInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+								</h3>
+							</div>
+							<apex:outputPanel layout="none">
+								<div style="white-space: initial; margin-bottom: 20px;">
+									<h4>
+										Delete topic "{!deletingTopic.Name}"
+									</h4>
+								</div>
+							</apex:outputPanel>
+							<div>
+								<apex:commandButton value="Delete" onclick="deleteChosenTopic(); return false;" styleClass="btn btn-primary" style="margin: 0 auto;"/>
+							</div>
+						</div>
+					</div>
+				</apex:outputpanel>
+			</apex:outputpanel>
+		</apex:pageBlock>
 
-			var insetButton = document.querySelector("input[id*='expandingButton'");
-			insetButton.value = "Expand All";
-			insetButton.blur();
-			insetButton.onclick = function() {
-				expandAllInsets();
-				return false;
-			}
-		}
-	</script>
+		<apex:outputpanel >
+			<apex:actionstatus id="refreshDeleteStatus">
+				<apex:facet name="start">
+					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%;">
+						<div class="waitingHolder" style="top: 25%;">
+							<img class="waitingImage" src="{!$Resource.spinner}"/>
+						</div>
+					</div>
+				</apex:facet>
+			</apex:actionstatus>
+		</apex:outputpanel>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="prepareSubjectToDelete" action="{!prepareSubjectToDelete}" reRender="innerDeleteSubjectDialog" status="refreshDeleteStatus">
+			<apex:param name="deleteSubjectId" value=""/>
+		</apex:actionFunction>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="deleteSubject" action="{!deleteSubject}" reRender="subjectSection, innerDeleteSubjectDialog" status="refreshDeleteStatus"/>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="prepareTopicToDelete" action="{!prepareTopicToDelete}" reRender="innerDeleteTopicDialog" status="refreshDeleteStatus">
+			<apex:param name="deleteTopicId" value=""/>
+		</apex:actionFunction>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="deleteTopic" action="{!deleteTopic}" reRender="subjectSection, subjectInput" status="refreshDeleteStatus"/>
+	</apex:form>
+
+	<apex:form >
+		<apex:pageBlock >
+			<apex:outputpanel id="updateSubjectDialog" style="display: none;">
+				<apex:outputpanel id="innerUpdateSubjectDialog">
+					<apex:outputPanel rendered="{!IF(updatingSubject.Id == null, true, false)}">
+						<script>
+							closeUpdateSubjectInfo();
+						</script>
+					</apex:outputPanel>
+
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
+						<div class="waitingHolder" style="top: 20%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+							<div style="margin-bottom: 20px; margin-left: 65px;">
+								<h3 style="margin: 0 auto;">
+									Updating subject
+									<apex:commandButton value="Cancel" onclick="closeUpdateSubjectInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+									<apex:commandButton value="Update" onclick="updateChosenSubject(); return false;" styleClass="btn btn-primary" style="float: right;"/>
+								</h3>
+							</div>
+							<apex:outputPanel layout="none">
+								<div style="white-space: initial; margin-bottom: 20px;">
+									<h4>
+										<apex:inputText id="subjectUpdateInput" value="{!tmpSubject}" html-placeholder="Please, input subject name..." style="margin: 15px 12px 12px 12px !important;" html-autocomplete="off"/>
+									</h4>
+								</div>
+							</apex:outputPanel>
+						</div>
+					</div>
+				</apex:outputpanel>
+			</apex:outputpanel>
+		</apex:pageBlock>
+
+		<apex:outputpanel >
+			<apex:actionstatus id="refreshUpdateSubjectStatus">
+				<apex:facet name="start">
+					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%;">
+						<div class="waitingHolder" style="top: 25%;">
+							<img class="waitingImage" src="{!$Resource.spinner}"/>
+						</div>
+					</div>
+				</apex:facet>
+			</apex:actionstatus>
+		</apex:outputpanel>
+
+		<apex:actionFunction name="updateSubject" action="{!updateSubject}" reRender="subjectSection, innerUpdateSubjectDialog" status="refreshUpdateSubjectStatus"/>
+	</apex:form>
+
+	<apex:form >
+		<apex:pageBlock >
+			<apex:outputpanel id="updateTopicDialog" style="display: none;">
+				<apex:outputpanel id="innerUpdateTopicDialog">
+					<apex:outputPanel rendered="{!IF(updatingTopic.Id == null, true, false)}">
+						<script>
+							closeUpdateTopicInfo();
+						</script>
+					</apex:outputPanel>
+					<apex:outputPanel rendered="{!IF(updatingTopic.Id == null, true, false)}">
+						<script>
+							closeUpdateSubjectInfo();
+						</script>
+					</apex:outputPanel>
+
+					<div class="waitingSearchDiv" style="background-color: #fbfbfb;	height: 100%; background: rgba(0, 0, 0, 0.6); width: 100%; overflow:auto">
+						<div class="waitingHolder" style="top: 20%; background: rgba(255, 0, 0, 1); background-color: #fff; border-radius: 6px; padding: 18px;">
+							<div style="margin-bottom: 20px; margin-left: 65px;">
+								<h3 style="margin: 0 auto;">
+									Updating topic
+									<apex:commandButton value="Cancel" onclick="closeUpdateTopicInfo(); return false;" styleClass="btn btn-link" style="float: right;" title="Close this section"/>
+									<apex:commandButton value="Update" onclick="updateChosenTopic(); return false;" styleClass="btn btn-primary" style="float: right;"/>
+								</h3>
+							</div>
+							<apex:outputPanel layout="none">
+								<div style="white-space: initial; margin-bottom: 20px;">
+									<h4>
+										<apex:inputText id="topicUpdateInput" value="{!tmpTheme}" html-placeholder="Please, input topic name..." style="margin: 15px 12px 12px 12px !important;" html-autocomplete="off"/>
+									</h4>
+								</div>
+							</apex:outputPanel>
+						</div>
+					</div>
+				</apex:outputpanel>
+			</apex:outputpanel>
+		</apex:pageBlock>
+
+		<apex:outputpanel >
+			<apex:actionstatus id="refreshUpdateTopicStatus">
+				<apex:facet name="start">
+					<div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;	height: 100%; opacity: 0.3; width: 100%;">
+						<div class="waitingHolder" style="top: 25%;">
+							<img class="waitingImage" src="{!$Resource.spinner}"/>
+						</div>
+					</div>
+				</apex:facet>
+			</apex:actionstatus>
+		</apex:outputpanel>
+
+		<apex:actionFunction name="prepareTopicToUpdate" action="{!prepareTopicToUpdate}" reRender="innerUpdateTopicDialog" status="refreshUpdateTopicStatus">
+			<apex:param name="updateTopicId" value=""/>
+		</apex:actionFunction>
+		<apex:actionFunction name="updateTopic" action="{!updateTopic}" reRender="subjectSection, innerUpdateTopicDialog" status="refreshUpdateTopicStatus"/>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="prepareSubjectToUpdate" action="{!prepareSubjectToUpdate}" reRender="innerUpdateSubjectDialog" status="refreshUpdateSubjectStatus">
+			<apex:param name="updateSubjectId" value=""/>
+		</apex:actionFunction>
+	</apex:form>
+
+	<apex:form>
+		<apex:actionFunction name="createFileOnDropbox" action="{!createFileOnDropbox}" reRender="innerUpdateSubjectDialog" status="refreshUpdateSubjectStatus">
+			<apex:param name="updateSubjectId" value=""/>
+		</apex:actionFunction>
+	</apex:form>
 
 </apex:page>

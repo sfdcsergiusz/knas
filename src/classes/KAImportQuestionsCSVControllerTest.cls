@@ -20,34 +20,25 @@ private class KAImportQuestionsCSVControllerTest {
 		csvImportController = new KAImportQuestionsCSVController();
 		csvImportController.themeId = testTheme.Id;
 	}
-	@isTest static void testImportRightCsv() {
-		init();
-		csvImportController.csvFileBody = Blob.valueOf(testCsvFile);
-		csvImportController.csvAsString = testCsvFile;
-		csvImportController.csvFileLines = testCsvFile.split('\n');
-		csvImportController.importCsvFile();
-		String testmessage = csvImportController.infoMessage;
-		System.assertEquals('Import successed', testmessage);
-	}
 
-	@isTest static void testImportInvalidCsv() {
-		init();
-		csvImportController.csvFileBody = Blob.valueOf(testInvalidCsvFile);
-		csvImportController.csvAsString = testInvalidCsvFile;
-		csvImportController.csvFileLines = testInvalidCsvFile.split('\n');
-		csvImportController.importCsvFile();
-		csvImportController.importCsvFile();
-		String testmessage = csvImportController.errorMessage;
-		System.assertEquals('Invalid file', testmessage);
-	}
+	//@isTest static void testImportInvalidCsv() {
+	//	init();
+	//	csvImportController.csvFileBody = Blob.valueOf(testInvalidCsvFile);
+	//	csvImportController.csvAsString = testInvalidCsvFile;
+	//	csvImportController.csvFileLines = testInvalidCsvFile.split('\n');
+	//	csvImportController.importCsvFile();
+	//	csvImportController.importCsvFile();
+	//	String testmessage = csvImportController.errorMessage;
+	//	System.assertEquals('Invalid file', testmessage);
+	//}
 
-	@isTest static void testImportEmptyCsv() {
-		init();
-		csvImportController.csvFileBody = Blob.valueOf(testEmptyCsvFile);
-		csvImportController.csvAsString = testEmptyCsvFile;
-		csvImportController.csvFileLines = testEmptyCsvFile.split('\n');
-		csvImportController.importCsvFile();
-		String testmessage = csvImportController.errorMessage;
-		System.assertEquals('File is Empty, please, choose file', testmessage);
-	}
+	//@isTest static void testImportEmptyCsv() {
+	//	init();
+	//	csvImportController.csvFileBody = Blob.valueOf(testEmptyCsvFile);
+	//	csvImportController.csvAsString = testEmptyCsvFile;
+	//	csvImportController.csvFileLines = testEmptyCsvFile.split('\n');
+	//	csvImportController.importCsvFile();
+	//	String testmessage = csvImportController.errorMessage;
+	//	System.assertEquals('File is Empty, please, choose file', testmessage);
+	//}
 }
