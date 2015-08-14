@@ -42,16 +42,6 @@
 			<img src="{!$Resource.upLink}" class="upNavigationImg"/>
 		</a>
 	</div>
-	<div style="width: 100%; margin: auto; position: fixed; top: 40%; text-align: center;">
-		<apex:outputPanel id="renderedScript">
-			<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
-				<script>
-					createMessage('{!JSENCODE(notificMap.currentMessage)}');
-					actionDbImport();
-				</script>
-			</apex:outputPanel>
-		</apex:outputPanel>
-	</div>
 	<apex:form >
 		<apex:pageBlock >
 			<apex:pageBlockSection columns="1">
@@ -70,4 +60,14 @@
 			</apex:pageBlockTable>
 		</apex:pageBlock>
 	</apex:form>
+	<div style="width: 100%; margin: auto; position: fixed; top: 40%; text-align: center;">
+		<apex:outputPanel id="renderedScript">
+			<apex:outputPanel rendered="{!IF(notificMap.isEmpty, false, true)}">
+				<script>
+					createMessage('{!JSENCODE(notificMap.currentMessage)}');
+					actionDbImport();
+				</script>
+			</apex:outputPanel>
+		</apex:outputPanel>
+	</div>
 </apex:page>

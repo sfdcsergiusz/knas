@@ -19,9 +19,14 @@ private class KAAdminHomeControllerTest {
 		Employee_Task__c testEmploTask = new Employee_Task__c(Employee__c = testEmployee.Id, Task__c = testTask.Id);
 		insert testEmploTask;
 
+		DropBox__c dropToken = new DropBox__c(Name = 'Token');
+		insert dropToken;
+
 		PageReference currPage = Page.KAAdminUserHome;
 		currPage.getParameters().put('chosenEmployee', testEmployee.Id);
 		currPage.getParameters().put('chosenTest', testTest.Id);
+		currPage.getParameters().put('deleteTaskId', testTask.Id);
+		currPage.getParameters().put('updateTaskId', testEmploTask.Id);
 		Test.setCurrentPage(currPage);
 
 		adminController = new KAAdminHomeController();
@@ -146,6 +151,25 @@ private class KAAdminHomeControllerTest {
 		adminController.createNewTask();
 
 		System.assertNotEquals(adminController.notificMap.notificationMap.get('danger'), null);
+	}
+
+	@isTest static void testDeletingTask_Success() {
+		init();
+
+		adminController.prepareTaskToDelete();
+		adminController.deleteTask();
+
+		System.assertNotEquals(adminController.notificMap.notificationMap.get('success'), null);
+	}
+
+	@isTest static void testUpdatingTask_Success() {
+		init();
+
+		adminController.prepareTaskToUpdate();
+		adminController.preCreatedTask.AssignTime__c = Datetime.now() + 1000;
+		adminController.updateTask();
+
+		System.assertNotEquals(adminController.notificMap.notificationMap.get('success'), null);
 	}
 
 }

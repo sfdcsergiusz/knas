@@ -171,7 +171,9 @@ public with sharing class KACommonSubjectsController {
 		}
 
 		notificMap.addSuccess('Subject was successfully deleted.');
-		delete deletingSubject;
+		if (deletingSubject.Id != null) {
+			delete deletingSubject;
+		}
 
 		if (tmpSubject != '') {
 			typeSubject();
