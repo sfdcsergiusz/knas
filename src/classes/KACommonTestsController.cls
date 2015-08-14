@@ -33,6 +33,8 @@ public with sharing class KACommonTestsController {
 			updTopics[i].Questions_Number__c = KADropBoxUtil.getQuestionsByTopic(updTopics[i].Id).size();
 		}
 		update updTopics;
+
+		selectAllSubjects();
 	}
 
 	public KACommonTestsController() {

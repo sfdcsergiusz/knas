@@ -7,7 +7,7 @@ private class KATestPassingControllerTest {
 		Subject__c testSubject = new Subject__c(Name = 'testSubject');
 		insert testSubject;
 
-		Test__c testTest = new Test__c(Duration__c = 120, Subject__c = testSubject.Id);
+		Test__c testTest = new Test__c(Duration__c = 120, Subject__c = testSubject.Id, Difficulty__c = 'Junior');
 		insert testTest;
 
 		Employee__c testEmployee = new Employee__c(Name = 'testName', First_Name__c = 'testFirstName');
@@ -44,6 +44,9 @@ private class KATestPassingControllerTest {
 		insert testFirstAnswer2;
 		insert testSecondAnswer2;
 
+		DropBox__c dropToken = new DropBox__c(Name = 'Token');
+		insert dropToken;
+
 		PageReference currPage = Page.KATestPassing;
 		currPage.getParameters().put('test', testTest.Id);
 		currPage.getParameters().put('questOnEdit', '1');
@@ -65,13 +68,20 @@ private class KATestPassingControllerTest {
 
 	@isTest static void testStartTest_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
 
 		passingController.startTest();
+
+		Test.stopTest();
+
 		System.assertNotEquals(passingController.questions.size(), 0);
 	}
 
 	@isTest static void testConstructionWithoutTest_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
 		List<Test__c> testsListToDelete = [
 			SELECT Id
 			FROM Test__c
@@ -79,69 +89,110 @@ private class KATestPassingControllerTest {
 		delete testsListToDelete;
 		passingController = new KATestPassingController();
 
+		Test.startTest();
+
 		passingController.startTest();
+
+		Test.stopTest();
+
 		System.assertEquals(passingController.totalQuestionsNum, null);
 	}
 
 	@isTest static void testStartTestWithoutUser_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
 		List<Employee__c> usersListToDelete = [
 			SELECT Id
 			FROM Employee__c
 		];
 		delete usersListToDelete;
 
+		Test.startTest();
+
 		passingController.startTest();
+
+		Test.stopTest();
+
 		System.assertEquals(passingController.totalQuestionsNum, null);
 	}
 
 	@isTest static void testStartTestWithoutTask_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
 		List<Task__c> tasksListToDelete = [
 			SELECT Id
 			FROM Task__c
 		];
 		delete tasksListToDelete;
 
+		Test.startTest();
+
 		passingController.startTest();
+
+		Test.stopTest();
+
 		System.assertEquals(passingController.totalQuestionsNum, null);
 	}
 
 	@isTest static void testSingleQuestionTransfer_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
 
 		passingController.startTest();
 
 		passingController.goToNext();
 		passingController.goToPrev();
 		passingController.goToFinish();
+
+		Test.stopTest();
+
 		System.assertEquals(passingController.isFinishBlockEnabled, true);
 	}
 
 	@isTest static void testQuestionAnswersEdit_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
 
 		passingController.startTest();
 		passingController.goToQuestions();
+
+		Test.stopTest();
+
 		System.assertNotEquals(passingController.currentQuestion, null);
 	}
 
 	@isTest static void testGettingSelectOptions_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
 
 		passingController.startTest();
 		passingController.goToQuestions();
 		passingController.getVariantOptions();
+
+		Test.stopTest();
+
 		System.assertNotEquals(passingController.getVariantOptions().size(), 0);
 	}
 
 	@isTest static void testFinishTest_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
 
 		passingController.startTest();
 		passingController.goToNext();
 		passingController.goToPrev();
 		passingController.goToFinish();
+
+		Test.stopTest();
+
 		System.assertEquals(passingController.finishTest().getRedirect(), true);
 	}
 
