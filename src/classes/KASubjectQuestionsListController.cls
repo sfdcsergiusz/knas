@@ -200,9 +200,12 @@ public with sharing class KASubjectQuestionsListController {
 			}
 		}
 
-		if (checkThemeExistenceList.size() == 0 || preCreatedQuestion.Statement__c == '' || hasAnswersEmpties || ( ! hasAnswersRights) ||
+		if (preCreatedQuestion == null || checkThemeExistenceList.size() == 0 || preCreatedQuestion.Statement__c == '' || hasAnswersEmpties || ( ! hasAnswersRights) ||
 			preCreatedQuestion.Level__c == null) {
-			if (checkThemeExistenceList.size() == 0) {
+			if (preCreatedQuestion == null) {
+				notificMap.addInfo('Please, wait a second for sending creation request.');
+			}
+			else if (checkThemeExistenceList.size() == 0) {
 				notificMap.addDanger('Please, check question\'s subject and topic');
 			}
 			else if (preCreatedQuestion.Statement__c == '' || preCreatedQuestion.Statement__c == null) {
@@ -233,7 +236,7 @@ public with sharing class KASubjectQuestionsListController {
 
 			notificMap.addSuccess('Question was created.');
 
-			preCreatedQuestion = new Question__c();
+			preCreatedQuestion = null;
 			preCreatedAnswers.clear();
 			for (Integer i = 0; i < 3; i++) {
 				preCreatedAnswers.add(new Answer__c());
@@ -243,19 +246,23 @@ public with sharing class KASubjectQuestionsListController {
 	}
 
 	public void createQuestionOnDropbox() {
-		List<Question__c> dropBoxQuestion = [
-			SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id,
-			(
-				SELECT Variant__c, Right__c
-				FROM Answers__r
-			)
-			FROM Question__c
-			WHERE Id = :preCreatedQuestionDropbox.Id
-			LIMIT 1
-		];
-		if (dropBoxQuestion.size() > 0) {
-			KADropBoxUtil.addQuestionToTopic(topicDropboxId, dropBoxQuestion.get(0));
-			refreshQuestions(true);
+		if (preCreatedQuestion == null) {
+			preCreatedQuestion = new Question__c();
+
+			List<Question__c> dropBoxQuestion = [
+				SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id,
+				(
+					SELECT Variant__c, Right__c
+					FROM Answers__r
+				)
+				FROM Question__c
+				WHERE Id = :preCreatedQuestionDropbox.Id
+				LIMIT 1
+			];
+			if (dropBoxQuestion.size() > 0) {
+				KADropBoxUtil.addQuestionToTopic(topicDropboxId, dropBoxQuestion.get(0));
+				refreshQuestions(true);
+			}
 		}
 	}
 

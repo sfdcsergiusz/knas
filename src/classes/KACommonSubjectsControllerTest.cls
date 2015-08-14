@@ -32,9 +32,16 @@ private class KACommonSubjectsControllerTest {
 		insert testFirstAnswer2;
 		insert testSecondAnswer2;
 
+		DropBox__c dropToken = new DropBox__c(Name = 'Token');
+		insert dropToken;
+
 		PageReference currPage = Page.KAAdminUserHome;
 		currPage.getParameters().put('subjectName', testSubject.Name);
 		currPage.getParameters().put('deleteParam', 'somethingToDelete');
+		currPage.getParameters().put('deleteTopicId', testTheme.Id);
+		currPage.getParameters().put('deleteSubjectId', testSubject.Id);
+		currPage.getParameters().put('updateTopicId', testTheme.Id);
+		currPage.getParameters().put('updateSubjectId', testSubject.Id);
 		Test.setCurrentPage(currPage);
 
 		subjectsController = new KACommonSubjectsController();
@@ -62,6 +69,7 @@ private class KACommonSubjectsControllerTest {
 		init();
 
 		subjectsController.tmpSubject = 'testSubject';
+		subjectsController.typeSubject();
 		subjectsController.createSubject();
 		System.assertEquals(subjectsController.subjects.size() == 1, true);
 	}
@@ -70,6 +78,7 @@ private class KACommonSubjectsControllerTest {
 		init();
 
 		subjectsController.tmpSubject = '';
+		subjectsController.typeSubject();
 		subjectsController.createSubject();
 		System.assertEquals(subjectsController.subjects.size() == 1, true);
 	}
@@ -109,47 +118,25 @@ private class KACommonSubjectsControllerTest {
 
 	@isTest static void testDeleteSubject_Success() {
 		init();
+		subjectsController.typeSubject();
 
 		insert new Subject__c(Name = 'somethingToDelete');
 
 		subjectsController.deleteSubject();
-		System.assertEquals(subjectsController.subjects.size() == 1, true);
+		System.assertEquals(subjectsController.subjects.size() == 1, false);
 	}
 
 	@isTest static void testDeleteSubjectAnotherCondition_Success() {
 		init();
+		subjectsController.typeSubject();
 
 		insert new Subject__c(Name = 'somethingToDelete');
 
 		subjectsController.tmpSubject = 'newTestSubject';
+		subjectsController.prepareSubjectToDelete();
 		subjectsController.deleteSubject();
 		System.assertEquals(subjectsController.subjects.size() == 0, true);
 	}
-
-	//@isTest static void testDeleteTheme_Success() {
-	//	init();
-
-	//	Subject__c subjectForTheme = new Subject__c(Name = 'subjectForTheme');
-	//	insert subjectForTheme;
-
-	//	insert new Theme__c(Name = 'somethingToDelete', Subject__c = subjectForTheme.Id);
-
-	//	subjectsController.deleteTheme();
-	//	System.assertEquals(subjectsController.subjects.size() == 2, true);
-	//}
-
-	//@isTest static void testDeleteThemeAnotherCondition_Success() {
-	//	init();
-
-	//	Subject__c subjectForTheme = new Subject__c(Name = 'subjectForTheme');
-	//	insert subjectForTheme;
-
-	//	insert new Theme__c(Name = 'somethingToDelete', Subject__c = subjectForTheme.Id);
-
-	//	subjectsController.tmpSubject = 'newTestSubject';
-	//	subjectsController.deleteTheme();
-	//	System.assertEquals(subjectsController.subjects.size() == 0, true);
-	//}
 
 	@isTest static void testRedirectToThemeList_Success() {
 		init();
@@ -174,6 +161,100 @@ private class KACommonSubjectsControllerTest {
 
 		subjectsController.resetSearch();
 		System.assertEquals(subjectsController.subjects.size() == 1, true);
+	}
+
+	//@isTest static void testResetSearch_Success() {
+	//	init();
+
+	//	subjectsController.resetSearch();
+	//	System.assertEquals(subjectsController.subjects.size() == 1, true);
+	//}
+
+	@isTest static void testDeletingTopic_Success() {
+		init();
+
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		subjectsController.prepareTopicToDelete();
+		subjectsController.deleteTopic();
+
+		Test.stopTest();
+
+		System.assertEquals(subjectsController.subjects.size() == 1, true);
+	}
+
+	@isTest static void testUpdatingTopic_Failure() {
+		init();
+
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		subjectsController.prepareTopicToUpdate();
+		subjectsController.updateTopic();
+		subjectsController.resetSearch();
+
+		Test.stopTest();
+
+		System.assertEquals(subjectsController.subjects.size() == 1, true);
+	}
+
+	@isTest static void testUpdatingSubject_Failure() {
+		init();
+
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		subjectsController.prepareSubjectToUpdate();
+		subjectsController.updateSubject();
+		subjectsController.resetSearch();
+
+		Test.stopTest();
+
+		System.assertEquals(subjectsController.subjects.size() == 1, true);
+	}
+
+	@isTest static void testUpdatingTopic_Success() {
+		init();
+
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		subjectsController.prepareTopicToUpdate();
+		subjectsController.tmpTheme = 'testUpdate';
+		subjectsController.updateTopic();
+		subjectsController.resetSearch();
+
+		Test.stopTest();
+
+		System.assertEquals(subjectsController.subjects.size() == 1, true);
+	}
+
+	@isTest static void testUpdatingSubject_Success() {
+		init();
+
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		subjectsController.prepareSubjectToUpdate();
+		subjectsController.tmpSubject = 'testUpdate';
+		subjectsController.updateSubject();
+		subjectsController.resetSearch();
+
+		Test.stopTest();
+
+		System.assertEquals(subjectsController.subjects.size() == 1, true);
+	}
+
+	@isTest static void testBackLinkInit_Success() {
+		init();
+
+		System.assert(subjectsController.backLink.contains('Admin'));
 	}
 
 }

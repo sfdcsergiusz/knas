@@ -64,6 +64,17 @@ public with sharing class KATestPassingController {
 				totalQuestionsNum = Integer.valueOf(correspThemes.get(0).Questions_Captured__c);
 
 				List<Question__c> topicQuestions = KADropBoxUtil.getQuestionsByTopic(correspThemes.get(0).Theme__r.Id);
+				if ( ! topicQuestions.isEmpty()) {
+					topicQuestions = [
+						SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id, (
+							SELECT Variant__c, Right__c
+							FROM Answers__r
+						)
+						FROM Question__c
+						WHERE Theme__c = :correspThemes.get(0).Theme__r.Id
+					];
+				}
+
 				List<Question__c> acceptableQuestions = new List<Question__c>();
 				for (Integer i = 0; i < topicQuestions.size(); i++) {
 					if (topicQuestions.get(i).Level__c == currentTest.Difficulty__c) {

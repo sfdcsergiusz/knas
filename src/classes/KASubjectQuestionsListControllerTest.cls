@@ -44,6 +44,9 @@ private class KASubjectQuestionsListControllerTest {
 		insert testFirstAnswer2;
 		insert testSecondAnswer2;
 
+		DropBox__c dropToken = new DropBox__c(Name = 'Token');
+		insert dropToken;
+
 		PageReference currPage = Page.KATestPassing;
 		currPage.getParameters().put('themeId', testTheme.Id);
 		currPage.getParameters().put('subjectId', testSubject.Id);
@@ -51,147 +54,289 @@ private class KASubjectQuestionsListControllerTest {
 		currPage.getParameters().put('chosenSubject', testSubject.Id);
 		currPage.getParameters().put('answerIndex', '0');
 		currPage.getParameters().put('chosenQuestion', testQuestion.Id);
+		currPage.getParameters().put('deleteQuestionId', testQuestion.Id);
+		currPage.getParameters().put('updateQuestionId', testQuestion.Id);
 		Test.setCurrentPage(currPage);
-
-		questListController = new KASubjectQuestionsListController();
 	}
 
 	@isTest static void testDeletingQuestion() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
 
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
+
+		questListController.prepareQuestionToDelete();
 		questListController.deleteQuestion();
-		System.assertEquals(questListController.questions.size() == 1, true);
+
+		Test.stopTest();
+
+		System.assertNotEquals(questListController.notificMap.notificationMap.get('info'), null);
+	}
+
+	@isTest static void testUpdatingQuestion() {
+		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
+
+		questListController.prepareQuestionToUpdate();
+		questListController.tmpSubject = [
+			SELECT Name
+			FROM Subject__c
+			LIMIT 1
+		].get(0).Name;
+		questListController.tmpTheme = [
+			SELECT Name
+			FROM Theme__c
+			LIMIT 1
+		].get(0).Name;
+		questListController.preCreatedQuestion.Statement__c = 'testStatement';
+		questListController.preCreatedQuestion.Level__c = 'Junior';
+		questListController.preCreatedAnswers = [
+			SELECT Variant__c, Right__c
+			FROM Answer__c
+		];
+		questListController.updateQuestion();
+
+		Test.stopTest();
+
+		System.assertNotEquals(questListController.notificMap.notificationMap.get('success'), null);
 	}
 
 	@isTest static void testTypingSubject_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.typeSubject();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.subjects.size(), 1);
 	}
 
 	@isTest static void testTypingTheme_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.typeTheme();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.themes.size(), 1);
 	}
 
 	@isTest static void testChoosingSubject_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.chooseSubject();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.subjects.size(), 0);
 	}
 
 	@isTest static void testChoosingTheme_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.chooseTheme();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.themes.size(), 0);
 	}
 
-	//@isTest static void testRemoteQuestionUpdate_Success() {
-	//	init();
-
-	//	KASubjectQuestionsListController.tmpJSON = new JSON();
-	//	System.assertEquals(KASubjectQuestionsListController.startUpdateQuestion('id'), null);
-	//}
-
 	@isTest static void testAddEmptyAnswer_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.addAnswer();
+
+		Test.stopTest();
+
 		System.assertNotEquals(questListController.preCreatedAnswers.size() == 0, true);
 	}
 
 	@isTest static void testReduceAnswer_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.reduceAnswer();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.preCreatedAnswers.size() == 2, true);
 	}
 
 	@isTest static void testRefreshingWithoutQuestions_Success() {
 		init();
-
 		Subject__c testSubjectForId = new Subject__c(Name = 'testSubjectForId');
 		insert testSubjectForId;
 
 		Theme__c testThemeForId = new Theme__c(Name = 'testThemeForId', Subject__c = testSubjectForId.Id);
 		insert testThemeForId;
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.themeId = testThemeForId.Id;
-		questListController.refreshQuestions();
+		questListController.refreshQuestions(false);
+
+		Test.stopTest();
+
 		System.assertNotEquals(questListController.subjectId, null);
 	}
 
 	@isTest static void testRefreshingWithoutTheme_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.themeId = null;
-		questListController.refreshQuestions();
+		questListController.refreshQuestions(false);
+
+		Test.stopTest();
+
 		System.assertNotEquals(questListController.subjectId, null);
 	}
 
 	@isTest static void testCreatingQuestion_Success() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.preCreatedQuestion = new Question__c(Statement__c = 'testStatement', Level__c = 'Junior');
 		questListController.preCreatedAnswers.clear();
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = 'testVariant', Right__c = true));
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = 'testVariant', Right__c = false));
 		questListController.createQuestion();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.notificMap.notificationMap.keyset().size() == 1, true);
 	}
 
 	@isTest static void testCreatingQuestion_EmptyAnswerFailure() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.preCreatedQuestion = new Question__c(Statement__c = 'testStatement', Level__c = 'Junior');
 		questListController.preCreatedAnswers.clear();
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = 'testVariant', Right__c = true));
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = '', Right__c = false));
 		questListController.createQuestion();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.notificMap.notificationMap.keyset().size() == 1, true);
 	}
 
 	@isTest static void testCreatingQuestion_WrongAnswerFailure() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.preCreatedQuestion = new Question__c(Statement__c = 'testStatement', Level__c = 'Junior');
 		questListController.preCreatedAnswers.clear();
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = 'testVariant', Right__c = false));
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = 'testVariant', Right__c = false));
 		questListController.createQuestion();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.notificMap.notificationMap.keyset().size() == 1, true);
 	}
 
 
 	@isTest static void testCreatingQuestion_QuestionStatementFailure() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.preCreatedQuestion = new Question__c(Statement__c = null, Level__c = 'Junior');
 		questListController.preCreatedAnswers.clear();
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = 'testVariant', Right__c = true));
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = '', Right__c = false));
 		questListController.createQuestion();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.notificMap.notificationMap.keyset().size() == 1, true);
 	}
 
 	@isTest static void testCreatingQuestion_QuestionLevelFailure() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.preCreatedQuestion = new Question__c(Statement__c = 'testStatement', Level__c = null);
 		questListController.preCreatedAnswers.clear();
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = 'testVariant', Right__c = true));
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = 'testVariant', Right__c = false));
 		questListController.createQuestion();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.notificMap.notificationMap.keyset().size() == 1, true);
 	}
 
 	@isTest static void testCreatingQuestion_ThemeExistenceFailure() {
 		init();
+		Test.setMock(HttpCalloutMock.class, new KADropBoxServiceMock());
+
+		Test.startTest();
+
+		questListController = new KASubjectQuestionsListController();
 
 		questListController.tmpTheme = 'testFailure';
 		questListController.tmpSubject = 'testFailure';
@@ -200,6 +345,9 @@ private class KASubjectQuestionsListControllerTest {
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = 'testVariant', Right__c = true));
 		questListController.preCreatedAnswers.add(new Answer__c(Variant__c = 'testVariant', Right__c = false));
 		questListController.createQuestion();
+
+		Test.stopTest();
+
 		System.assertEquals(questListController.notificMap.notificationMap.keyset().size() == 1, true);
 	}
 }
