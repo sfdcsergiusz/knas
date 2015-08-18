@@ -53,8 +53,13 @@ private class KANavigationBarControllerTest {
 
 	@isTest static void testOnLoadNotStartPage_Success() {
 		init();
+
+		Test.startTest();
+
 		PageReference currPage = Page.KACreateNewPassword;
 		Test.setCurrentPage(currPage);
+
+		Test.stopTest();
 
 		System.assertNotEquals(navigationController.onLoad(), null);
 	}
@@ -94,7 +99,11 @@ private class KANavigationBarControllerTest {
 		);
 		Test.setCurrentPage(currPage);
 
+		Test.startTest();
+
 		navigationController = new KANavigationBarController();
+
+		Test.stopTest();
 
 		System.assertEquals(navigationController.goHome().getUrl().toUpperCase().contains('ADMIN'), true);
 	}

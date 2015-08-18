@@ -12,7 +12,7 @@ public with sharing class KACreateNewPasswordController {
 					ApexPages.Severity.ERROR,
 					'You haven\'t access to this page.'
 				)
-			);				
+			);
 		}
 		else if (ApexPages.currentPage().getParameters().get('hashLink') != '') {
 			List<Employee__c> users = [
@@ -31,7 +31,7 @@ public with sharing class KACreateNewPasswordController {
 						ApexPages.Severity.ERROR,
 						'You haven\'t access to this page.'
 					)
-				);	
+				);
 			}
 		}
 		else {
@@ -40,14 +40,18 @@ public with sharing class KACreateNewPasswordController {
 					ApexPages.Severity.ERROR,
 					'You haven\'t access to this page.'
 				)
-			);	
+			);
 		}
 	}
 
-	public KACreateNewPasswordController() {
+	private void init() {
 		this.user = new Employee__c();
 		this.hash = ApexPages.currentPage().getParameters().get('hashLink');
 		this.isRightLink = false;
+	}
+
+	public KACreateNewPasswordController() {
+		init();
 	}
 
 
@@ -61,7 +65,7 @@ public with sharing class KACreateNewPasswordController {
 
 				PageReference updatingPage = new PageReference('/apex/KALogin');
 				updatingPage.setRedirect(true);
-				return updatingPage;				
+				return updatingPage;
 			}
 			else if (newPassword != confirmPassword) {
 				ApexPages.addMessage(
@@ -72,14 +76,14 @@ public with sharing class KACreateNewPasswordController {
 				);
 				return null;
 			}
-		}			
+		}
 		ApexPages.addMessage(
 			new ApexPages.Message(
 				ApexPages.Severity.ERROR,
 				'You haven\'t access to this page.'
 			)
 		);
-		return null;	
+		return null;
 	}
 
 }

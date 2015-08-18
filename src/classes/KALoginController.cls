@@ -9,10 +9,14 @@ public with sharing class KALoginController {
 
 	private PageReference currentPage;
 
-	public KALoginController() {
+	private void init() {
 		notificMap = new KANotificationMapWrapper();
 		currentPage = ApexPages.currentPage();
 		browserId = new Browser__c();
+	}
+
+	public KALoginController() {
+		init();
 	}
 
 	public void setIdentifier() {

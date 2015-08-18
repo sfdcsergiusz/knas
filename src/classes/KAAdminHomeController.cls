@@ -23,7 +23,7 @@ public with sharing class KAAdminHomeController {
 	public List<CronTrigger> scheduledTriggers { get; private set; }
 	public KANotificationMapWrapper notificMap { get; private set; }
 
-	public KAAdminHomeController() {
+	private void init() {
 		refreshRecentTasks();
 		refreshRecentResults();
 
@@ -39,9 +39,15 @@ public with sharing class KAAdminHomeController {
 		dropBoxToken = DropBox__c.getValues('Token').Token__c;
 	}
 
+	public KAAdminHomeController() {
+		init();
+	}
+
 	public void refreshRecentTasks() {
 		recentTasks = [
-			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c, Task__r.Status__c, Task__r.AssignTime__c, Task__r.CreatedDate, Task__r.Test__r.Name
+			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c,
+				Task__r.Status__c, Task__r.AssignTime__c,
+				Task__r.CreatedDate, Task__r.Test__r.Name
 			FROM Employee_Task__c
 			ORDER BY CreatedDate DESC
 			LIMIT 50000
@@ -50,7 +56,9 @@ public with sharing class KAAdminHomeController {
 
 	public void refreshRecentResults() {
 		recentResults = [
-			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c, CreatedDate, Result__c, Test__r.Subject__r.Name, Test__r.Name, Test__r.Difficulty__c, Test__r.Passing_Threshold__c
+			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c,
+				CreatedDate, Result__c, Test__r.Subject__r.Name,
+				Test__r.Name, Test__r.Difficulty__c, Test__r.Passing_Threshold__c
 			FROM Pass_History__c
 			ORDER BY CreatedDate DESC
 			LIMIT 50000
@@ -74,16 +82,16 @@ public with sharing class KAAdminHomeController {
 		if (suitableEmployees.size() == 0 || suitableTests.size() == 0 ||
 			preCreatedTask.AssignTime__c == null || preCreatedTask.AssignTime__c < Datetime.now()) {
 			if (suitableEmployees.size() == 0) {
-				notificMap.addDanger('User doesn\'t exist.');
+				notificMap.addDanger(Label.Msg_User_Not_Exist);
 			}
 			else if (suitableTests.size() == 0) {
-				notificMap.addDanger('Test doesn\'t exist.');
+				notificMap.addDanger(Label.Msg_Test_Not_Exist);
 			}
 			else if (preCreatedTask.AssignTime__c == null) {
-				notificMap.addDanger('Date shouldn\'t be empty.');
+				notificMap.addDanger(Label.Msg_Empty_Date);
 			}
 			else if (preCreatedTask.AssignTime__c < Datetime.now()) {
-				notificMap.addDanger('Date shouldn\'t be less than present time.');
+				notificMap.addDanger(Label.Msg_Little_Date);
 			}
 		}
 		else {
@@ -122,16 +130,13 @@ public with sharing class KAAdminHomeController {
 				preCreatedEmployeeTask.IsEmailQueue__c = true;
 				insert preCreatedEmployeeTask;
 
-				notificMap.addSuccess('Task was created for ' + String.valueOf(preCreatedTask.AssignTime__c) + '.');
+				notificMap.addSuccess(Label.Msg_Task_Created_For + String.valueOf(preCreatedTask.AssignTime__c) + '.');
 
 				refreshRecentTasks();
 				preCreatedTask = new Task__c();
 				preCreatedEmployeeTask = new Employee_Task__c();
 				tmpTest = null;
 				tmpEmployee = null;
-				//PageReference updatingPage = new PageReference('/apex/KAAdminUserHome');
-				//updatingPage.setRedirect(true);
-				//return updatingPage;
 			}
 		}
 		return null;
@@ -187,12 +192,12 @@ public with sharing class KAAdminHomeController {
 				System.abortJob(scheduledTrigger.Id);
 			}
 
-			notificMap.addInfo('Email distribution was switched off.');
+			notificMap.addInfo(Label.Msg_Email_Dist_Off);
 		}
 		else {
 			System.schedule('Daily emails', '0 0 9,10,11,12,13,14,15,16,17,18 * * ?', new KAEmailHandler());
 
-			notificMap.addInfo('Email distribution was switched on.');
+			notificMap.addInfo(Label.Msg_Email_Dist_On);
 		}
 		scheduledTriggers = [
 			SELECT Id
@@ -210,7 +215,7 @@ public with sharing class KAAdminHomeController {
 			dropToken.get(0).Token__c = dropBoxToken;
 			update dropToken.get(0);
 
-			notificMap.addSuccess('DropBox Token was changed.');
+			notificMap.addSuccess(Label.Msg_DropBox_Changed);
 		}
 	}
 
@@ -230,7 +235,7 @@ public with sharing class KAAdminHomeController {
 			}
 		}
 
-		notificMap.addSuccess('Task was successfully deleted.');
+		notificMap.addSuccess(Label.Msg_Task_Deleted);
 		delete deletingTask;
 	}
 
@@ -275,23 +280,23 @@ public with sharing class KAAdminHomeController {
 		if (suitableEmployees.size() == 0 || suitableTests.size() == 0 ||
 			preCreatedTask.AssignTime__c == null || preCreatedTask.AssignTime__c < Datetime.now()) {
 			if (suitableEmployees.size() == 0) {
-				notificMap.addDanger('User doesn\'t exist.');
+				notificMap.addDanger(Label.Msg_User_Not_Exist);
 			}
 			else if (suitableTests.size() == 0) {
-				notificMap.addDanger('Test doesn\'t exist.');
+				notificMap.addDanger(Label.Msg_Test_Not_Exist);
 			}
 			else if (preCreatedTask.AssignTime__c == null) {
-				notificMap.addDanger('Date shouldn\'t be empty.');
+				notificMap.addDanger(Label.Msg_Empty_Date);
 			}
 			else if (preCreatedTask.AssignTime__c < Datetime.now()) {
-				notificMap.addDanger('Date shouldn\'t be less than present time.');
+				notificMap.addDanger(Label.Msg_Little_Date);
 			}
 		}
 		else {
 			preCreatedTask.Test__c = suitableTests.get(0).Id;
 
 			try {
-				preCreatedTask.Status__c = 'Scheduled';
+				preCreatedTask.Status__c = KAPageConstants.TASK_STATUS_SCHEDULED;
 				update preCreatedTask;
 			}
 			catch (DmlException exc) {
@@ -309,7 +314,7 @@ public with sharing class KAAdminHomeController {
 				preCreatedEmployeeTask.Task__c = suitableTasks.get(0).Id;
 				preCreatedEmployeeTask.Employee__c = suitableEmployees.get(0).Id;
 				preCreatedEmployeeTask.IsEmailQueue__c = true;
-				notificMap.addSuccess('Task was successfully updated.');
+				notificMap.addSuccess(Label.Msg_Task_Updated);
 				update preCreatedEmployeeTask;
 
 				refreshRecentTasks();

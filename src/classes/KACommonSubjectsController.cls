@@ -33,13 +33,17 @@ public with sharing class KACommonSubjectsController {
 		selectAllSubjects();
 	}
 
-	public KACommonSubjectsController() {
+	private void init() {
 		tmpSubject = '';
 		notificMap = new KANotificationMapWrapper();
-		deletingSubject = new Subject__c(Name = 'Loading...');
-		deletingTopic = new Theme__c(Name = 'Loading...');
+		deletingSubject = new Subject__c(Name = Label.LoadingDtDtDt);
+		deletingTopic = new Theme__c(Name = Label.LoadingDtDtDt);
 		updatingSubject = new Subject__c();
 		updatingTopic = new Theme__c();
+	}
+
+	public KACommonSubjectsController() {
+		init();
 	}
 
 	public void typeSubject() {
@@ -67,17 +71,17 @@ public with sharing class KACommonSubjectsController {
 			];
 			if (checkSubjectsList.size() == 0) {
 				Subject__c preCreatedSubject = new Subject__c(Name = tmpSubject);
-				notificMap.addSuccess('Subject "' + preCreatedSubject.Name + '" was created.');
+				notificMap.addSuccess(Label.SubjectSpc + '"' + preCreatedSubject.Name + '"' + Label.Spc_Was_Created_Dt);
 				insert preCreatedSubject;
 
 				typeSubject();
 			}
 			else {
-				notificMap.addDanger('Subject already exists.');
+				notificMap.addDanger(Label.Msg_Subject_Exists);
 			}
 		}
 		else {
-			notificMap.addDanger('Subject name is empty.');
+			notificMap.addDanger(Label.Msg_Empty_Subject);
 		}
 	}
 
@@ -96,7 +100,7 @@ public with sharing class KACommonSubjectsController {
 			];
 			if (tmpSubjectObject.Themes__r.size() == 0) {
 				Theme__c preCreatedTheme = new Theme__c(Name = tmpTheme, Subject__c = tmpSubjectObject.Id);
-				notificMap.addSuccess('Topic "' + preCreatedTheme.Name + '" was created.');
+				notificMap.addSuccess(Label.Topic_Spc + '"' + preCreatedTheme.Name + '"' + Label.Spc_Was_Created_Dt);
 				insert preCreatedTheme;
 
 				topicDropboxId = preCreatedTheme.Id;
@@ -109,11 +113,11 @@ public with sharing class KACommonSubjectsController {
 				}
 			}
 			else {
-				notificMap.addDanger('Topic already exists.');
+				notificMap.addDanger(Label.Msg_Topic_Exists);
 			}
 		}
 		else {
-			notificMap.addDanger('Topic name is empty.');
+			notificMap.addDanger(Label.Msg_Empty_Topic);
 		}
 	}
 
@@ -124,7 +128,7 @@ public with sharing class KACommonSubjectsController {
 	public void resetSearch() {
 		tmpSubject = '';
 		selectAllSubjects();
-		notificMap.addInfo('All subjects are selected.');
+		notificMap.addInfo(Label.Msg_Reset_Search);
 	}
 
 	public PageReference goToThemeList() {
@@ -170,7 +174,7 @@ public with sharing class KACommonSubjectsController {
 			}
 		}
 
-		notificMap.addSuccess('Subject was successfully deleted.');
+		notificMap.addSuccess(Label.Msg_Subject_Deleted);
 		if (deletingSubject.Id != null) {
 			delete deletingSubject;
 		}
@@ -181,7 +185,7 @@ public with sharing class KACommonSubjectsController {
 		else {
 			selectAllSubjects();
 		}
-		deletingSubject = new Subject__c(Name = 'Loading...');
+		deletingSubject = new Subject__c(Name = Label.LoadingDtDtDt);
 
 		List<Test__c> checkingTests = [
 			SELECT Id, (
@@ -221,7 +225,7 @@ public with sharing class KACommonSubjectsController {
 
 		KADropBoxUtil.deleteTopic(deletingTopic.Id);
 
-		notificMap.addSuccess('Topic was successfully deleted.');
+		notificMap.addSuccess(Label.Msg_Topic_Deleted);
 		delete deletingTopic;
 
 		if (tmpSubject != '') {
@@ -230,7 +234,7 @@ public with sharing class KACommonSubjectsController {
 		else {
 			selectAllSubjects();
 		}
-		deletingTopic = new Theme__c(Name = 'Loading...');
+		deletingTopic = new Theme__c(Name = Label.LoadingDtDtDt);
 
 		List<Test__c> checkingTests = [
 			SELECT Id, (
@@ -274,7 +278,7 @@ public with sharing class KACommonSubjectsController {
 					filterValue = updatingSubject.Name.split('filtertrue')[0];
 				}
 				updatingSubject.Name = tmpSubject;
-				notificMap.addSuccess('Subject "' + updatingSubject.Name + '" was updated.');
+				notificMap.addSuccess(Label.SubjectSpc + '"' + updatingSubject.Name + '"' + Label.Spc_Was_Updated_Dt);
 				update updatingSubject;
 
 				updatingSubject = new Subject__c();
@@ -288,11 +292,11 @@ public with sharing class KACommonSubjectsController {
 				tmpSubject = '';
 			}
 			else {
-				notificMap.addDanger('Subject already exists.');
+				notificMap.addDanger(Label.Msg_Subject_Exists);
 			}
 		}
 		else {
-			notificMap.addDanger('Subject name is empty.');
+			notificMap.addDanger(Label.Msg_Empty_Subject);
 		}
 	}
 
@@ -334,11 +338,11 @@ public with sharing class KACommonSubjectsController {
 				}
 			}
 			else {
-				notificMap.addDanger('Topic already exists.');
+				notificMap.addDanger(Label.Msg_Topic_Exists);
 			}
 		}
 		else {
-			notificMap.addDanger('Topic name is empty.');
+			notificMap.addDanger(Label.Msg_Empty_Topic);
 		}
 	}
 

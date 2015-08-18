@@ -42,7 +42,12 @@ private class KARegularHomeControllerTest {
 	@isTest static void testLaunchingTest_Success() {
 		init();
 
+		Test.startTest();
+
 		regularController.launchedTestId = 'success';
+
+		Test.stopTest();
+
 		System.assertNotEquals(regularController.launchTest(), null);
 	}
 

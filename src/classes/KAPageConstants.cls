@@ -38,4 +38,6 @@ public with sharing class KAPageConstants {
 		pageNames.put('KATESTPASSING', 'Tsss, Just Do It');
 	}
 
+	public static final String TASK_STATUS_SCHEDULED = 'Scheduled';
+
 }

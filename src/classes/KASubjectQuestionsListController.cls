@@ -35,7 +35,7 @@ public with sharing class KASubjectQuestionsListController {
 
 	private PageReference currentPage;
 
-	public KASubjectQuestionsListController() {
+	private void init() {
 		notificMap = new KANotificationMapWrapper();
 		subjects = new List<Subject__c>();
 		themes = new List<Theme__c>();
@@ -72,6 +72,10 @@ public with sharing class KASubjectQuestionsListController {
 		}
 
 		refreshQuestions(false);
+	}
+
+	public KASubjectQuestionsListController() {
+		init();
 	}
 
 	public void refreshQuestions(Boolean ifDelete) {
@@ -200,8 +204,9 @@ public with sharing class KASubjectQuestionsListController {
 			}
 		}
 
-		if (preCreatedQuestion == null || checkThemeExistenceList.size() == 0 || preCreatedQuestion.Statement__c == '' || hasAnswersEmpties || ( ! hasAnswersRights) ||
-			preCreatedQuestion.Level__c == null) {
+		if (preCreatedQuestion == null || checkThemeExistenceList.size() == 0 ||
+				preCreatedQuestion.Statement__c == '' || hasAnswersEmpties ||
+				( ! hasAnswersRights) || preCreatedQuestion.Level__c == null) {
 			if (preCreatedQuestion == null) {
 				notificMap.addInfo('Please, wait a second for sending creation request.');
 			}
@@ -250,7 +255,8 @@ public with sharing class KASubjectQuestionsListController {
 			preCreatedQuestion = new Question__c();
 
 			List<Question__c> dropBoxQuestion = [
-				SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id,
+				SELECT Name, Level__c, Statement__c, CreatedDate,
+					Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id,
 				(
 					SELECT Variant__c, Right__c
 					FROM Answers__r
@@ -315,6 +321,7 @@ public with sharing class KASubjectQuestionsListController {
 		];
 		Boolean hasAnswersEmpties = false;
 		Boolean hasAnswersRights = false;
+
 		for (Integer i = 0; i < preCreatedAnswers.size(); i++) {
 			if (preCreatedAnswers[i].Variant__c == null || preCreatedAnswers[i].Variant__c == '') {
 				hasAnswersEmpties = true;
@@ -325,8 +332,8 @@ public with sharing class KASubjectQuestionsListController {
 			}
 		}
 
-		if (checkThemeExistenceList.size() == 0 || preCreatedQuestion.Statement__c == '' || hasAnswersEmpties || ( ! hasAnswersRights) ||
-			preCreatedQuestion.Level__c == null) {
+		if (checkThemeExistenceList.size() == 0 || preCreatedQuestion.Statement__c == '' || hasAnswersEmpties ||
+			( ! hasAnswersRights) || preCreatedQuestion.Level__c == null) {
 			if (checkThemeExistenceList.size() == 0) {
 				notificMap.addDanger('Please, check question\'s subject and topic');
 			}

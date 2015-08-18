@@ -17,7 +17,7 @@ public with sharing class KAImportQuestionsCSVController {
 
 	private PageReference currentPage;
 
-	public KAImportQuestionsCSVController() {
+	private void init() {
 		csvFileLines = new String[]{};
 		quelist = new List<Question__c>();
 		rightAnswers = new List<List<Answer__c>>();
@@ -25,6 +25,10 @@ public with sharing class KAImportQuestionsCSVController {
 		currentPage = ApexPages.currentPage();
 		themeId = currentPage.getParameters().get('themeId');
 		notificMap = new KANotificationMapWrapper();
+	}
+
+	public KAImportQuestionsCSVController() {
+		init();
 	}
 
 	public void importCsvFile() {
@@ -68,7 +72,6 @@ public with sharing class KAImportQuestionsCSVController {
 							question.Theme__c = tmpList.get(0).Id;
 							quelist.add(question);
 						}
-
 					}
 				}
 
@@ -112,7 +115,8 @@ public with sharing class KAImportQuestionsCSVController {
 
 	public void importCsvToDropbox() {
 		List<Question__c> dBQuestions = [
-			SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name, Theme__r.Subject__r.Name, Theme__r.Subject__r.Id, (
+			SELECT Name, Level__c, Statement__c, CreatedDate, Theme__r.Name,
+				Theme__r.Subject__r.Name, Theme__r.Subject__r.Id, (
 				SELECT Variant__c, Right__c
 				FROM Answers__r
 			)

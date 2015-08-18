@@ -16,52 +16,87 @@ private class KANotificationMapWrapperTest {
 	@isTest static void testAddDanger_Success() {
 		init();
 
+		Test.startTest();
+
 		notificWrapper.addDanger('success');
+
+		Test.stopTest();
+
 		System.assertEquals(notificWrapper.isEmpty, false);
 	}
 
 	@isTest static void testAddSuccess_Success() {
 		init();
 
+		Test.startTest();
+
 		notificWrapper.addSuccess('success');
+
+		Test.stopTest();
+
 		System.assertEquals(notificWrapper.isEmpty, false);
 	}
 
 	@isTest static void testAddInfo_Success() {
 		init();
 
+		Test.startTest();
+
 		notificWrapper.addInfo('success');
+
+		Test.stopTest();
+
 		System.assertEquals(notificWrapper.isEmpty, false);
 	}
 
 	@isTest static void testClearMap_Success() {
 		init();
 
+		Test.startTest();
+
 		notificWrapper.addDanger('success');
 		notificWrapper.addDanger('cleared');
 		notificWrapper.addSuccess('success');
 		notificWrapper.addInfo('success');
+
+		Test.stopTest();
+
 		System.assertEquals(notificWrapper.getCurrentMessage().split(':')[2], 'cleared');
 	}
 
 	@isTest static void testGetDanger_Success() {
 		init();
 
+		Test.startTest();
+
 		notificWrapper.addDanger('success');
+
+		Test.stopTest();
+
 		System.assertNotEquals(notificWrapper.getCurrentMessage(), null);
 	}
 
 	@isTest static void testGetSuccess_Success() {
 		init();
 
+		Test.startTest();
+
 		notificWrapper.addSuccess('success');
+
+		Test.stopTest();
+
 		System.assertNotEquals(notificWrapper.getCurrentMessage(), null);
 	}
 
 	@isTest static void testGetInfo_Success() {
 		init();
 
+		Test.startTest();
+
 		notificWrapper.addInfo('success');
+
+		Test.stopTest();
+
 		System.assertNotEquals(notificWrapper.getCurrentMessage(), null);
 	}
 
