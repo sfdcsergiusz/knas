@@ -65,22 +65,37 @@ private class KACommonUsersControllerTest {
 	@isTest static void testTypeUserSelect_Success() {
 		init();
 
+		Test.startTest();
+
 		usersController.tmpUser = 'testName';
 		usersController.typeUser();
+
+		Test.stopTest();
+
 		System.assertEquals(usersController.users.size() == 1, true);
 	}
 
 	@isTest static void testFreezeUser_Success() {
 		init();
 
+		Test.startTest();
+
 		usersController.changeActivity();
+
+		Test.stopTest();
+
 		System.assertEquals(usersController.users.get(0).IsActive__c, true);
 	}
 
 	@isTest static void testRenderUser_Success() {
 		init();
 
+		Test.startTest();
+
 		usersController.renderUser();
+
+		Test.stopTest();
+
 		System.assertEquals(usersController.renderedStatistic.keyset().size() == 1, true);
 	}
 

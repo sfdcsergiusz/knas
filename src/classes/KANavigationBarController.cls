@@ -9,7 +9,7 @@ public with sharing class KANavigationBarController {
 
 	private PageReference currentPage { private get; private set; }
 
-	public KANavigationBarController() {
+	private void init() {
 		currentPage = ApexPages.currentPage();
 		isStartPage = currentPage.getUrl().toUpperCase().contains('LOGIN') || currentPage.getUrl().toUpperCase().contains('REGISTER') || currentPage.getUrl().toUpperCase().contains('PASSWORD');
 		isAdminPage = isStartPage ? false : true;
@@ -36,13 +36,19 @@ public with sharing class KANavigationBarController {
 		showingPageName = KAPageConstants.pageNames.get(currentPage.getUrl().split('/apex/')[1].split('\\?')[0].toUpperCase());
 	}
 
+	public KANavigationBarController() {
+		init();
+	}
+
 	public PageReference onLoad() {
 		target = null;
 		packagePrefix = KAPageConstants.packagePrefix;
 
 		if (getLoginCookie() != null) {
 			List<Browser__c> browsers = [
-				SELECT Identifier__c, Employee__r.Name, Employee__r.Password__c, Employee__r.IsAdmin__c, Employee__r.IsActive__c, Employee__r.First_Name__c, Employee__r.Last_Name__c
+				SELECT Identifier__c, Employee__r.Name, Employee__r.Password__c,
+					Employee__r.IsAdmin__c, Employee__r.IsActive__c,
+					Employee__r.First_Name__c, Employee__r.Last_Name__c
 				FROM Browser__c
 				WHERE Identifier__c = :getLoginCookie().getValue()
 				LIMIT 1

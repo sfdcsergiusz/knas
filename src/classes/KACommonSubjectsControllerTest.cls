@@ -50,84 +50,133 @@ private class KACommonSubjectsControllerTest {
 	@isTest static void testTypeSubjectSelect_Success() {
 		init();
 
+		Test.startTest();
+
 		subjectsController.tmpSubject = 'testSubject';
 		subjectsController.typeSubject();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.subjects.size() > 0, true);
 	}
 
 	@isTest static void testCreateSubject_Success() {
 		init();
 
+		Test.startTest();
+
 		subjectsController.tmpSubject = 'newTestSubject';
 		subjectsController.createSubject();
 		subjectsController.tmpSubject = '';
 		subjectsController.typeSubject();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.subjects.size() == 2, true);
 	}
 
 	@isTest static void testCreateSubject_ExistingFailure() {
 		init();
 
+		Test.startTest();
+
 		subjectsController.tmpSubject = 'testSubject';
 		subjectsController.typeSubject();
 		subjectsController.createSubject();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.subjects.size() == 1, true);
 	}
 
 	@isTest static void testCreateSubject_EmptyFailure() {
 		init();
 
+		Test.startTest();
+
 		subjectsController.tmpSubject = '';
 		subjectsController.typeSubject();
 		subjectsController.createSubject();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.subjects.size() == 1, true);
 	}
 
 	@isTest static void testCreateTheme_Success() {
 		init();
 
+		Test.startTest();
+
 		subjectsController.tmpTheme = 'newTestTheme';
 		subjectsController.createTheme();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.tmpTheme == '', true);
 	}
 
 	@isTest static void testCreateThemeAnotherCondition_Success() {
 		init();
 
+		Test.startTest();
+
 		subjectsController.tmpTheme = 'newTestTheme';
 		subjectsController.tmpSubject = 'newTestSubject';
 		subjectsController.createTheme();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.tmpTheme == '', true);
 	}
 
 	@isTest static void testCreateTheme_ExistingFailure() {
 		init();
 
+		Test.startTest();
+
 		subjectsController.tmpTheme = 'testTheme';
 		subjectsController.createTheme();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.notificMap.notificationMap.keyset().size() == 1, true);
 	}
 
 	@isTest static void testCreateTheme_EmptyFailure() {
 		init();
 
+		Test.startTest();
+
 		subjectsController.tmpTheme = '';
 		subjectsController.createTheme();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.notificMap.notificationMap.keyset().size() == 1, true);
 	}
 
 	@isTest static void testDeleteSubject_Success() {
 		init();
+
+		Test.startTest();
+
 		subjectsController.typeSubject();
 
 		insert new Subject__c(Name = 'somethingToDelete');
 
 		subjectsController.deleteSubject();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.subjects.size() == 1, false);
 	}
 
 	@isTest static void testDeleteSubjectAnotherCondition_Success() {
 		init();
+
+		Test.startTest();
+
 		subjectsController.typeSubject();
 
 		insert new Subject__c(Name = 'somethingToDelete');
@@ -135,6 +184,9 @@ private class KACommonSubjectsControllerTest {
 		subjectsController.tmpSubject = 'newTestSubject';
 		subjectsController.prepareSubjectToDelete();
 		subjectsController.deleteSubject();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.subjects.size() == 0, true);
 	}
 
@@ -159,16 +211,14 @@ private class KACommonSubjectsControllerTest {
 	@isTest static void testResetSearch_Success() {
 		init();
 
+		Test.startTest();
+
 		subjectsController.resetSearch();
+
+		Test.stopTest();
+
 		System.assertEquals(subjectsController.subjects.size() == 1, true);
 	}
-
-	//@isTest static void testResetSearch_Success() {
-	//	init();
-
-	//	subjectsController.resetSearch();
-	//	System.assertEquals(subjectsController.subjects.size() == 1, true);
-	//}
 
 	@isTest static void testDeletingTopic_Success() {
 		init();

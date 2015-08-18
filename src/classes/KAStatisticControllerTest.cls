@@ -1,6 +1,6 @@
 @isTest
 private class KAStatisticControllerTest {
-	
+
 	private static KAStatisticController testStatContr;
 
 	private static void init() {
@@ -36,18 +36,30 @@ private class KAStatisticControllerTest {
 
 	@isTest static void testRefreshRecentResults() {
 		init();
+
+		Test.startTest();
+
 		testStatContr.refreshRecentResults();
 		Integer tableSize = testStatContr.recentResults.size();
+
+		Test.stopTest();
+
 		System.assertEquals(2, tableSize);
 
 	}
 
 	@isTest static void testOrderByCreatedOn() {
 		init();
+
+		Test.startTest();
+
 		testStatContr.orderByCreatedOn();
 		Datetime  testItem1 = testStatContr.recentResults.get(0).createdDate;
 		testStatContr.orderByCreatedOn();
 		Datetime  testItem2 = testStatContr.recentResults.get(0).createdDate;
+
+		Test.stopTest();
+
 		System.assertEquals(testItem1, testItem2);
 
 	}
@@ -55,30 +67,48 @@ private class KAStatisticControllerTest {
 
 	@isTest static void testOrderBySubject() {
 		init();
+
+		Test.startTest();
+
 		testStatContr.orderBySubject();
 		String  testName1 = testStatContr.recentResults.get(0).Test__r.Subject__r.Name;
 		testStatContr.orderBySubject();
 		String  testName2 = testStatContr.recentResults.get(0).Test__r.Subject__r.Name;
+
+		Test.stopTest();
+
 		System.assertNotEquals(testName1, testName2);
 
 	}
 
 	@isTest static void testOrderByTestTitle() {
 		init();
+
+		Test.startTest();
+
 		testStatContr.orderByTestTitle();
 		String  testName1 = testStatContr.recentResults.get(0).Test__r.Name;
 		testStatContr.orderByTestTitle();
 		String  testName2 = testStatContr.recentResults.get(0).Test__r.Name;
+
+		Test.stopTest();
+
 		System.assertNotEquals(testName1, testName2);
 
 	}
 
 	@isTest static void testOrderByPassResult() {
 		init();
+
+		Test.startTest();
+
 		testStatContr.orderByPassResult();
 		Double  testName1 = testStatContr.recentResults.get(0).Result__c;
 		testStatContr.orderByPassResult();
 		Double  testName2 = testStatContr.recentResults.get(0).Result__c;
+
+		Test.stopTest();
+
 		System.assertNotEquals(testName1, testName2);
 
 	}

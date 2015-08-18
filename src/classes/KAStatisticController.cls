@@ -6,15 +6,20 @@ public with sharing class KAStatisticController {
 	public String userId { get; set; }
 	private Boolean isSort { private get; private set; }
 
-	public KAStatisticController() {
+	private void init() {
 		userId = ApexPages.currentPage().getParameters().get('userId');
 		refreshRecentResults();
 		sortResults = 'SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c, CreatedDate, Result__c, Test__r.Subject__r.Name, Test__r.Name FROM Pass_History__c ';
 		isSort = true;
 	}
+
+	public KAStatisticController() {
+		init();
+	}
 	public void refreshRecentResults() {
 		recentResults = [
-			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c, CreatedDate, Result__c, Test__r.Subject__r.Name, Test__r.Name
+			SELECT Employee__r.First_Name__c, Employee__r.Last_Name__c,
+				CreatedDate, Result__c, Test__r.Subject__r.Name, Test__r.Name
 			FROM Pass_History__c
 			WHERE Employee__r.Id = :userId
 			ORDER BY CreatedDate DESC

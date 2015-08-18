@@ -11,16 +11,18 @@ private class KAEmailHandlerTest {
 		insert testTest;
 
 		Task__c testTask = new Task__c(Test__c = testTest.Id, AssignTime__c = Datetime.now() + 200);
-		insert testTask;		
+		insert testTask;
 
 		Employee_Task__c testEmploTask = new Employee_Task__c(Task__c = testTask.Id, Employee__c = testEmployee.Id, IsEmailQueue__c = true);
 		insert testEmploTask;
 
 		emailHandler = new KAEmailHandler();
 	}
-	
+
 	@isTest static void testExecute() {
 		init();
+
+		Test.startTest();
 
 		emailHandler.sendAction();
 		Employee_Task__c assertEmploTask = [
@@ -28,7 +30,10 @@ private class KAEmailHandlerTest {
 			FROM Employee_Task__c
 			LIMIT 1
 		];
+
+		Test.stopTest();
+
 		System.assertEquals(assertEmploTask.IsEmailQueue__c, false);
 	}
-	
+
 }

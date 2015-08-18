@@ -12,10 +12,14 @@ public with sharing class KARegisterController {
 
 	private PageReference currentPage;
 
-	public KARegisterController() {
+	private void init() {
 		notificMap = new KANotificationMapWrapper();
 		currentPage = ApexPages.currentPage();
 		browserId = new Browser__c();
+	}
+
+	public KARegisterController() {
+		init();
 	}
 
 	public void setIdentifier() {
@@ -38,7 +42,7 @@ public with sharing class KARegisterController {
 	}
 
 	private Boolean registerNewEmployee() {
-		if (username == '' || password == '' || firstName == '' || lastName == '' || 
+		if (username == '' || password == '' || firstName == '' || lastName == '' ||
 			passwordConfirmation == '' || passwordConfirmation != password) {
 			if (username == '') {
 				notificMap.addDanger('Please, enter username.');
@@ -57,7 +61,7 @@ public with sharing class KARegisterController {
 			}
 			else if (lastName == '') {
 				notificMap.addDanger('Please, enter last name.');
-			}			
+			}
 		}
 		else {
 			Employee__c newestEmployee = new Employee__c(

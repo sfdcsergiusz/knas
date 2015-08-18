@@ -25,36 +25,58 @@ private class KALoginControllerTest {
 	@isTest static void testRegisterRedirect_Success() {
 		init();
 
+		Test.startTest();
+
 		loginController.setIdentifier();
+
+		Test.stopTest();
+
 		System.assertNotEquals(loginController.register(), null);
 	}
 
 	@isTest static void testResetPass_Success() {
 		init();
 
+		Test.startTest();
+
 		loginController.setIdentifier();
 		loginController.resetPass();
+
+		Test.stopTest();
+
 		System.assertEquals(loginController.notificMap.notificationMap.keyset().isEmpty(), false);
 	}
 
 	@isTest static void testResetPass_Failure() {
 		init();
 
+		Test.startTest();
+
 		loginController.setIdentifier();
 		loginController.username = 'failure';
 		loginController.resetPass();
+
+		Test.stopTest();
+
 		System.assertEquals(loginController.notificMap.notificationMap.keyset().isEmpty(), false);
 	}
 
 	@isTest static void testLogin_Success() {
 		init();
 
+		Test.startTest();
+
 		loginController.setIdentifier();
+
+		Test.stopTest();
+
 		System.assertNotEquals(loginController.login(), null);
 	}
 
 	@isTest static void testLoginAdmin_Success() {
 		init();
+
+		Test.startTest();
 
 		List<Employee__c> employeesToDelete = [
 			SELECT Id
@@ -70,22 +92,35 @@ private class KALoginControllerTest {
 		insert testEmployee;
 
 		loginController.setIdentifier();
+
+		Test.stopTest();
+
 		System.assertNotEquals(loginController.login(), null);
 	}
 
 	@isTest static void testLogin_PassFailure() {
 		init();
 
+		Test.startTest();
+
 		loginController.password = 'failure';
 		loginController.setIdentifier();
+
+		Test.stopTest();
+
 		System.assertEquals(loginController.login(), null);
 	}
 
 	@isTest static void testLogin_UsernameFailure() {
 		init();
 
+		Test.startTest();
+
 		loginController.username = 'failure';
 		loginController.setIdentifier();
+
+		Test.stopTest();
+
 		System.assertEquals(loginController.login(), null);
 	}
 

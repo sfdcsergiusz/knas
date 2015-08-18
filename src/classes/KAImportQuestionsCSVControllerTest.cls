@@ -21,24 +21,4 @@ private class KAImportQuestionsCSVControllerTest {
 		csvImportController.themeId = testTheme.Id;
 	}
 
-	//@isTest static void testImportInvalidCsv() {
-	//	init();
-	//	csvImportController.csvFileBody = Blob.valueOf(testInvalidCsvFile);
-	//	csvImportController.csvAsString = testInvalidCsvFile;
-	//	csvImportController.csvFileLines = testInvalidCsvFile.split('\n');
-	//	csvImportController.importCsvFile();
-	//	csvImportController.importCsvFile();
-	//	String testmessage = csvImportController.errorMessage;
-	//	System.assertEquals('Invalid file', testmessage);
-	//}
-
-	//@isTest static void testImportEmptyCsv() {
-	//	init();
-	//	csvImportController.csvFileBody = Blob.valueOf(testEmptyCsvFile);
-	//	csvImportController.csvAsString = testEmptyCsvFile;
-	//	csvImportController.csvFileLines = testEmptyCsvFile.split('\n');
-	//	csvImportController.importCsvFile();
-	//	String testmessage = csvImportController.errorMessage;
-	//	System.assertEquals('File is Empty, please, choose file', testmessage);
-	//}
 }

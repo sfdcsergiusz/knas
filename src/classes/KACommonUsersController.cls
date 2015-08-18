@@ -18,7 +18,7 @@ public with sharing class KACommonUsersController {
 	}
 	public String tmpUser { get; set; }
 
-	public KACommonUsersController() {
+	private void init() {
 		allSubjects = [
 			SELECT Name,
 			(
@@ -41,6 +41,10 @@ public with sharing class KACommonUsersController {
 		];
 	}
 
+	public KACommonUsersController() {
+		init();
+	}
+
 	public void typeUser() {
 		String searchUser = '%' + tmpUser + '%';
 		users = [
@@ -60,7 +64,7 @@ public with sharing class KACommonUsersController {
 			SELECT Name, First_Name__c, Last_Name__c, CreatedDate, IsActive__c
 			FROM Employee__c
 			WHERE Id = :ApexPages.currentPage().getParameters().get('activeUserId')
-			LIMIT 1	
+			LIMIT 1
 		];
 		activeFreezeUser.IsActive__c = activeFreezeUser.IsActive__c ? false : true;
 		update activeFreezeUser;
@@ -69,7 +73,7 @@ public with sharing class KACommonUsersController {
 			SELECT Name, First_Name__c, Last_Name__c, CreatedDate, IsActive__c
 			FROM Employee__c
 			WHERE IsAdmin__c = false
-		];		
+		];
 	}
 
 	public void renderUser() {
@@ -88,7 +92,7 @@ public with sharing class KACommonUsersController {
 		];
 
 		testThemeStat = [
-			SELECT Questions_Captured__c, Theme__r.Name, Theme__r.Subject__r.Name, 
+			SELECT Questions_Captured__c, Theme__r.Name, Theme__r.Subject__r.Name,
 				Test__r.Id, Test__r.Name, Test__r.Duration__c, Test__r.Difficulty__c, Test__r.Passing_Threshold__c
 			FROM TestTheme__c
 		];

@@ -37,15 +37,19 @@ public with sharing class KACommonTestsController {
 		selectAllSubjects();
 	}
 
-	public KACommonTestsController() {
+	private void init() {
 		tmpSubject = '';
 		preCreatedTestTheme = new TestTheme__c();
 		preCreatedTest = new Test__c();
-		deletingTest = new Test__c(Name = 'Loading...');
+		deletingTest = new Test__c(Name = Label.LoadingDtDtDt);
 		themeStatistic = new List<TestTheme__c>();
 		notificMap = new KANotificationMapWrapper();
 
 		selectAllSubjects();
+	}
+
+	public KACommonTestsController() {
+		init();
 	}
 
 	public void typeSubject() {
@@ -78,11 +82,11 @@ public with sharing class KACommonTestsController {
 
 			tmpTheme = [
 				SELECT Id, Name, Subject__r.Name, Questions_Number__c,
-					(
-						SELECT Id
-						FROM Questions__r
-						WHERE Level__c = :preCreatedTest.Difficulty__c
-					)
+				(
+					SELECT Id
+					FROM Questions__r
+					WHERE Level__c = :preCreatedTest.Difficulty__c
+				)
 				FROM Theme__c
 				WHERE Id = :ApexPages.currentPage().getParameters().get('themeId')
 			];
@@ -142,34 +146,34 @@ public with sharing class KACommonTestsController {
 			preCreatedTest.Duration__c == null || preCreatedTestTheme.Questions_Captured__c == null ||
 			preCreatedTest.Passing_Threshold__c < 0 || preCreatedTest.Passing_Threshold__c > 100) {
 			if (preCreatedTestTheme.Questions_Captured__c <= 0) {
-				notificMap.addDanger('Number of questions should be more than 0.');
+				notificMap.addDanger(Label.Msg_Little_Quests_Num);
 			}
 			else if (preCreatedTestTheme.Questions_Captured__c > themeAvailableQuestions) {
-				notificMap.addDanger('Number of questions should be less than available: ' + themeAvailableQuestions + '.');
+				notificMap.addDanger(Label.Msg_Too_Much_Questions + themeAvailableQuestions + '.');
 			}
 			else if (checkEqualTestList.size() > 0) {
-				notificMap.addDanger('Test with name "' + preCreatedTest.Name + '" already exists.');
+				notificMap.addDanger(Label.Msg_Test_Exists + '"' + preCreatedTest.Name + '"' + Label.Msg_Spc_Already_Exists);
 			}
 			else if (preCreatedTest.Duration__c <= 0) {
-				notificMap.addDanger('Duration of the test should be more than 0 minutes.');
+				notificMap.addDanger(Label.Msg_Little_Duration);
 			}
 			else if (subjectForTest.isEmpty()) {
-				notificMap.addDanger('Test cannot be created. Please, refresh page.');
+				notificMap.addDanger(Label.Msg_Test_Cannot_Be_Created);
 			}
 			else if (preCreatedTest.Passing_Threshold__c == null) {
-				notificMap.addDanger('Please, input passing threshold.');
+				notificMap.addDanger(Label.Msg_Input_Threshold);
 			}
 			else if (preCreatedTest.Passing_Threshold__c < 0) {
-				notificMap.addDanger('Threshold shold be equal or greater than 0.');
+				notificMap.addDanger(Label.Msg_Incorrect_Threshold);
 			}
 			else if (preCreatedTest.Passing_Threshold__c > 100) {
-				notificMap.addDanger('Threshold shold be equal or less than 100.');
+				notificMap.addDanger(Label.Msg_Incorrect_Threshold_More);
 			}
 			else if (preCreatedTest.Duration__c == null) {
-				notificMap.addDanger('Please, enter duration.');
+				notificMap.addDanger(Label.Msg_Empty_Duration);
 			}
 			else if (preCreatedTestTheme.Questions_Captured__c == null) {
-				notificMap.addDanger('Please, enter number of questions.');
+				notificMap.addDanger(Label.Msg_Empty_Questions);
 			}
 		}
 		else {
@@ -180,10 +184,10 @@ public with sharing class KACommonTestsController {
 			preCreatedTestTheme.Theme__c = tmpTheme.Id;
 			insert preCreatedTestTheme;
 
-			notificMap.addSuccess('Test was created. ' + testSubjectName
+			notificMap.addSuccess(Label.Msg_Test_Was_Created + ' ' + testSubjectName
 				+ ', ' + testThemeName
-				+ ', ' + preCreatedTestTheme.Questions_Captured__c + ' questions'
-				+ ', ' + preCreatedTest.Duration__c + ' minutes.'
+				+ ', ' + preCreatedTestTheme.Questions_Captured__c + Label.Msg_Spc_Questions
+				+ ', ' + preCreatedTest.Duration__c + Label.Msg_Spc_Minutes_Dt
 			);
 
 			clearThemeStatistic();
@@ -256,12 +260,12 @@ public with sharing class KACommonTestsController {
 			}
 		}
 
-		notificMap.addInfo(deletingTest.Name + ' was deleted from ' + deletingTest.Subject__r.Name + '.');
+		notificMap.addInfo(deletingTest.Name + Label.Msg_Was_Deleted_From + deletingTest.Subject__r.Name + '.');
 		delete deletingTest;
 
 		clearThemeStatistic();
 		typeSubject();
-		deletingTest = new Test__c(Name = 'Loading...');
+		deletingTest = new Test__c(Name = Label.LoadingDtDtDt);
 	}
 
 	public void prepareTestToUpdate() {
@@ -345,31 +349,31 @@ public with sharing class KACommonTestsController {
 			preCreatedTest.Duration__c == null || preCreatedTestTheme.Questions_Captured__c == null ||
 			preCreatedTest.Passing_Threshold__c < 0 || preCreatedTest.Passing_Threshold__c > 100) {
 			if (preCreatedTestTheme.Questions_Captured__c <= 0) {
-				notificMap.addDanger('Number of questions should be more than 0.');
+				notificMap.addDanger(Label.Msg_Little_Quests_Num);
 			}
 			else if (preCreatedTestTheme.Questions_Captured__c > themeAvailableQuestions) {
-				notificMap.addDanger('Number of questions should be less than available: ' + themeAvailableQuestions + '.');
+				notificMap.addDanger(Label.Msg_Too_Much_Questions + themeAvailableQuestions + '.');
 			}
 			else if (checkEqualTestList.size() > 0 && checkEqualTestList.get(0).Name != updatingTest) {
-				notificMap.addDanger('Test with name "' + preCreatedTest.Name + '" already exists.');
+				notificMap.addDanger(Label.Msg_Test_Exists + '"' + preCreatedTest.Name + '"' + Label.Msg_Spc_Already_Exists);
 			}
 			else if (preCreatedTest.Duration__c <= 0) {
-				notificMap.addDanger('Duration of the test should be more than 0 minutes.');
+				notificMap.addDanger(Label.Msg_Little_Duration);
 			}
 			else if (preCreatedTest.Passing_Threshold__c == null) {
-				notificMap.addDanger('Please, input passing threshold.');
+				notificMap.addDanger(Label.Msg_Input_Threshold);
 			}
 			else if (preCreatedTest.Passing_Threshold__c < 0) {
-				notificMap.addDanger('Threshold shold be equal or greater than 0.');
+				notificMap.addDanger(Label.Msg_Incorrect_Threshold);
 			}
 			else if (preCreatedTest.Passing_Threshold__c > 100) {
-				notificMap.addDanger('Threshold shold be equal or less than 100.');
+				notificMap.addDanger(Label.Msg_Incorrect_Threshold_More);
 			}
 			else if (preCreatedTest.Duration__c == null) {
-				notificMap.addDanger('Please, enter duration.');
+				notificMap.addDanger(Label.Msg_Empty_Duration);
 			}
 			else if (preCreatedTestTheme.Questions_Captured__c == null) {
-				notificMap.addDanger('Please, enter number of questions.');
+				notificMap.addDanger(Label.Msg_Empty_Questions);
 			}
 		}
 		else {
@@ -380,13 +384,14 @@ public with sharing class KACommonTestsController {
 
 			notificMap.addSuccess('Test was updated. ' + testSubjectName
 				+ ', ' + testThemeName
-				+ ', ' + preCreatedTestTheme.Questions_Captured__c + ' questions'
-				+ ', ' + preCreatedTest.Duration__c + ' minutes.'
+				+ ', ' + preCreatedTestTheme.Questions_Captured__c + Label.Msg_Spc_Questions
+				+ ', ' + preCreatedTest.Duration__c + Label.Msg_Spc_Minutes_Dt
 			);
 
 			clearThemeStatistic();
 			preCreatedTest = new Test__c();
 			preCreatedTestTheme = new TestTheme__c();
+
 		}
 	}
 
